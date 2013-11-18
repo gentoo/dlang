@@ -1,0 +1,26 @@
+--- src/druntime/posix.mak
++++ src/druntime/posix.mak
+@@ -237,8 +237,8 @@
+ 	cp -r doc/* $(INSTALL_DIR)/html/
+ 	mkdir -p $(INSTALL_DIR)/import
+ 	cp -r import/* $(INSTALL_DIR)/import/
+-	mkdir -p $(INSTALL_DIR)/lib
+-	cp -r lib/* $(INSTALL_DIR)/lib/
++	mkdir -p $(INSTALL_DIR)/$(LIB_DIR)
++	cp -r lib/libdruntime-linux$(MODEL)* $(INSTALL_DIR)/$(LIB_DIR)/
+ 	cp LICENSE $(INSTALL_DIR)/druntime-LICENSE.txt
+ 
+ clean: $(addsuffix /.clean,$(ADDITIONAL_TESTS))
+--- src/phobos/posix.mak
++++ src/phobos/posix.mak
+@@ -331,8 +331,8 @@
+ 	zip $(ZIPFILE) $(MAKEFILE) $(ALL_D_FILES) $(ALL_C_FILES) win32.mak win64.mak
+ 
+ install2 : release
+-	mkdir -p $(INSTALL_DIR)/lib
+-	cp $(LIB) $(INSTALL_DIR)/lib/
++	mkdir -p $(INSTALL_DIR)/$(LIB_DIR)
++	cp $(LIB) $(INSTALL_DIR)/$(LIB_DIR)/
+ 	mkdir -p $(INSTALL_DIR)/import/etc
+ 	mkdir -p $(INSTALL_DIR)/import/std
+ 	cp crc32.d $(INSTALL_DIR)/import/
