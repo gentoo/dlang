@@ -25,8 +25,8 @@ common command-line syntax between D compilers they are split up into DMDFLAGS,
 GDCFLAGS and LDCFLAGS in `make.conf`. An example configuration could be:
 ```sh
 DMDFLAGS="-O"
-GDCFLAGS="-march=native -O3 -pipe -fno-bounds-check"
-LDCFLAGS="-O4 -release -singleobj -disable-boundscheck"
+GDCFLAGS="-march=native -O3 -pipe -frelease"
+LDCFLAGS="-O4 -release"
 ```
 You may experiment with `-ffunction-sections`, `-fdata-sections` and the
 corresponding linker flag `--gc-sections`, but this caused broken exception
