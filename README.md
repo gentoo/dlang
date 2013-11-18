@@ -2,7 +2,14 @@ dlang - overlay for Gentoo Linux
 ================================
 
 This overlay aims to make parallel installation of D compilers easy and offer
-some of the most popular D libraries.
+some of the most popular D libraries. Features it offers:
+* Installation of DMD, GDC and LDC in parallel
+* Customizable »CFLAGS« for each D compiler
+* GDC is integrated with GCC for the best compatibility
+* Slotted installation of previous D compiler versions
+* Shared library support when using DMD
+* Easily compile debug builds with DMD and release builds with LDC/GDC even when they depend on libraries like GtkD.
+  (Note: This depends on availability of libraries in this repository.)
 
 ### Usage
 
@@ -24,6 +31,15 @@ LDCFLAGS="-O4 -release -singleobj -disable-boundscheck"
 You may experiment with `-ffunction-sections`, `-fdata-sections` and the
 corresponding linker flag `--gc-sections`, but this caused broken exception
 handling in the past.
+
+When you install libraries, no compilers will be selected to work with. Please run
+`emerge -pv <lib>` to list available compiler use flags for a library and use
+`/etc/portage/package.use` to activate them. A note about compilation times:
+Most build tools compile one module at a time, which causes a considerable overhead
+in compile times compared to passing multiple modules to the compiler at once.
+The use of several compilers in several versions and multilib installs all multiply
+the compile times. GtkD with no optional features compiled for *one* version of DMD,
+GDC and LDC took me 1 hour 10 minutes on a dual core 2 Ghz notebook.
 
 ### Executables paths
 * DMD: `/opt/dmd-<version>/bin/dmd`
