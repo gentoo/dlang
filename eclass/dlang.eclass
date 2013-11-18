@@ -291,7 +291,7 @@ __dlang_compiler_to_dlang_version() {
 		["0.12.0"]="1.076"
 	)
 	local -rA ldc2=(
-		["0.12.0"]="1.076"
+		["0.12.0"]="2.063"
 	)
 
 	case "${1}" in
