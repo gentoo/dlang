@@ -4,6 +4,27 @@ dlang - overlay for Gentoo Linux
 This overlay aims to make parallel installation of D compilers easy and offer
 some of the most popular D libraries.
 
+### Usage
+
+The overlay supports linker and compiler flags, though some package build
+scripts may not be patched to use them (e.g. DMD). For D packages, the LDFLAGS
+variable is rewritten to match the D compilers linker prefix. For DMD this is
+`-L` and for LDC this is `-L=`. If you have not set up LDFLAGS in make.conf, the
+Gentoo default will be used, which is currently `-Wl,--as-needed -Wl,-O1`.
+Taking this example, in a compilation using DMD this would be rewritten to
+`LDFLAGS=-L--as-needed -L-O1`.
+Compiler flags are passed into build scripts as `DCFLAGS`, but since there is no
+common command-line syntax between D compilers they are split up into DMDFLAGS,
+GDCFLAGS and LDCFLAGS in `make.conf`. An example configuration could be:
+```sh
+DMDFLAGS="-O"
+GDCFLAGS="-march=native -O3 -pipe -fno-bounds-check"
+LDCFLAGS="-O4 -release -singleobj -disable-boundscheck"
+```
+You may experiment with `-ffunction-sections`, `-fdata-sections` and the
+corresponding linker flag `--gc-sections`, but this caused broken exception
+handling in the past.
+
 ### Executables paths
 * DMD: `/opt/dmd-<version>/bin/dmd`
 * GDC: `/usr/<abi>-pc-linux-gnu/gcc-bin/<version>/gdc`
