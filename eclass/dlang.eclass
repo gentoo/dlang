@@ -218,35 +218,35 @@ __dlang_filter_versions() {
 	fi
 
 	# Convert D versions to usable compilers and write IUSE
-	local compiler compilers=() depends=()
+	local slot compilers=() depends=()
 	for d_version in ${__DLANG_VERSIONS[@]}; do
 		# DMD
 		case "${d_version}" in
-			"2.063") compiler="dmd-2.063" ;;
-			"2.064") compiler="dmd-2.064" ;;
-			*) compiler="" ;;
+			"2.063") slot="2.063" ;;
+			"2.064") slot="2.064" ;;
+			*) slot="" ;;
 		esac
-		if [[ -n "${compiler}" ]]; then
-			compilers+=("${compiler}")
-			depends+=("${compiler}? ( =dev-lang/${compiler}*:${d_version}[${MULTILIB_USEDEP}] )")
+		if [[ -n "${slot}" ]]; then
+			compilers+=("dmd-$(replace_all_version_separators _ ${slot})")
+			depends+=("dmd-$(replace_all_version_separators _ ${slot})? ( =dev-lang/dmd-${slot}*:${d_version}[${MULTILIB_USEDEP}] )")
 		fi
 		# GDC
 		case "${d_version}" in
-			"2.063") compiler="gdc-4.8.1" ;;
-			*) compiler="" ;;
+			"2.063") slot="4.8.1" ;;
+			*) slot="" ;;
 		esac
-		if [[ -n "${compiler}" ]]; then
-			compilers+=("${compiler}")
-			depends+=("${compiler}? ( =sys-devel/${compiler/#gdc/gcc}*[d] )")
+		if [[ -n "${slot}" ]]; then
+			compilers+=("gdc-$(replace_all_version_separators _ ${slot})")
+			depends+=("gdc-$(replace_all_version_separators _ ${slot})? ( =sys-devel/gcc-${slot}*[d] )")
 		fi
 		# LDC
 		case "${d_version}" in
-			"2.063") compiler="ldc2-0.12.0" ;;
-			*) compiler="" ;;
+			"2.063") slot="0.12.0" ;;
+			*) slot="" ;;
 		esac
-		if [[ -n "${compiler}" ]]; then
-			compilers+=("${compiler}")
-			depends+=("${compiler}? ( =dev-lang/${compiler}* )")
+		if [[ -n "${slot}" ]]; then
+			compilers+=("ldc2-$(replace_all_version_separators _ ${slot})")
+			depends+=("ldc2-$(replace_all_version_separators _ ${slot})? ( =dev-lang/ldc2-${slot}* )")
 		fi
 	done
 	[[ ${#compilers[@]} -ne 0 ]] || die "No compilers found for D versions [${__DLANG_VERSIONS[@]}]"
@@ -310,7 +310,7 @@ __dlang_multibuild_configurations() {
 		case ${use_flag} in
 			dmd-* | gdc-* | ldc-* | ldc2-*)
 				for abi in $(multilib_get_enabled_abis); do
-					variants+=("${abi}-${use_flag}")
+					variants+=("${abi}-${use_flag//_/.}")
 				done
 				;;
 		esac
