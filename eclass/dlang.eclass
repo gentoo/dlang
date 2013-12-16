@@ -69,17 +69,7 @@ dlang_convert_ldflags() {
 dlang_foreach_config() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	local MULTIBUILD_VARIANTS=() use_flag
-	# TODO: get some real compiler dependencies here.
-	for use_flag in ${USE}; do
-		case ${use_flag} in
-			dmd-* | gdc-* | ldc-* | ldc2-*)
-				for abi in $(multilib_get_enabled_abis); do
-					MULTIBUILD_VARIANTS+=("${abi}-${use_flag}")
-				done
-				;;
-		esac
-	done
+	local MULTIBUILD_VARIANTS=($(__dlang_multibuild_configurations))
 
 	multibuild_wrapper() {
 		debug-print-function ${FUNCNAME} "${@}"
@@ -261,6 +251,7 @@ __dlang_filter_versions() {
 	done
 	[[ ${#compilers[@]} -ne 0 ]] || die "No compilers found for D versions [${__DLANG_VERSIONS[@]}]"
 	IUSE="${compilers[@]}"
+	REQUIRED_USE="|| ( ${IUSE} )"
 	DEPEND="${depends[@]}"
 }
 __dlang_filter_versions
@@ -314,18 +305,20 @@ __dlang_compiler_to_dlang_version() {
 }
 
 __dlang_multibuild_configurations() {
-	local MULTIBUILD_VARIANTS=() use_flag
-	# TODO: get some real compiler dependencies here.
+	local variants=() use_flag
 	for use_flag in ${USE}; do
 		case ${use_flag} in
 			dmd-* | gdc-* | ldc-* | ldc2-*)
 				for abi in $(multilib_get_enabled_abis); do
-					MULTIBUILD_VARIANTS+=("${abi}-${use_flag}")
+					variants+=("${abi}-${use_flag}")
 				done
 				;;
 		esac
 	done
-	echo "${MULTIBUILD_VARIANTS[@]}"
+	if [ ${#variants[@]} -eq 0 ]; then
+		die "At least one compiler USE-flag must be selected. This should be checked by REQUIRED_USE in this package."
+	fi
+	echo "${variants[@]}"
 }
 
 fi
