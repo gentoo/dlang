@@ -18,7 +18,7 @@ DLANG_VERSION_RANGE="2.063-"
 inherit eutils dlang
 
 GTKD_COMP_FLAGS=(opengl sourceview libgda gstreamer vte)
-GTKD_COMP_NAMES=(gtkdgl sv         gda    gstreamer vte)
+GTKD_COMP_NAMES=(gtkdgl gtkdsv     gda    gstreamer vte)
 IUSE="${GTKD_COMP_FLAGS[@]} static-libs"
 
 flags_to_comps() {
