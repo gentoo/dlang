@@ -1,7 +1,7 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 DESCRIPTION="D binding and OO wrapper of GTK+ and is released on the LGPL license"
 HOMEPAGE="http://gtkd.org/"

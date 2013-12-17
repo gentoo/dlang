@@ -1,11 +1,11 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
-EAPI=4
+EAPI=5
 
 inherit cmake-utils versionator
 
-MY_PV=$(replace_version_separator '_' '-')
+MY_PV="$(replace_version_separator '_' '-')"
 MY_P="ldc-${MY_PV}-src"
 SRC_URI="https://github.com/ldc-developers/ldc/releases/download/v${MY_PV}/${MY_P}.tar.gz"
 S=${WORKDIR}/${MY_P}
@@ -14,7 +14,7 @@ DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://ldc-developers.github.com/ldc"
 KEYWORDS="x86 amd64 ~ppc64"
 LICENSE="BSD"
-SLOT="${PV}"
+SLOT="$(get_version_component_range 1-2)/0"
 IUSE=""
 
 RDEPEND=">=sys-devel/llvm-3.1-r2
@@ -22,10 +22,14 @@ RDEPEND=">=sys-devel/llvm-3.1-r2
 DEPEND=">=dev-util/cmake-2.8
 	${RDEPEND}"
 
+src_prepare() {
+	epatch "${FILESDIR}/0.12.0-_d_newclass.patch"
+}
+
 src_configure() {
 	local mycmakeargs=(
 		-DD_VERSION=2
-		-DCMAKE_INSTALL_PREFIX=/opt/ldc2-${PV}
+		-DCMAKE_INSTALL_PREFIX=/opt/ldc2-$(get_version_component_range 1-2)
 	)
 	cmake-utils_src_configure
 }

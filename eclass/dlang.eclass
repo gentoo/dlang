@@ -59,7 +59,7 @@ dlang_convert_ldflags() {
 # DC_VERSION: Release version of the compiler. This is the version excluding any
 #   Patch releases. So dmd 2.064.2 would still be 2.064. This version is used
 #   to separate potentially incompatible ABIs and to create the library path.
-#   Typical versions of gdc or ldc are 4.8.1 or 0.12.0.
+#   Typical versions of gdc or ldc are 4.8.1 or 0.12.
 # DLANG_VERSION: This differs from DC_VERSION in so far as it displays the
 #   front-end or language specification version for every compiler. Since the
 #   release of D1 it follows the scheme x.yyy and is as of writing at 2.064.
@@ -228,9 +228,9 @@ __dlang_filter_versions() {
 		esac
 		if [[ -n "${slot}" ]]; then
 			compilers+=("dmd-$(replace_all_version_separators _ ${slot})")
-			depends+=("dmd-$(replace_all_version_separators _ ${slot})? ( =dev-lang/dmd-${slot}*:${d_version}[${MULTILIB_USEDEP}] )")
+			depends+=("dmd-$(replace_all_version_separators _ ${slot})? ( dev-lang/dmd:${slot}=[${MULTILIB_USEDEP}] )")
 		fi
-		# GDC
+		# GDC (doesn't support sub-slots, due to low EAPI requirement)
 		case "${d_version}" in
 			"2.063") slot="4.8.1" ;;
 			*) slot="" ;;
@@ -241,18 +241,19 @@ __dlang_filter_versions() {
 		fi
 		# LDC
 		case "${d_version}" in
-			"2.063") slot="0.12.0" ;;
+			"2.063") slot="0.12" ;;
 			*) slot="" ;;
 		esac
 		if [[ -n "${slot}" ]]; then
 			compilers+=("ldc2-$(replace_all_version_separators _ ${slot})")
-			depends+=("ldc2-$(replace_all_version_separators _ ${slot})? ( =dev-lang/ldc2-${slot}* )")
+			depends+=("ldc2-$(replace_all_version_separators _ ${slot})? ( dev-lang/ldc2:${slot}= )")
 		fi
 	done
 	[[ ${#compilers[@]} -ne 0 ]] || die "No compilers found for D versions [${__DLANG_VERSIONS[@]}]"
 	IUSE="${compilers[@]}"
 	REQUIRED_USE="|| ( ${IUSE} )"
 	DEPEND="${depends[@]}"
+	RDEPEND="${depends[@]}"
 }
 __dlang_filter_versions
 
@@ -279,10 +280,10 @@ __dlang_compiler_to_dlang_version() {
 		["4.8.1"]="2.063"
 	)
 	local -rA ldc=(
-		["0.12.0"]="1.076"
+		["0.12"]="1.076"
 	)
 	local -rA ldc2=(
-		["0.12.0"]="2.063"
+		["0.12"]="2.063"
 	)
 
 	case "${1}" in
