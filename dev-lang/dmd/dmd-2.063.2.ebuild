@@ -18,11 +18,22 @@ IUSE="doc examples"
 LICENSE="DMD"
 RESTRICT="mirror"
 
+CURL_DEPEND="
+	!amd64? ( net-misc/curl )
+	amd64? (
+		abi_x86_64? ( net-misc/curl )
+		abi_x86_32? ( app-emulation/emul-linux-x86-baselibs )
+	)"
+
 DEPEND="
+	${CURL_DEPEND}
 	app-arch/unzip
 	app-admin/eselect-dlang
 	"
-RDEPEND="!dev-lang/dmd-bin"
+RDEPEND="
+	${CURL_DEPEND}
+	!dev-lang/dmd-bin
+	"
 
 S="${WORKDIR}/dmd2"
 
