@@ -3,7 +3,7 @@
 
 EGIT_REPO_URI="git://github.com/D-Programming-GDC/GDC.git"
 EGIT_BRANCH="gdc-4.8"
-EGIT_COMMIT="6296cfbe97"
+EGIT_COMMIT="1aa5755d393d4beb991f49cec34ff96e3ecdb53e"
 EGIT_SOURCEDIR="${WORKDIR}/dev"
 EGIT_NOUNPACK=1
 
@@ -41,6 +41,7 @@ RDEPEND=""
 DEPEND="${RDEPEND}
 	elibc_glibc? ( >=sys-libs/glibc-2.8 )
 	>=${CATEGORY}/binutils-2.20"
+PDEPEND="=dev-util/gdmd-${PV}*"
 
 if [[ ${CATEGORY} != cross-* ]] ; then
 	PDEPEND="${PDEPEND} elibc_glibc? ( >=sys-libs/glibc-2.8 )"
