@@ -233,6 +233,7 @@ __dlang_filter_versions() {
 		# GDC (doesn't support sub-slots, due to low EAPI requirement)
 		case "${d_version}" in
 			"2.063") slot="4.8.1" ;;
+			"2.064") slot="4.8.2" ;;
 			*) slot="" ;;
 		esac
 		if [[ -n "${slot}" ]]; then

@@ -9,7 +9,7 @@ LICENSE="GPL-3+"
 
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-DEPEND="=sys-devel/gcc-${PV}*[d]"
+DEPEND="sys-devel/gcc[d]"
 
 EGIT_REPO_URI="git://github.com/D-Programming-GDC/GDMD.git"
 EGIT_COMMIT="37ca1c1f96632decb3a9f766bd25a430ecf770c8"

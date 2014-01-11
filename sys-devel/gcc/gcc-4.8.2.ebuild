@@ -3,7 +3,7 @@
 
 EGIT_REPO_URI="git://github.com/D-Programming-GDC/GDC.git"
 EGIT_BRANCH="gdc-4.8"
-EGIT_COMMIT="1aa5755d393d4beb991f49cec34ff96e3ecdb53e"
+EGIT_COMMIT="c4194221701084a31b8b28a54f20339a80fb50a7"
 EGIT_SOURCEDIR="${WORKDIR}/dev"
 EGIT_NOUNPACK=1
 
@@ -13,11 +13,11 @@ IUSE="d"
 FILESDIR=${PORTDIR}/sys-devel/gcc/files
 
 # Original GCC code starts here
-PATCH_VER="1.2"
+PATCH_VER="1.3"
 UCLIBC_VER="1.0"
 
 # Hardened gcc 4 stuff
-PIE_VER="0.5.7"
+PIE_VER="0.5.8"
 SPECS_VER="0.2.0"
 SPECS_GCC_VER="4.4.3"
 # arch/libc configurations known to be stable with {PIE,SSP}-by-default
