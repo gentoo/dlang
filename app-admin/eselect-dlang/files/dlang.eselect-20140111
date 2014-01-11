@@ -58,6 +58,7 @@ set_compiler() {
 		symlink_helper "/opt/${target}/bin/ldc" "${COMPILER_PATH}/ldc"
 	else
 		symlink_helper "/opt/${target}/bin/ldc2" "${COMPILER_PATH}/ldc2"
+		symlink_helper "/opt/${target}/bin/ldmd2" "${COMPILER_PATH}/ldmd2"
 	fi
 }
 
