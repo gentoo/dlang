@@ -67,24 +67,3 @@ src_unpack() {
 		./setup-gcc.sh ../gcc-${GCC_PV} || die "Could not setup GDC."
 	fi
 }
-
-pkg_setup() {
-	toolchain_pkg_setup
-
-	if use lto ; then
-		ewarn
-		ewarn "LTO support is still experimental and unstable.  Any bug reports"
-		ewarn "about LTO that do not include an upstream patch will be closed as"
-		ewarn "invalid."
-		ewarn
-	fi
-}
-
-pkg_postinst() {
-	toolchain_pkg_postinst
-
-	elog
-	elog "Packages failing to build with GCC 4.8 are tracked at"
-	elog "https://bugs.gentoo.org/461954"
-	elog
-}

@@ -13,11 +13,11 @@ IUSE="d"
 FILESDIR=${PORTDIR}/sys-devel/gcc/files
 
 # Original GCC code starts here
-PATCH_VER="1.3"
+PATCH_VER="1.3r1"
 UCLIBC_VER="1.0"
 
 # Hardened gcc 4 stuff
-PIE_VER="0.5.8"
+PIE_VER="0.5.8r1"
 SPECS_VER="0.2.0"
 SPECS_GCC_VER="4.4.3"
 # arch/libc configurations known to be stable with {PIE,SSP}-by-default
@@ -66,25 +66,4 @@ src_unpack() {
 		cd ../dev || die "Changing into Git checkout directory failed."
 		./setup-gcc.sh ../gcc-${GCC_PV} || die "Could not setup GDC."
 	fi
-}
-
-pkg_setup() {
-	toolchain_pkg_setup
-
-	if use lto ; then
-		ewarn
-		ewarn "LTO support is still experimental and unstable.  Any bug reports"
-		ewarn "about LTO that do not include an upstream patch will be closed as"
-		ewarn "invalid."
-		ewarn
-	fi
-}
-
-pkg_postinst() {
-	toolchain_pkg_postinst
-
-	elog
-	elog "Packages failing to build with GCC 4.8 are tracked at"
-	elog "https://bugs.gentoo.org/461954"
-	elog
 }
