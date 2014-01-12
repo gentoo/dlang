@@ -14,6 +14,7 @@ RDEPEND="x11-libs/gtk+:3"
 SRC_URI="http://master.dl.sourceforge.net/project/gtkd-packages/sources/${P}.zip"
 
 DLANG_VERSION_RANGE="2.063-"
+DLANG_PACKAGE_TYPE="multi"
 
 inherit eutils dlang
 

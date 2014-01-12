@@ -13,7 +13,11 @@ if has ${EAPI:-0} 0 1 2 3; then
 	die "EAPI must be >= 4 for dlang packages."
 fi
 
-inherit multilib-minimal versionator
+inherit versionator
+if [[ "${DLANG_PACKAGE_TYPE}" != "single" ]]; then
+	# We handle a multi instance package.
+	inherit multilib-minimal
+fi
 
 EXPORT_FUNCTIONS src_configure src_compile src_test src_install
 
@@ -47,6 +51,46 @@ dlang_convert_ldflags() {
 	fi
 }
 
+__dlang_use_build_vars() {
+	# Now we define some variables and then call the function.
+	export ABI="$(echo ${MULTIBUILD_VARIANT} | cut -d- -f1)"
+	export DC="$(echo ${MULTIBUILD_VARIANT} | cut -d- -f2)"
+	export DC_VERSION="$(echo ${MULTIBUILD_VARIANT} | cut -d- -f3)"
+	export DLANG_VENDOR="${DC:0:3}"
+	export DLANG_VERSION="$(__dlang_compiler_to_dlang_version ${DC} ${DC_VERSION})"
+	case "${ABI}" in
+		"default") ;;
+		"x86"*)    export MODEL=32 ;;
+		*)         export MODEL=64 ;;
+	esac
+	if [[ "${DLANG_VENDOR}" == "dmd" ]]; then
+		export DC="/opt/${DC}-${DC_VERSION}/bin/dmd"
+		export DMD="${DC}"
+		export DLANG_LIB_DIR="/opt/dmd-${DC_VERSION}/$(get_libdir)"
+		export DCFLAGS="${DMDFLAGS}"
+	elif [[ "${DLANG_VENDOR}" == "gdc" ]]; then
+		export DC="/usr/${__DLANG_CHOST}/gcc-bin/${DC_VERSION}/gdc"
+		export DMD="/usr/${__DLANG_CHOST}/gcc-bin/${DC_VERSION}/gdmd"
+		if [[ "${MODEL}" == "32" ]]; then
+			export DLANG_LIB_DIR="/usr/lib/gcc/${__DLANG_CHOST}/${DC_VERSION}/32"
+		else
+			export DLANG_LIB_DIR="/usr/lib/gcc/${__DLANG_CHOST}/${DC_VERSION}"
+		fi
+		export DCFLAGS="${GDCFLAGS}"
+	elif [[ "${DLANG_VENDOR}" == "ldc" ]]; then
+		export DLANG_LIB_DIR="/opt/${DC}-${DC_VERSION}/$(get_libdir)"
+		export DMD="/opt/${DC}-${DC_VERSION}/bin/ldmd2"
+		export DC="/opt/${DC}-${DC_VERSION}/bin/ldc2"
+		export DCFLAGS="${LDCFLAGS}"
+	else
+		die "Could not detect D compiler vendor!"
+	fi
+	# We need to convert the LDFLAGS, so they are understood by DMD and LDC.
+	export LDFLAGS="$(dlang_convert_ldflags)"
+	"${@}"
+}
+
+
 # @FUNCTION: dlang_foreach_config
 # @DESCRIPTION:
 # Function that calls its arguments for each D configuration. A few environment
@@ -69,7 +113,7 @@ dlang_convert_ldflags() {
 dlang_foreach_config() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	local MULTIBUILD_VARIANTS=($(__dlang_multibuild_configurations))
+	local MULTIBUILD_VARIANTS=($(__dlang_build_configurations))
 
 	multibuild_wrapper() {
 		debug-print-function ${FUNCNAME} "${@}"
@@ -85,39 +129,21 @@ dlang_foreach_config() {
 		else
 			unset CC
 		fi
-
-		# Now we define some variables and then call the function.
-		export ABI="$(echo ${MULTIBUILD_VARIANT} | cut -d- -f1)"
-		export DC="$(echo ${MULTIBUILD_VARIANT} | cut -d- -f2)"
-		export DC_VERSION="$(echo ${MULTIBUILD_VARIANT} | cut -d- -f3)"
-		export DLANG_VENDOR="${DC:0:3}"
-		export DLANG_VERSION="$(__dlang_compiler_to_dlang_version ${DC} ${DC_VERSION})"
-		[[ "${ABI:0:3}" == "x86" ]] && export MODEL=32 || export MODEL=64
-		if [[ "${DLANG_VENDOR}" == "dmd" ]]; then
-			export DC="/opt/${DC}-${DC_VERSION}/bin/dmd"
-			export DLANG_LIB_DIR="/opt/dmd-${DC_VERSION}/$(get_libdir)"
-			export DCFLAGS="${DMDFLAGS}"
-		elif [[ "${DLANG_VENDOR}" == "gdc" ]]; then
-			export DC="/usr/${__DLANG_CHOST}/gcc-bin/${DC_VERSION}/${__DLANG_CHOST}-gdc"
-			if [[ "${MODEL}" == "32" ]]; then
-				export DLANG_LIB_DIR="/usr/lib/gcc/${__DLANG_CHOST}/${DC_VERSION}/32"
-			else
-				export DLANG_LIB_DIR="/usr/lib/gcc/${__DLANG_CHOST}/${DC_VERSION}"
-			fi
-			export DCFLAGS="${GDCFLAGS}"
-		elif [[ "${DLANG_VENDOR}" == "ldc" ]]; then
-			export DLANG_LIB_DIR="/opt/${DC}-${DC_VERSION}/$(get_libdir)"
-			export DC="/opt/${DC}-${DC_VERSION}/bin/ldc2"
-			export DCFLAGS="${LDCFLAGS}"
-		else
-			die "Could not detect D compiler vendor!"
-		fi
-		# We need to convert the LDFLAGS, so they are understood by DMD and LDC.
-		export LDFLAGS="$(dlang_convert_ldflags)"
-		"${@}"
+		mkdir -p "${BUILD_DIR}" || die
+		pushd "${BUILD_DIR}" >/dev/null || die
+		__dlang_use_build_vars "${@}"
+		popd >/dev/null || die
 	}
 
 	multibuild_foreach_variant multibuild_wrapper "${@}"
+}
+
+dlang_single_config() {
+	debug-print-function ${FUNCNAME} "${@}"
+
+	local MULTIBUILD_VARIANT=$(__dlang_build_configurations)
+
+	__dlang_use_build_vars "${@}"
 }
 
 # @FUNCTION: dlang_copy_sources
@@ -126,7 +152,7 @@ dlang_foreach_config() {
 dlang_copy_sources() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	local MULTIBUILD_VARIANTS=($(__dlang_multibuild_configurations))
+	local MULTIBUILD_VARIANTS=($(__dlang_build_configurations))
 	multibuild_copy_sources
 }
 
@@ -228,7 +254,11 @@ __dlang_filter_versions() {
 		esac
 		if [[ -n "${slot}" ]]; then
 			compilers+=("dmd-$(replace_all_version_separators _ ${slot})")
-			depends+=("dmd-$(replace_all_version_separators _ ${slot})? ( dev-lang/dmd:${slot}=[${MULTILIB_USEDEP}] )")
+			if [[ "${DLANG_PACKAGE_TYPE}" == "single" ]]; then
+				depends+=("dmd-$(replace_all_version_separators _ ${slot})? ( dev-lang/dmd:${slot}= )")
+			else
+				depends+=("dmd-$(replace_all_version_separators _ ${slot})? ( dev-lang/dmd:${slot}=[${MULTILIB_USEDEP}] )")
+			fi
 		fi
 		# GDC (doesn't support sub-slots, due to low EAPI requirement)
 		case "${d_version}" in
@@ -252,7 +282,11 @@ __dlang_filter_versions() {
 	done
 	[[ ${#compilers[@]} -ne 0 ]] || die "No compilers found for D versions [${__DLANG_VERSIONS[@]}]"
 	IUSE="${compilers[@]}"
-	REQUIRED_USE="|| ( ${IUSE} )"
+	if [[ "${DLANG_PACKAGE_TYPE}" == "single" ]]; then
+		REQUIRED_USE="^^ ( ${IUSE} )"
+	else
+		REQUIRED_USE="|| ( ${IUSE} )"
+	fi
 	DEPEND="${depends[@]}"
 	RDEPEND="${depends[@]}"
 }
@@ -262,18 +296,19 @@ __dlang_filter_versions
 __DLANG_CHOST="${CHOST}"
 
 __dlang_phase_wrapper() {
-	dlang_multi() {
-		mkdir -p "${BUILD_DIR}" || die
-		pushd "${BUILD_DIR}" >/dev/null || die
+	dlang_phase() {
 		if declare -f d_src_${1} >/dev/null ; then
 			d_src_${1}
 		else
 			default_src_${1}
 		fi
-		popd >/dev/null || die
 	}
 
-	dlang_foreach_config dlang_multi "${1}"
+	if [[ ${DLANG_PACKAGE_TYPE} == "single" ]]; then
+		dlang_single_config dlang_phase "${1}"
+	else
+		dlang_foreach_config dlang_phase "${1}"
+	fi
 }
 
 __dlang_compiler_to_dlang_version() {
@@ -306,14 +341,18 @@ __dlang_compiler_to_dlang_version() {
 	esac
 }
 
-__dlang_multibuild_configurations() {
+__dlang_build_configurations() {
 	local variants=() use_flag
 	for use_flag in ${USE}; do
 		case ${use_flag} in
 			dmd-* | gdc-* | ldc-* | ldc2-*)
-				for abi in $(multilib_get_enabled_abis); do
-					variants+=("${abi}-${use_flag//_/.}")
-				done
+				if [[ "${DLANG_PACKAGE_TYPE}" == "single" ]]; then
+					variants+=("default-${use_flag//_/.}")
+				else
+					for abi in $(multilib_get_enabled_abis); do
+						variants+=("${abi}-${use_flag//_/.}")
+					done
+				fi
 				;;
 		esac
 	done

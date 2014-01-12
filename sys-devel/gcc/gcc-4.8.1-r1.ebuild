@@ -41,7 +41,7 @@ RDEPEND=""
 DEPEND="${RDEPEND}
 	elibc_glibc? ( >=sys-libs/glibc-2.8 )
 	>=${CATEGORY}/binutils-2.20"
-PDEPEND=">=dev-util/gdmd-20130328"
+PDEPEND="=dev-util/gdmd-${PV}*"
 
 if [[ ${CATEGORY} != cross-* ]] ; then
 	PDEPEND="${PDEPEND} elibc_glibc? ( >=sys-libs/glibc-2.8 )"
