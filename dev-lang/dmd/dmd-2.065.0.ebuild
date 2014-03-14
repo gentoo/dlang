@@ -42,7 +42,7 @@ IMPORT_DIR="/${PREFIX}/import"
 
 src_prepare() {
 	# Remove precompiled binaries and non-essential files.
-	rm -r README.TXT windows osx freebsd || die "Failed to remove included binaries."
+	rm -r README.TXT windows osx freebsd linux || die "Failed to remove included binaries."
 
 	# convert line-endings of file-types that start as cr-lf and are patched or installed later on
 	for file in $( find . -name "*.txt" -o -name "*.html" -o -name "*.d" -o -name "*.di" -o -name "*.ddoc" -type f ); do
