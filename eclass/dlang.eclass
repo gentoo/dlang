@@ -195,7 +195,7 @@ done
 for v1 in 00 {001..007} {009..076}; do
 	__DLANG_VERSIONS_1+=("1.${v1}")
 done
-for v2 in {000..023} {025..064}; do
+for v2 in {000..023} {025..065}; do
 	__DLANG_VERSIONS_2+=("2.${v2}")
 done
 __DLANG_VERSIONS=("${__DLANG_VERSIONS_1[@]}" "${__DLANG_VERSIONS_2[@]}")
@@ -250,6 +250,7 @@ __dlang_filter_versions() {
 		case "${d_version}" in
 			"2.063") slot="2.063" ;;
 			"2.064") slot="2.064" ;;
+			"2.065") slot="2.065" ;;
 			*) slot="" ;;
 		esac
 		if [[ -n "${slot}" ]]; then
