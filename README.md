@@ -97,7 +97,6 @@ It advertizes compiler specific variables and paths to D ebuilds.
      separate D specifications the same way as compilers.
 
 ### TODO
-* Optional: Execute eselect dlang upon compiler installation/uninstall.
 * Optional: For GtkD, make HTML DDOC generation work with any compiler and
             install them if the doc use flag is set.
 * Optional: Make dmd respect CFLAGS etc.
