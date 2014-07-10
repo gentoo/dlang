@@ -1,4 +1,4 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 EAPI=5
@@ -18,7 +18,8 @@ SLOT="$(get_version_component_range 1-2)/1"
 IUSE=""
 
 RDEPEND=">=sys-devel/llvm-3.1-r2
-	>=dev-libs/libconfig-1.4.7"
+	>=dev-libs/libconfig-1.4.7
+	>=app-admin/eselect-dlang-20140709"
 DEPEND=">=dev-util/cmake-2.8
 	${RDEPEND}"
 
@@ -43,4 +44,13 @@ src_install() {
 	cmake-utils_src_install
 
 	rm -rf "${ED}"/usr/share/bash-completion
+}
+
+pkg_postinst() {
+	# Update active ldc2
+	"${ROOT}"/usr/bin/eselect dlang update ldc2
+}
+
+pkg_postrm() {
+	"${ROOT}"/usr/bin/eselect dlang update ldc2
 }

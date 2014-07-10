@@ -1,7 +1,7 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
+EAPI=5
 
 inherit eutils multilib-build
 
@@ -18,20 +18,21 @@ IUSE="doc examples"
 LICENSE="DMD"
 RESTRICT="mirror"
 
-CURL_DEPEND="
+COMMON_DEPEND="
 	!amd64? ( net-misc/curl )
 	amd64? (
 		abi_x86_64? ( net-misc/curl )
 		abi_x86_32? ( app-emulation/emul-linux-x86-baselibs )
-	)"
+	)
+	>=app-admin/eselect-dlang-20140709
+	"
 
 DEPEND="
-	${CURL_DEPEND}
+	${COMMON_DEPEND}
 	app-arch/unzip
-	app-admin/eselect-dlang
 	"
 RDEPEND="
-	${CURL_DEPEND}
+	${COMMON_DEPEND}
 	!dev-lang/dmd-bin
 	"
 
@@ -152,7 +153,14 @@ EOF
 }
 
 pkg_postinst() {
+	# Update active dmd
+	"${ROOT}"/usr/bin/eselect dlang update dmd
+
 	elog "License files are in: /${PREFIX}"
 	use examples && elog "Examples can be found in: /${PREFIX}/samples"
 	use doc && elog "HTML documentation is in: /${PREFIX}/html"
+}
+
+pkg_postrm() {
+	"${ROOT}"/usr/bin/eselect dlang update dmd
 }
