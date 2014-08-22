@@ -274,6 +274,8 @@ __dlang_filter_versions() {
 		# LDC
 		case "${d_version}" in
 			"2.063") slot="0.12" ;;
+			"2.064") slot="0.13" ;;
+			"2.065") slot="0.14" ;;
 			*) slot="" ;;
 		esac
 		if [[ -n "${slot}" ]]; then
@@ -321,6 +323,8 @@ __dlang_compiler_to_dlang_version() {
 	)
 	local -rA ldc2=(
 		["0.12"]="2.063"
+		["0.13"]="2.064"
+		["0.14"]="2.065"
 	)
 
 	case "${1}" in
