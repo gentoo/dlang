@@ -1,5 +1,6 @@
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
+# $Header: $
 
 EGIT_REPO_URI="git://github.com/D-Programming-GDC/GDC.git"
 EGIT_BRANCH="gdc-4.8"
@@ -10,7 +11,6 @@ EGIT_NOUNPACK=1
 inherit git-2
 
 IUSE="d"
-FILESDIR=${PORTDIR}/sys-devel/gcc/files
 
 # Original GCC code starts here
 PATCH_VER="1.3r1"
@@ -54,6 +54,7 @@ src_unpack() {
 		EPATCH_EXCLUDE+=" 10_all_default-fortify-source.patch"
 	fi
 
+	local GCC_FILESDIR=${PORTDIR}/sys-devel/gcc/files
 	toolchain_src_unpack
 
 	use vanilla && return 0

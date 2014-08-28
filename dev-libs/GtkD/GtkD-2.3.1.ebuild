@@ -38,7 +38,7 @@ src_unpack() {
 
 src_prepare() {
 	epatch "${FILESDIR}/${PV}-makefile.patch"
-	dlang_copy_sources
+	dlang_src_prepare
 }
 
 d_src_compile() {
