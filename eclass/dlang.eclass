@@ -285,6 +285,7 @@ __dlang_filter_versions() {
 		case $d_version in
 			2.063) slot="4.8.1" ;;
 			2.064) slot="4.8.2" ;;
+			2.065) slot="4.8.3" ;;
 			*) slot="" ;;
 		esac
 		if [[ -n "${slot}" ]]; then

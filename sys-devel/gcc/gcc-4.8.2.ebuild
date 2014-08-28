@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
+EAPI="2"
+
 EGIT_REPO_URI="git://github.com/D-Programming-GDC/GDC.git"
 EGIT_BRANCH="gdc-4.8"
 EGIT_COMMIT="c4194221701084a31b8b28a54f20339a80fb50a7"
@@ -29,13 +31,13 @@ SSP_STABLE="amd64 x86 mips ppc ppc64 arm"
 SSP_UCLIBC_STABLE="x86 amd64 mips ppc ppc64 arm"
 #end Hardened stuff
 
-inherit toolchain
+inherit eutils toolchain
 
 DESCRIPTION="The GNU Compiler Collection"
 
 LICENSE="GPL-3+ LGPL-3+ || ( GPL-3+ libgcc libstdc++ gcc-runtime-library-exception-3.1 ) FDL-1.3+"
 
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~mips ~x86 ~amd64-fbsd ~x86-fbsd"
+KEYWORDS="~alpha ~amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~s390 ~sh ~sparc ~x86 ~amd64-fbsd ~x86-fbsd"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
@@ -47,7 +49,7 @@ if [[ ${CATEGORY} != cross-* ]] ; then
 	PDEPEND="${PDEPEND} elibc_glibc? ( >=sys-libs/glibc-2.8 )"
 fi
 
-src_unpack() {
+src_prepare() {
 	if has_version '<sys-libs/glibc-2.12' ; then
 		ewarn "Your host glibc is too old; disabling automatic fortify."
 		ewarn "Please rebuild gcc after upgrading to >=glibc-2.12 #362315"
@@ -55,7 +57,7 @@ src_unpack() {
 	fi
 
 	local GCC_FILESDIR=${PORTDIR}/sys-devel/gcc/files
-	toolchain_src_unpack
+	toolchain_src_prepare
 
 	use vanilla && return 0
 	#Use -r1 for newer piepatchet that use DRIVER_SELF_SPECS for the hardened specs.

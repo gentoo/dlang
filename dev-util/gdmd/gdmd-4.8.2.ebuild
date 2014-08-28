@@ -9,7 +9,7 @@ HOMEPAGE="http://www.gdcproject.org/"
 LICENSE="GPL-3+"
 
 SLOT="${PV}"
-KEYWORDS="~amd64 ~x86 ~amd64-fbsd ~arm"
+KEYWORDS="~amd64 ~x86 ~amd64-fbsd ~arm ~ia64"
 DEPEND="=sys-devel/gcc-${PV}*[d]"
 RDEPEND=""
 
