@@ -1,13 +1,15 @@
-# Copyright 1999-2013 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
+# $Header: $
 
 EAPI=5
 
 DESCRIPTION="D binding and OO wrapper of GTK+ and is released on the LGPL license"
 HOMEPAGE="http://gtkd.org/"
+LICENSE="LGPL-3"
 
 SLOT="0"
-KEYWORDS="x86 amd64"
+KEYWORDS="~x86 ~amd64"
 DEPEND="app-arch/unzip"
 RDEPEND="x11-libs/gtk+:3"
 
@@ -31,7 +33,7 @@ flags_to_comps() {
 }
 
 src_unpack() {
-	unzip -q ${DISTDIR}/${A} -d ${S}
+	unzip -q "${DISTDIR}/${A}" -d "${S}"
 }
 
 src_prepare() {
@@ -66,5 +68,5 @@ d_src_install() {
 
 src_install_all() {
 	emake DESTDIR="${D}" $(flags_to_comps "install-headers-")
-	dodoc AUTHORS README COPYING
+	dodoc AUTHORS README
 }
