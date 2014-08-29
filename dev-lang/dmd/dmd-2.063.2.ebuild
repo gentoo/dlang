@@ -80,18 +80,24 @@ dmd_foreach_abi() {
 }
 
 src_compile() {
+	#Need to set PIC if GCC is hardened, otherwise users will be unable to link Phobos
+	if [[ $(gcc --version | grep -o Hardened) ]]; then
+		einfo "Hardened GCC detected - setting PIC"
+		PIC="PIC=1"
+	fi
+
 	# A native build of dmd is used to compile the runtimes for both x86 and amd64
 	# We cannot use multilib-minimal yet, as we have to be sure dmd for amd64
 	# always gets build first.
 	einfo "Building ${PN}..."
-	emake -C src/dmd -f posix.mak TARGET_CPU=X86 RELEASE=1
+	emake -C src/dmd -f posix.mak TARGET_CPU=X86 RELEASE=1 ${PIC}
 
 	compile_libraries() {
 		einfo 'Building druntime...'
-		emake -C src/druntime -f posix.mak MODEL=${MODEL} DMD=../dmd/dmd
+		emake -C src/druntime -f posix.mak MODEL=${MODEL} DMD=../dmd/dmd ${PIC}
 
 		einfo 'Building Phobos 2...'
-		emake -C src/phobos -f posix.mak MODEL=${MODEL} DMD=../dmd/dmd
+		emake -C src/phobos -f posix.mak MODEL=${MODEL} DMD=../dmd/dmd ${PIC}
 	}
 
 	dmd_foreach_abi compile_libraries
