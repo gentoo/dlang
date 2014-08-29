@@ -45,6 +45,8 @@ DEPEND="${RDEPEND}
 	>=${CATEGORY}/binutils-2.20"
 PDEPEND="d? ( =dev-util/gdmd-${PV}* )"
 
+GCC_FILESDIR=${PORTDIR}/sys-devel/gcc/files
+
 if [[ ${CATEGORY} != cross-* ]] ; then
 	PDEPEND="${PDEPEND} elibc_glibc? ( >=sys-libs/glibc-2.8 )"
 fi
@@ -56,7 +58,6 @@ src_prepare() {
 		EPATCH_EXCLUDE+=" 10_all_default-fortify-source.patch"
 	fi
 
-	local GCC_FILESDIR=${PORTDIR}/sys-devel/gcc/files
 	toolchain_src_prepare
 
 	use vanilla && return 0
