@@ -84,6 +84,12 @@ dmd_foreach_abi() {
 }
 
 src_compile() {
+	#Need to set PIC if GCC is hardened, otherwise users will be unable to link Phobos
+	if [[ $(gcc --version | grep -o Hardened) ]]; then
+		einfo "Hardened GCC detected - setting PIC"
+		PIC="PIC=1"
+	fi
+
 	# A native build of dmd is used to compile the runtimes for both x86 and amd64
 	# We cannot use multilib-minimal yet, as we have to be sure dmd for amd64
 	# always gets build first.
@@ -92,10 +98,10 @@ src_compile() {
 
 	compile_libraries() {
 		einfo 'Building druntime...'
-		emake -C src/druntime -f posix.mak MODEL=${MODEL} DMD=../dmd/dmd
+		emake -C src/druntime -f posix.mak MODEL=${MODEL} DMD=../dmd/dmd ${PIC}
 
 		einfo 'Building Phobos 2...'
-		emake -C src/phobos -f posix.mak MODEL=${MODEL} DMD=../dmd/dmd
+		emake -C src/phobos -f posix.mak MODEL=${MODEL} DMD=../dmd/dmd ${PIC}
 	}
 
 	dmd_foreach_abi compile_libraries
@@ -131,7 +137,7 @@ EOF
 
 	einfo 'Installing druntime...'
 	install_druntime() {
-		emake -C src/druntime -f posix.mak INSTALL_DIR="${D}${PREFIX}" LIB_DIR="$(get_libdir)" MODEL=$(abi_to_model) install
+		emake -C src/druntime -f posix.mak INSTALL_DIR="${D}${PREFIX}" LIB_DIR="$(get_libdir)" MODEL=$(abi_to_model) install ${PIC}
 		rm -r "${D}${PREFIX}/html" || die "Couldn't remove duplicate HTML documentation."
 	}
 	dmd_foreach_abi install_druntime
@@ -139,7 +145,7 @@ EOF
 	einfo 'Installing Phobos 2...'
 	into ${PREFIX}
 	install_library() {
-		emake -C src/phobos -f posix.mak INSTALL_DIR="${D}${PREFIX}" LIB_DIR="$(get_libdir)" MODEL=$(abi_to_model) install
+		emake -C src/phobos -f posix.mak INSTALL_DIR="${D}${PREFIX}" LIB_DIR="$(get_libdir)" MODEL=$(abi_to_model) install ${PIC}
 		dolib.so src/phobos/generated/linux/release/${MODEL}/libphobos2.so.0.64.0
 		dosym libphobos2.so.0.64.0 ${PREFIX}/$(get_libdir)/libphobos2.so.0.64
 		dosym libphobos2.so.0.64.0 ${PREFIX}/$(get_libdir)/libphobos2.so
