@@ -91,7 +91,9 @@ __dlang_use_build_vars() {
 		export LIBDIR_${ABI}="../opt/${DC}-${DC_VERSION}/lib${MODEL}"
 		export DMD="/opt/${DC}-${DC_VERSION}/bin/ldmd2"
 		export DC="/opt/${DC}-${DC_VERSION}/bin/ldc2"
-		export DCFLAGS="${LDCFLAGS}"
+		# To allow separate compilation and avoid object file name collisions,
+		# we append -oq (fully qualified module names for object file names).
+		export DCFLAGS="${LDCFLAGS} -oq"
 		export DLANG_LINKER_FLAG="-L="
 		export DLANG_SO_FLAGS="-shared -relocation-model=pic"
 		export DLANG_OUTPUT_FLAG="-of="
