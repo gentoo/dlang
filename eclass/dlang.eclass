@@ -78,7 +78,7 @@ __dlang_use_build_vars() {
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
 		export DC="/usr/${__DLANG_CHOST}/gcc-bin/${DC_VERSION}/gdc"
 		export DMD="/usr/${__DLANG_CHOST}/gcc-bin/${DC_VERSION}/gdmd"
-		if multilib_is_native_abi; then
+		if [[ "${DLANG_PACKAGE_TYPE}" == "multi" ]] && multilib_is_native_abi; then
 			export LIBDIR_${ABI}="lib/gcc/${__DLANG_CHOST}/${DC_VERSION}"
 		else
 			export LIBDIR_${ABI}="lib/gcc/${__DLANG_CHOST}/${DC_VERSION}/${MODEL}"
