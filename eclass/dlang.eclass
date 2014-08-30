@@ -35,8 +35,8 @@ dlang_convert_ldflags() {
 			if [[ "${set:0:4}" == "-Wl," ]]; then
 				set=${set/-Wl,/${repl}}
 				flags+=(${set//,/ ${repl}})
-			elif [[ "${set:0:8}" == "-Xlinker" ]]; then
-				flags+=(${set/-Xlinker/${repl}})
+			elif [[ "${set:0:9}" == "-Xlinker " ]]; then
+				flags+=(${set/-Xlinker /${repl}})
 			elif [[ "${set:0:2}" == "-L" ]]; then
 				flags+=(${set/-L/${repl}})
 			else
@@ -84,7 +84,7 @@ __dlang_use_build_vars() {
 			export LIBDIR_${ABI}="lib/gcc/${__DLANG_CHOST}/${DC_VERSION}/${MODEL}"
 		fi
 		export DCFLAGS="${GDCFLAGS}"
-		export DLANG_LINKER_FLAG="-Xlinker"
+		export DLANG_LINKER_FLAG="-Xlinker "
 		export DLANG_SO_FLAGS="-shared -fPIC"
 		export DLANG_OUTPUT_FLAG="-o "
 	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
