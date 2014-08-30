@@ -43,7 +43,16 @@ dlang_convert_ldflags() {
 				flags+=(${set})
 			fi
 		done
-		echo "${flags[@]}"
+		# gc-sections breaks executables for some versions of D.
+		if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
+			if version_is_at_least 2.067 $DLANG_VERSION; then
+				echo "${flags[@]}"
+			else
+				echo "${flags[@]} ${repl}--no-gc-sections"
+			fi
+		else
+			echo "${flags[@]}"
+		fi
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
 		echo "${LDFLAGS}"
 	else
@@ -101,8 +110,39 @@ __dlang_use_build_vars() {
 		die "Could not detect D compiler vendor!"
 	fi
 	# We need to convert the LDFLAGS, so they are understood by DMD and LDC.
-	export LDFLAGS="$(dlang_convert_ldflags)"
-	"${@}"
+	LDFLAGS="$(dlang_convert_ldflags)" "${@}"
+}
+
+__dlang_prefix_words() {
+	for arg in $1; do
+		echo -n $2$1
+	done
+}
+
+__dlang_additional_flags() {
+	# For info on debug use flags see:
+	# https://wiki.gentoo.org/wiki/Project:Quality_Assurance/Backtraces#debug_USE_flag
+	case "${DLANG_VENDOR}" in
+		"DigitalMars")
+			local version_prefix="-version="
+			local import_prefix="-I"
+			local debug_flags="-debug"
+			;;
+		"GNU")
+			local version_prefix="-fversion="
+			local import_prefix="-I"
+			local debug_flags="-fdebug"
+			;;
+		"LDC")
+			local version_prefix="-d-version="
+			local import_prefix="-I="
+			local debug_flags="-d-debug"
+			;;
+	esac
+	echo $(use debug && echo ${debug_flags}) \
+		$(__dlang_prefix_words $versions $version_prefix) \
+		$(__dlang_prefix_words $imports $import_prefix) \
+		$(__dlang_prefix_words $libs "${DLANG_LINKER_FLAG}-l")
 }
 
 
@@ -402,23 +442,41 @@ dlang_exec() {
 	${@} || die
 }
 
+# @FUNCTION: dlang_compile_bin
+# @DESCRIPTION:
+# Compiles a D application. The first argument is the output file name, the
+# other arguments are source files. Additional variables can be set to fine tune
+# the compilation. They will be prepended with the proper flags for each
+# compiler:
+# versions - a list of versions to activate during compilation
+# imports - a list of import paths
+#
+# Aditionally, if the ebuild offers the "debug" use flag, we will automatically
+# raise the debug level to 1 during compilation.
+dlang_compile_bin() {
+	[[ "${DLANG_PACKAGE_TYPE}" == "single" ]] || die "Currently ${FUNCTION} only works with DLANG_PACKAGE_TYPE=\"single\"."
+
+	local binname="${1}"
+	local sources="${@:2}"
+
+	dlang_exec ${DC} ${DCFLAGS} ${sources} $(__dlang_additional_flags) \
+		${LDFLAGS} ${DLANG_OUTPUT_FLAG}${binname}
+}
+
+# @FUNCTION: dlang_compile_lib.so
+# @DESCRIPTION:
+# Compiles a D shared library. The first argument is the output file name, the
+# second argument is the soname (typically file name without patch level
+# suffix), the other arguments are source files. Additional variables and the
+# "debug" use flag will be handled as described in dlang_compile_bin().
 dlang_compile_lib.so() {
 	local libname="${1}"
 	local soname="${2}"
 	local sources="${@:3}"
-	evar_push LDFLAGS
 
-	case "${DLANG_VENDOR}" in
-		"DigitalMars")
-			# dmd-2.065 executables lose required symbols when the linker is invoked with --gc-sections.
-			filter-ldflags "${DLANG_LINKER_FLAG}--gc-sections"
-			;;
-	esac
-	dlang_exec ${DC} ${DCFLAGS} -m${MODEL} ${sources} \
-	${DLANG_OUTPUT_FLAG}${libname} ${LDFLAGS} ${DLANG_SO_FLAGS} \
-	${DLANG_LINKER_FLAG}-soname=${soname}
-
-	evar_pop
+	dlang_exec ${DC} ${DCFLAGS} -m${MODEL} ${sources} $(__dlang_additional_flags) \
+		${LDFLAGS} ${DLANG_SO_FLAGS} ${DLANG_LINKER_FLAG}-soname=${soname} \
+		${DLANG_OUTPUT_FLAG}${libname}
 }
 
 fi
