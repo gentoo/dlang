@@ -1,0 +1,13 @@
+diff --git a/dmd2/expression.c b/dmd2/expression.c
+index fec788b..c684224 100644
+--- a/dmd2/expression.c
++++ b/dmd2/expression.c
+@@ -1695,7 +1695,7 @@ Type *functionParameters(Loc loc, Scope *sc, TypeFunction *tf,
+             // If not D linkage, do promotions
+ #if IN_LLVM
+             // LDC: don't do promotions on intrinsics
+-            if (tf->linkage != LINKd && fd->llvmInternal != LLVMintrinsic)
++            if (tf->linkage != LINKd && (!fd || fd->llvmInternal != LLVMintrinsic))
+ #else
+             if (tf->linkage != LINKd)
+ #endif
