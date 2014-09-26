@@ -46,7 +46,7 @@ d_src_compile() {
 				lib${LIB_NAME}-${MAJOR}.so.0 -Isrc ${GTKD_SRC_DIRS[$i]}/*/*.d
 		else
 			ewarn "${DC} does not have shared library support."
-			ewarn "Only static libraries will be compiled if selected through the static-libs USE flag."
+			ewarn "Only static ${LIB_NAME} will be compiled if selected through the static-libs USE flag."
 		fi
 
 		# Build the static library version
