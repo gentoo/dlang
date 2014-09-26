@@ -114,8 +114,8 @@ __dlang_use_build_vars() {
 }
 
 __dlang_prefix_words() {
-	for arg in $1; do
-		echo -n $2$1
+	for arg in ${*:2}; do
+		echo -n " $1$arg"
 	done
 }
 
@@ -139,10 +139,10 @@ __dlang_additional_flags() {
 			local debug_flags="-d-debug"
 			;;
 	esac
-	echo $(use debug && echo ${debug_flags}) \
-		$(__dlang_prefix_words $versions $version_prefix) \
-		$(__dlang_prefix_words $imports $import_prefix) \
-		$(__dlang_prefix_words $libs "${DLANG_LINKER_FLAG}-l")
+	echo $(has debug ${IUSE} && use debug && echo ${debug_flags})\
+		$(__dlang_prefix_words $version_prefix $versions)\
+		$(__dlang_prefix_words $import_prefix $imports)\
+		$(__dlang_prefix_words "${DLANG_LINKER_FLAG}-l" $libs)
 }
 
 

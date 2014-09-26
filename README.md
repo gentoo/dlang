@@ -69,9 +69,9 @@ Include files should be placed in `/usr/include/dlang/<library>`
 
 ### Procedures
 #### When adding new compiler versions
-Add the version to dlang.eclass, too. This is way it knows which compiler
-release includes which version of D, which is crucial for dependency
-management.
+Add the version to dlang.eclass, too. This way it knows which compiler release
+builds on which version of the D language specification, which is crucial for
+dependency management.
 #### When changing paths in compiler ebuilds
 Make sure that dlang.eselect knows about it. dlang.eclass also has a
 function that needs to be changed: `dlang_foreach_config()`
