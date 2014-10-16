@@ -21,7 +21,6 @@ DEPEND="app-arch/unzip"
 RDEPEND="
 	>=x11-libs/gtk+-3.10:3
 	sourceview? ( x11-libs/gtksourceview:3.0 )
-	libgda? ( gnome-extra/libgda:4 )
 	gstreamer? ( media-libs/gstreamer:1.0 )
 	vte? ( x11-libs/vte:2.90 )
 "
