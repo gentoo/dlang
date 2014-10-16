@@ -1,7 +1,7 @@
 # @ECLASS: dlang.eclass
 # @MAINTAINER: marco.leise@gmx.de
 # @BLURB:
-# install D libraries in multiple locations for each  D version and compiler
+# install D libraries in multiple locations for each D version and compiler
 # @DESCRIPTION:
 # The dlang eclass faciliates creating dependiencies on D libraries for use
 # with different D compilers and D versions.
@@ -13,13 +13,21 @@ if has ${EAPI:-0} 0 1 2 3; then
 	die "EAPI must be >= 4 for dlang packages."
 fi
 
-inherit flag-o-matic versionator
+inherit flag-o-matic versionator dlang-compilers
 if [[ "${DLANG_PACKAGE_TYPE}" == "multi" ]]; then
 	# We handle a multi instance package.
 	inherit multilib-minimal
 fi
 
 EXPORT_FUNCTIONS src_prepare src_configure src_compile src_test src_install
+
+
+# Definition of know compilers and supported front-end versions from dlang-compilers.eclass
+
+dlang-compilers_declare_versions
+
+
+# The rest of the ebuild ...
 
 export DLANG_IMPORT_DIR="usr/include/dlang"
 
@@ -249,30 +257,85 @@ dlang_src_install() {
 
 ### Non-public helper functions ###
 
-# Generate arrays of all D versions
-__DLANG_VERSIONS_1=()
-__DLANG_VERSIONS_2=()
-for v0 in {43..46} {48..59} 61 {63..82} 86 {88..178}; do
-	__DLANG_VERSIONS_1+=("0.${v0}")
-done
-for v1 in 00 {001..007} {009..076}; do
-	__DLANG_VERSIONS_1+=("1.${v1}")
-done
-for v2 in {000..023} {025..066}; do
-	__DLANG_VERSIONS_2+=("2.${v2}")
-done
-__DLANG_VERSIONS=("${__DLANG_VERSIONS_1[@]}" "${__DLANG_VERSIONS_2[@]}")
+declare -a __dlang_compiler_iuse
+declare -a __dlang_depends
+
+__dlang_is_in_version_range() {
+	# Check the version range
+	local dlang_version=${1%% *}
+	local compiler_keywords=${1:${#dlang_version}}
+	local compiler_keyword package_keyword stability_satisfied
+	if [[ -n "$2" ]]; then
+		[[ ${dlang_version#*.} -lt ${2#*.} ]] && return 1
+	fi
+	if [[ -n "$3" ]]; then
+		[[ ${dlang_version#*.} -gt ${3#*.} ]] && return 1
+	fi
+	# Check the stability requirements (package archs not prefixed with ~)
+	for package_keyword in $KEYWORDS; do
+		if [[ "${package_keyword:0:1}" != "~" ]]; then
+			stability_satisfied=0
+			for compiler_keyword in $compiler_keywords; do
+				if [[ "$package_keyword" == "$compiler_keyword" ]]; then
+					stability_satisfied=1
+				fi
+			done
+			[[ $stability_satisfied -eq 1 ]] || return 1
+		fi
+	done
+}
+
+__dlang_filter_compilers() {
+	local dc_version mapping iuse
+
+	# filter for DMD
+	for dc_version in ${!__dlang_dmd_frontend_mapping[@]}; do
+		mapping=${__dlang_dmd_frontend_mapping[$dc_version]}
+		if __dlang_is_in_version_range "$mapping" "$1" "$2" "$KEYWORDS"; then
+			iuse=dmd-$(replace_all_version_separators _ $dc_version)
+			__dlang_compiler_iuse+=("$iuse")
+			if [[ "${DLANG_PACKAGE_TYPE}" == "single" ]]; then
+				__dlang_depends+=("$iuse? ( dev-lang/dmd:$dc_version= )")
+			else
+				__dlang_depends+=("$iuse? ( dev-lang/dmd:$dc_version=[${MULTILIB_USEDEP}] )")
+			fi
+		fi
+	done
+
+	# GDC (doesn't support sub-slots, due to low EAPI requirement)
+	for dc_version in ${!__dlang_gdc_frontend_mapping[@]}; do
+		mapping=${__dlang_gdc_frontend_mapping[$dc_version]}
+		if __dlang_is_in_version_range "$mapping" "$1" "$2" "$KEYWORDS"; then
+			iuse=gdc-$(replace_all_version_separators _ $dc_version)
+			__dlang_compiler_iuse+=("$iuse")
+			__dlang_depends+=("$iuse? ( =sys-devel/gcc-${dc_version}*[d] )")
+		fi
+	done
+
+	# filter for LDC2
+	for dc_version in ${!__dlang_ldc2_frontend_mapping[@]}; do
+		mapping=${__dlang_ldc2_frontend_mapping[$dc_version]}
+		if __dlang_is_in_version_range "$mapping" "$1" "$2" "$KEYWORDS"; then
+			iuse=ldc2-$(replace_all_version_separators _ $dc_version)
+			__dlang_compiler_iuse+=("$iuse")
+			__dlang_depends+=("$iuse? ( dev-lang/ldc2:${dc_version}= )")
+		fi
+	done
+}
 
 __dlang_filter_versions() {
-	# Use given range to create a positive list of supported D versions
-	local ranges start stop d_version matches versions do_start
+	local range start stop matches d_version versions do_start
 	local -A valid
+
+	# Use given range to create a positive list of supported D versions
 	if [[ -v DLANG_VERSION_RANGE ]]; then
-		ranges=(${DLANG_VERSION_RANGE})
-		for range in ${ranges[@]}; do
+		for range in $DLANG_VERSION_RANGE; do
+			# Define start and stop of range
 			if [[ "${range}" == *?- ]]; then
 				start="${range%-}"
+				stop=
 			elif [[ "${range}" == -?* ]]; then
+				start=
 				stop="${range#-}"
 			elif [[ "${range}" == *?-?* ]]; then
 				start="$(echo "${range}" | cut -d- -f1)"
@@ -281,80 +344,21 @@ __dlang_filter_versions() {
 				start="${range}"
 				stop="${range}"
 			fi
-			matches=0
-			do_start=0
-			for i in 1 2; do
-				versions="__DLANG_VERSIONS_$i[@]"
-				for d_version in ${!versions}; do
-					if [[ $do_start -eq 0 ]] && [[ "${d_version}" == "${start}" ]] || [[ -z "${start}" ]]; then
-						do_start=1
-					fi
-					if [[ $do_start -eq 1 ]]; then
-						valid[${d_version}]=1
-						matches=$(( $matches+1 ))
-					fi
-					if [[ $do_start -eq 1 ]] && [[ "${d_version}" == "${stop}" ]]; then
-						do_start=2
-					fi
-				done
-				if [[ do_start -eq 1 ]] && [[ -n "${stop}" ]]; then
-					die "Invalid end version in range '${range}'":
-				fi
-			done
-			[[ $matches -ne 0 ]] || die "Range '${range}' matches no D versions"
+			__dlang_filter_compilers "$start" "$stop"
 		done
-		__DLANG_VERSIONS=(${!valid[@]})
-	fi
-
-	# Convert D versions to usable compilers and write IUSE
-	local slot compilers=() depends=()
-	for d_version in ${__DLANG_VERSIONS[@]}; do
-		# DMD
-		case $d_version in
-			2.063|2.064|2.065|2.066)
-				slot=$d_version ;;
-			*) slot="" ;;
-		esac
-		if [[ -n "${slot}" ]]; then
-			compilers+=("dmd-$(replace_all_version_separators _ ${slot})")
-			if [[ "${DLANG_PACKAGE_TYPE}" == "single" ]]; then
-				depends+=("dmd-$(replace_all_version_separators _ ${slot})? ( dev-lang/dmd:${slot}= )")
-			else
-				depends+=("dmd-$(replace_all_version_separators _ ${slot})? ( dev-lang/dmd:${slot}=[${MULTILIB_USEDEP}] )")
-			fi
-		fi
-		# GDC (doesn't support sub-slots, due to low EAPI requirement)
-		case $d_version in
-			2.063) slot="4.8.1" ;;
-			2.064) slot="4.8.2" ;;
-			2.065) slot="4.8.3" ;;
-			*) slot="" ;;
-		esac
-		if [[ -n "${slot}" ]]; then
-			compilers+=("gdc-$(replace_all_version_separators _ ${slot})")
-			depends+=("gdc-$(replace_all_version_separators _ ${slot})? ( =sys-devel/gcc-${slot}*[d] )")
-		fi
-		# LDC
-		case $d_version in
-			2.063) slot="0.12" ;;
-			2.064) slot="0.13" ;;
-			2.065) slot="0.14" ;;
-			*) slot="" ;;
-		esac
-		if [[ -n "${slot}" ]]; then
-			compilers+=("ldc2-$(replace_all_version_separators _ ${slot})")
-			depends+=("ldc2-$(replace_all_version_separators _ ${slot})? ( dev-lang/ldc2:${slot}= )")
-		fi
-	done
-	[[ ${#compilers[@]} -ne 0 ]] || die "No compilers found for D versions [${__DLANG_VERSIONS[@]}]"
-	IUSE="${compilers[@]}"
-	if [[ "${DLANG_PACKAGE_TYPE}" == "single" ]]; then
-		REQUIRED_USE="^^ ( ${IUSE} )"
 	else
-		REQUIRED_USE="|| ( ${IUSE} )"
+		__dlang_filter_compilers "" ""
 	fi
-	DEPEND="${depends[@]}"
-	RDEPEND="${depends[@]}"
+	[[ ${#__dlang_compiler_iuse[@]} -ne 0 ]] || die "No D compilers found that satisfy this package's contraints"
+
+	IUSE="${__dlang_compiler_iuse[@]}"
+	if [[ "${DLANG_PACKAGE_TYPE}" == "single" ]]; then
+		REQUIRED_USE="^^ ( ${__dlang_compiler_iuse[@]} )"
+	else
+		REQUIRED_USE="|| ( ${__dlang_compiler_iuse[@]} )"
+	fi
+	DEPEND="${__dlang_depends[@]}"
+	RDEPEND="${__dlang_depends[@]}"
 }
 __dlang_filter_versions
 
@@ -382,35 +386,14 @@ __dlang_phase_wrapper() {
 }
 
 __dlang_compiler_to_dlang_version() {
-	local -rA gdc=(
-		["4.8.1"]="2.063"
-	)
-	local -rA ldc=(
-		["0.12"]="1.076"
-	)
-	local -rA ldc2=(
-		["0.12"]="2.063"
-		["0.13"]="2.064"
-		["0.14"]="2.065"
-	)
-
-	case "${1}" in
-	"dmd")
-		echo "${2}"
-		;;
-	"gdc")
-		echo "${gdc[${2}]}"
-		;;
-	"ldc")
-		echo "${ldc[${2}]}"
-		;;
-	"ldc2")
-		echo "${ldc2[${2}]}"
-		;;
-	*)
-		die "Compiler '${1}' is unknown."
-		;;
+	local mapping
+	case "$1" in
+		"dmd") mapping="$1" ;;
+		"gdc") mapping="${__dlang_gdc_frontend_mapping[${2}]}" ;;
+		"ldc2") mapping="${__dlang_ldc2_frontend_mapping[${2}]}" ;;
+		*) die "Compiler '${1}' is unknown." ;;
 	esac
+	echo ${mapping%% *}
 }
 
 __dlang_build_configurations() {
