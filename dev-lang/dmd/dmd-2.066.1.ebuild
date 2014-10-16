@@ -11,7 +11,7 @@ HOMEPAGE="http://dlang.org/"
 SRC_URI="http://downloads.dlang.org.s3.amazonaws.com/releases/2014/${PN}.${PV}.zip"
 
 # DMD supports amd64/x86 exclusively
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="-* ~amd64 ~x86"
 SLOT="2.066"
 IUSE="doc examples tools"
 
@@ -60,6 +60,12 @@ src_prepare() {
 	mv src/phobos phobos
 	mv src dmd
 	mv dmd/dmd dmd/src
+
+	# Write a simple dmd.conf to bootstrap druntime and phobos
+	cat > dmd/src/dmd.conf << EOF
+[Environment]
+DFLAGS=-L--export-dynamic
+EOF
 
 	# Temporary fix for recompilation of Phobos during installation
 	epatch "${FILESDIR}/${PV}-phobos-makefile.patch"
@@ -114,19 +120,21 @@ src_test() {
 src_install() {
 	local MODEL=$(abi_to_model)
 
-	# Prepeare and install config file.
+	# Prepeare dmd.conf
 	mkdir -p dmd/ini/linux/bin${MODEL} || die "Failed to create directory: dmd/ini/linux/bin${MODEL}"
 	if has_multilib_profile; then
 		cat > dmd/ini/linux/bin${MODEL}/dmd.conf << EOF
+[Environment]
+DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2
 [Environment32]
-DFLAGS=-I${IMPORT_DIR} -L-L/${PREFIX}/lib32 -L-rpath -L/${PREFIX}/lib32 -L--export-dynamic
+DFLAGS=%DFLAGS% -L-L/${PREFIX}/lib32 -L-rpath -L/${PREFIX}/lib32
 [Environment64]
-DFLAGS=-I${IMPORT_DIR} -L-L/${PREFIX}/lib64 -L-rpath -L/${PREFIX}/lib64 -L--export-dynamic
+DFLAGS=%DFLAGS% -L-L/${PREFIX}/lib64 -L-rpath -L/${PREFIX}/lib64
 EOF
 	else
 		cat > dmd/ini/linux/bin${MODEL}/dmd.conf << EOF
 [Environment]
-DFLAGS=-I${IMPORT_DIR} -L-L/${PREFIX}/lib -L-rpath -L/${PREFIX}/lib -L--export-dynamic
+DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -L-L/${PREFIX}/lib -L-rpath -L/${PREFIX}/lib
 EOF
 	fi
 
@@ -152,9 +160,9 @@ EOF
 	install_library() {
 		emake -C phobos -f posix.mak LIB_DIR="$(get_libdir)" MODEL=${MODEL} install
 		dolib.a install/linux/$(get_libdir)/libphobos2.a
-		dolib.so install/linux/$(get_libdir)/libphobos2.so.0.66.0
+		dolib.so install/linux/$(get_libdir)/libphobos2.so.0.66.1
 		dolib.so install/linux/$(get_libdir)/libphobos2.so
-		dosym libphobos2.so.0.66.0 ${PREFIX}/$(get_libdir)/libphobos2.so.0.66
+		dosym libphobos2.so.0.66.1 ${PREFIX}/$(get_libdir)/libphobos2.so.0.66
 	}
 	dmd_foreach_abi install_library
 	insinto ${PREFIX}/import

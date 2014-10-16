@@ -79,9 +79,3 @@
  
  ###########################################################
  # html documentation
-@@ -424,4 +435,4 @@
- 	cat $(DOCSRC)/std_consolidated_header.html $(BIGHTMLS)	\
- 	$(DOCSRC)/std_consolidated_footer.html > $(DOC_OUTPUT_DIR)/std_consolidated.html
- 
--#############################
-+#############################
