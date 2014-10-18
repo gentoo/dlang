@@ -388,7 +388,7 @@ __dlang_phase_wrapper() {
 __dlang_compiler_to_dlang_version() {
 	local mapping
 	case "$1" in
-		"dmd") mapping="$1" ;;
+		"dmd") mapping="$2" ;;
 		"gdc") mapping="${__dlang_gdc_frontend_mapping[${2}]}" ;;
 		"ldc2") mapping="${__dlang_ldc2_frontend_mapping[${2}]}" ;;
 		*) die "Compiler '${1}' is unknown." ;;
