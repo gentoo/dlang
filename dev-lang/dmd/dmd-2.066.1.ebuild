@@ -69,6 +69,7 @@ EOF
 
 	# Temporary fix for recompilation of Phobos during installation
 	epatch "${FILESDIR}/${PV}-phobos-makefile.patch"
+	epatch_user
 }
 
 abi_to_model() {

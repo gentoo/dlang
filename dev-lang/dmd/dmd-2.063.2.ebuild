@@ -69,6 +69,8 @@ EOF
 
 	# Copy missing LICENSE_1_0.txt
 	cp "${FILESDIR}/LICENSE_1_0.txt" src/phobos/ || die "Couldn't copy LICENSE_1_0.txt"
+
+	epatch_user
 }
 
 abi_to_model() {

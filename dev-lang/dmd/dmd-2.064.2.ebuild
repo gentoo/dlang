@@ -72,6 +72,7 @@ EOF
 
 	# Allow installation into lib32/lib64
 	epatch "${FILESDIR}/${SLOT}-makefile-multilib.patch"
+	epatch_user
 }
 
 abi_to_model() {
