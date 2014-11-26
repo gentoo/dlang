@@ -11,7 +11,7 @@ HOMEPAGE="http://dlang.org/"
 SRC_URI="http://downloads.dlang.org.s3.amazonaws.com/releases/2014/${PN}.${PV}.zip"
 
 # DMD supports amd64/x86 exclusively
-KEYWORDS="-* ~amd64 ~x86"
+KEYWORDS="-* amd64 x86"
 SLOT="2.066"
 IUSE="doc examples tools"
 
