@@ -27,7 +27,7 @@ dlang-compilers_declare_versions() {
 	__dlang_gdc_frontend_mapping=(
 		["4.8.1"]="2.063"
 		["4.8.2"]="2.064"
-		["4.8.3"]="2.065"
+		["4.8.3"]="2.065 x86 amd64"
 	)
 
 	# LDC
