@@ -1,23 +1,24 @@
-# Copyright 1999-2014 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
 EAPI=5
 
-inherit eutils multilib-build
-
 DESCRIPTION="Reference compiler for the D programming language"
 HOMEPAGE="http://dlang.org/"
-SRC_URI="http://downloads.dlang.org.s3.amazonaws.com/releases/2013/${PN}.${PV}.zip"
-
-# DMD supports amd64/x86 exclusively
-KEYWORDS="-* amd64 x86"
-SLOT="2.063"
-IUSE="doc examples"
+SRC_URI="mirror://aws/2013/${PN}.${PV}.zip"
 
 # License doesn't allow redistribution
 LICENSE="DMD"
 RESTRICT="mirror"
+
+# DMD supports amd64/x86 exclusively
+MULTILIB_COMPAT=( abi_x86_{32,64} )
+KEYWORDS="-* amd64 x86"
+SLOT="2.063"
+IUSE="doc examples"
+
+inherit eutils multilib-build
 
 COMMON_DEPEND="
 	!amd64? ( net-misc/curl )
@@ -41,15 +42,14 @@ RDEPEND="
 	"
 
 S="${WORKDIR}/dmd2"
-
 PREFIX="opt/${PN}-${SLOT}"
 IMPORT_DIR="/${PREFIX}/import"
 
 src_prepare() {
-	# Remove precompiled binaries and non-essential files.
+	# Remove precompiled binaries and non-essential files
 	rm -r README.TXT windows osx linux || die "Failed to remove included binaries."
 
-	# convert line-endings of file-types that start as cr-lf and are patched or installed later on
+	# Convert line-endings of file-types that start as cr-lf and are patched or installed later on
 	for file in $( find . -name "*.txt" -o -name "*.html" -o -name "*.d" -o -name "*.di" -o -name "*.ddoc" -type f ); do
 		edos2unix $file || die "Failed to convert DOS line-endings to Unix."
 	done
