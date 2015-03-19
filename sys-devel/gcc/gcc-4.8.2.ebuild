@@ -1,4 +1,4 @@
-# Copyright 1999-2014 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -6,7 +6,7 @@ EAPI="2"
 
 EGIT_REPO_URI="git://github.com/D-Programming-GDC/GDC.git"
 EGIT_BRANCH="gdc-4.8"
-EGIT_COMMIT="c4194221701084a31b8b28a54f20339a80fb50a7"
+EGIT_COMMIT="v2.064.2_gcc4.8"
 EGIT_SOURCEDIR="${WORKDIR}/dev"
 EGIT_NOUNPACK=1
 
