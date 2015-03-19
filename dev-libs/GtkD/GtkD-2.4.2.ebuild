@@ -1,4 +1,4 @@
-# Copyright 1999-2014 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -8,8 +8,8 @@ DESCRIPTION="D binding and OO wrapper of GTK+ and is released on the LGPL licens
 HOMEPAGE="http://gtkd.org/"
 LICENSE="LGPL-3"
 
-SLOT="0"
-KEYWORDS="x86 amd64"
+SLOT="2"
+KEYWORDS="~x86 ~amd64"
 SRC_URI="http://gtkd.org/Downloads/sources/${P}.zip"
 
 DLANG_VERSION_RANGE="2.063-"
@@ -19,10 +19,10 @@ inherit eutils dlang
 
 DEPEND="app-arch/unzip"
 RDEPEND="
-	>=x11-libs/gtk+-3.10:3
-	sourceview? ( x11-libs/gtksourceview:3.0 )
-	gstreamer? ( media-libs/gstreamer:1.0 )
-	vte? ( x11-libs/vte:2.90 )
+	>=x11-libs/gtk+-3.10:3[${MULTILIB_USEDEP}]
+	sourceview? ( >=x11-libs/gtksourceview-3.10:3.0 )
+	gstreamer? ( >=media-libs/gstreamer-1.2:1.0 )
+	vte? ( >=x11-libs/vte-0.37.4:2.91 )
 "
 
 GTKD_USE_FLAGS=(gtk  opengl sourceview libgda  gstreamer    vte   )
