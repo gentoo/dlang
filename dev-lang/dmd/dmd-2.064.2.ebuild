@@ -4,8 +4,6 @@
 
 EAPI=5
 
-inherit eutils versionator
-
 DESCRIPTION="Reference compiler for the D programming language"
 HOMEPAGE="http://dlang.org/"
 SRC_URI="mirror://aws/2013/${PN}.${PV}.zip"
@@ -17,13 +15,20 @@ RESTRICT="mirror"
 # DMD supports amd64/x86 exclusively
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 KEYWORDS="-* amd64 x86"
-SLOT="$(get_version_component_range 1-2)"
+SLOT="2.064"
 IUSE="doc examples"
 
-inherit multilib-build
+inherit eutils multilib-build
 
 COMMON_DEPEND="
-	net-misc/curl[${MULTILIB_USEDEP}]
+	!amd64? ( net-misc/curl )
+	amd64? (
+		abi_x86_64? ( net-misc/curl )
+		abi_x86_32? ( || (
+			app-emulation/emul-linux-x86-baselibs[-abi_x86_32(-)]
+			net-misc/curl[abi_x86_32(-)]
+		) )
+	)
 	>=app-admin/eselect-dlang-20140709
 	"
 
@@ -145,9 +150,9 @@ EOF
 	into ${PREFIX}
 	install_library() {
 		emake -C src/phobos -f posix.mak INSTALL_DIR="${D}${PREFIX}" LIB_DIR="$(get_libdir)" MODEL=$(abi_to_model) install ${PIC}
-		dolib.so src/phobos/generated/linux/release/${MODEL}/libphobos2.so.0.64.2
-		dosym libphobos2.so.0.64.2 ${PREFIX}/$(get_libdir)/libphobos2.so.0.64
-		dosym libphobos2.so.0.64.2 ${PREFIX}/$(get_libdir)/libphobos2.so
+		dolib.so src/phobos/generated/linux/release/${MODEL}/libphobos2.so.0.64.0
+		dosym libphobos2.so.0.64.0 ${PREFIX}/$(get_libdir)/libphobos2.so.0.64
+		dosym libphobos2.so.0.64.0 ${PREFIX}/$(get_libdir)/libphobos2.so
 	}
 	dmd_foreach_abi install_library
 
