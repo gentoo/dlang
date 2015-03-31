@@ -200,10 +200,10 @@ do_update() {
 find_targets() {
 	case "$1" in
 		dmd)
-			ls /opt/dmd-?.???/bin/dmd | sed "s#^/opt/##;s#/.*##"
+			ls /opt/dmd-?.???/bin/dmd | sed "s#^/opt/dmd-##;s#/.*##"
 			;;
 		ldc2)
-			ls /opt/ldc2-?.??/bin/ldc2 | sed "s#^/opt/##;s#/.*##"
+			ls /opt/ldc2-?.??/bin/ldc2 | sed "s#^/opt/ldc2-##;s#/.*##"
 			;;
 		*)
 			die "Unknown compiler '$1'"
