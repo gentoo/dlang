@@ -52,8 +52,9 @@ dlang_convert_ldflags() {
 			fi
 		done
 		# gc-sections breaks executables for some versions of D.
+		# See: https://issues.dlang.org/show_bug.cgi?id=879
 		if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
-			if version_is_at_least 2.067 $DLANG_VERSION; then
+			if version_is_at_least 2.068 $DLANG_VERSION; then
 				echo "${flags[@]}"
 			else
 				echo "${flags[@]} ${repl}--no-gc-sections"

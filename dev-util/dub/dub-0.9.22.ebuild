@@ -1,4 +1,4 @@
-# Copyright 1999-2014 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -15,7 +15,7 @@ IUSE="debug"
 GITHUB_URI="https://codeload.github.com/D-Programming-Language"
 SRC_URI="${GITHUB_URI}/${PN}/tar.gz/v${PV} -> ${PN}-${PV}.tar.gz"
 
-DLANG_VERSION_RANGE="2.064-"
+DLANG_VERSION_RANGE="2.064-2.066"
 DLANG_PACKAGE_TYPE="single"
 
 inherit eutils dlang
