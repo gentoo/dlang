@@ -17,7 +17,7 @@ REQUIRED_USE="|| ( ${TOOLS} dman )"
 inherit versionator
 
 DLANG_SLOT="$(get_version_component_range 1-2)"
-RESTRICT="mirror"
+RESTRICT="primaryuri"
 GITHUB_URI="https://codeload.github.com/D-Programming-Language"
 SRC_URI="
 	${GITHUB_URI}/tools/tar.gz/v${PV} -> dlang-tools-${PV}.tar.gz
