@@ -6,7 +6,7 @@ EAPI="4"
 
 EGIT_REPO_URI="git://github.com/D-Programming-GDC/GDC.git"
 EGIT_BRANCH="gdc-4.8"
-EGIT_COMMIT="bfc75cb31bc9c511276814cc50a6b0867ef377e0"
+EGIT_COMMIT="v2.066.1_gcc4.8"
 EGIT_SOURCEDIR="${WORKDIR}/dev"
 EGIT_NOUNPACK=1
 
@@ -15,7 +15,7 @@ inherit git-2
 IUSE="d"
 
 # Original GCC code starts here
-PATCH_VER="1.3"
+PATCH_VER="1.5"
 UCLIBC_VER="1.0"
 
 # Hardened gcc 4 stuff
@@ -33,7 +33,7 @@ SSP_UCLIBC_STABLE="x86 amd64 mips ppc ppc64 arm"
 
 inherit eutils toolchain
 
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86 ~amd64-fbsd ~x86-fbsd"
+KEYWORDS="alpha amd64 ~arm arm64 hppa ~ia64 m68k ~mips ppc ppc64 s390 sh sparc x86 ~amd64-fbsd ~x86-fbsd"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
