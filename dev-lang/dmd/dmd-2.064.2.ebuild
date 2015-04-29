@@ -21,14 +21,7 @@ IUSE="doc examples"
 inherit eutils multilib-build
 
 COMMON_DEPEND="
-	!amd64? ( net-misc/curl )
-	amd64? (
-		abi_x86_64? ( net-misc/curl )
-		abi_x86_32? ( || (
-			app-emulation/emul-linux-x86-baselibs[-abi_x86_32(-)]
-			net-misc/curl[abi_x86_32(-)]
-		) )
-	)
+	net-misc/curl[${MULTILIB_USEDEP}]
 	>=app-admin/eselect-dlang-20140709
 	"
 
