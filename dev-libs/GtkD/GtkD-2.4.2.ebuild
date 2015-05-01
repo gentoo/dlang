@@ -41,7 +41,7 @@ d_src_compile() {
 	compile_libs() {
 		# Build the shared library version of the component
 		if dlang_has_shared_lib_support; then
-			dlang_compile_lib.so lib${LIB_NAME}-${MAJOR}.so.0.${MINOR} \
+			dlang_compile_lib_so lib${LIB_NAME}-${MAJOR}.so.0.${MINOR} \
 				lib${LIB_NAME}-${MAJOR}.so.0 -Isrc ${GTKD_SRC_DIRS[$i]}/*/*.d
 		else
 			ewarn "${DC} does not have shared library support."

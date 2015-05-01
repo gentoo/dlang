@@ -256,6 +256,52 @@ dlang_src_install() {
 	__dlang_phase_wrapper install
 }
 
+
+# @FUNCTION: dlang_exec
+# @DESCRIPTION:
+# Run and print a shell command. Aborts the ebuild on error using "die".
+dlang_exec() {
+	echo "${@}"
+	${@} || die
+}
+
+# @FUNCTION: dlang_compile_bin
+# @DESCRIPTION:
+# Compiles a D application. The first argument is the output file name, the
+# other arguments are source files. Additional variables can be set to fine tune
+# the compilation. They will be prepended with the proper flags for each
+# compiler:
+# versions - a list of versions to activate during compilation
+# imports - a list of import paths
+#
+# Aditionally, if the ebuild offers the "debug" use flag, we will automatically
+# raise the debug level to 1 during compilation.
+dlang_compile_bin() {
+	[[ "${DLANG_PACKAGE_TYPE}" == "single" ]] || die "Currently ${FUNCTION} only works with DLANG_PACKAGE_TYPE=\"single\"."
+
+	local binname="${1}"
+	local sources="${@:2}"
+
+	dlang_exec ${DC} ${DCFLAGS} ${sources} $(__dlang_additional_flags) \
+		${LDFLAGS} ${DLANG_OUTPUT_FLAG}${binname}
+}
+
+# @FUNCTION: dlang_compile_lib_so
+# @DESCRIPTION:
+# Compiles a D shared library. The first argument is the output file name, the
+# second argument is the soname (typically file name without patch level
+# suffix), the other arguments are source files. Additional variables and the
+# "debug" use flag will be handled as described in dlang_compile_bin().
+dlang_compile_lib_so() {
+	local libname="${1}"
+	local soname="${2}"
+	local sources="${@:3}"
+
+	dlang_exec ${DC} ${DCFLAGS} -m${MODEL} ${sources} $(__dlang_additional_flags) \
+		${LDFLAGS} ${DLANG_SO_FLAGS} ${DLANG_LINKER_FLAG}-soname=${soname} \
+		${DLANG_OUTPUT_FLAG}${libname}
+}
+
 ### Non-public helper functions ###
 
 declare -a __dlang_compiler_iuse
@@ -416,51 +462,6 @@ __dlang_build_configurations() {
 		die "At least one compiler USE-flag must be selected. This should be checked by REQUIRED_USE in this package."
 	fi
 	echo "${variants[@]}"
-}
-
-# @FUNCTION: dlang_exec
-# @DESCRIPTION:
-# Run and print a shell command. Aborts the ebuild on error using "die".
-dlang_exec() {
-	echo "${@}"
-	${@} || die
-}
-
-# @FUNCTION: dlang_compile_bin
-# @DESCRIPTION:
-# Compiles a D application. The first argument is the output file name, the
-# other arguments are source files. Additional variables can be set to fine tune
-# the compilation. They will be prepended with the proper flags for each
-# compiler:
-# versions - a list of versions to activate during compilation
-# imports - a list of import paths
-#
-# Aditionally, if the ebuild offers the "debug" use flag, we will automatically
-# raise the debug level to 1 during compilation.
-dlang_compile_bin() {
-	[[ "${DLANG_PACKAGE_TYPE}" == "single" ]] || die "Currently ${FUNCTION} only works with DLANG_PACKAGE_TYPE=\"single\"."
-
-	local binname="${1}"
-	local sources="${@:2}"
-
-	dlang_exec ${DC} ${DCFLAGS} ${sources} $(__dlang_additional_flags) \
-		${LDFLAGS} ${DLANG_OUTPUT_FLAG}${binname}
-}
-
-# @FUNCTION: dlang_compile_lib.so
-# @DESCRIPTION:
-# Compiles a D shared library. The first argument is the output file name, the
-# second argument is the soname (typically file name without patch level
-# suffix), the other arguments are source files. Additional variables and the
-# "debug" use flag will be handled as described in dlang_compile_bin().
-dlang_compile_lib.so() {
-	local libname="${1}"
-	local soname="${2}"
-	local sources="${@:3}"
-
-	dlang_exec ${DC} ${DCFLAGS} -m${MODEL} ${sources} $(__dlang_additional_flags) \
-		${LDFLAGS} ${DLANG_SO_FLAGS} ${DLANG_LINKER_FLAG}-soname=${soname} \
-		${DLANG_OUTPUT_FLAG}${libname}
 }
 
 fi
