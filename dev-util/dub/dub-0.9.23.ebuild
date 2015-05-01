@@ -24,7 +24,7 @@ DEPEND="net-misc/curl"
 RDEPEND="${DEPEND}"
 
 d_src_compile() {
-	local imports=source versions=DubUseCurl libs=curl
+	local imports=source versions=DubUseCurl libs="curl z"
 	dlang_compile_bin bin/dub $(<build-files.txt)
 }
 
