@@ -11,34 +11,76 @@ ___ECLASS_ONCE_DLANG_COMPILERS="recur -_+^+_- spank"
 EXPORT_FUNCTIONS declare_versions
 
 dlang-compilers_declare_versions() {
-	declare -gA __dlang_dmd_frontend_mapping
-	declare -gA __dlang_gdc_frontend_mapping
-	declare -gA __dlang_ldc2_frontend_mapping
+	declare -ga __dlang_dmd_frontend_archmap
+	declare -ga __dlang_dmd_frontend_versionmap
+	declare -ga __dlang_gdc_frontend_archmap
+	declare -ga __dlang_gdc_frontend_versionmap
+	declare -ga __dlang_ldc2_frontend_archmap
+	declare -ga __dlang_ldc2_frontend_versionmap
 
 	# DMD
-	__dlang_dmd_frontend_mapping=(
-		["2.063"]="2.063 x86 amd64"
-		["2.064"]="2.064 x86 amd64"
-		["2.065"]="2.065 x86 amd64"
-		["2.066"]="2.066 x86 amd64"
-		["2.067"]="2.067"
+	__dlang_dmd_frontend_archmap=(
+		[1]="2.063 x86 amd64"
+		[2]="2.064 x86 amd64"
+		[3]="2.065 x86 amd64"
+		[4]="2.066 x86 amd64"
+		[5]="2.067"
+	)
+	__dlang_dmd_frontend_versionmap=(
+		[1]="2.063"
+		[2]="2.064"
+		[3]="2.065"
+		[4]="2.066"
+		[5]="2.067"
 	)
 
 	# GDC
-	__dlang_gdc_frontend_mapping=(
-		["4.8.1"]="2.063"
-		["4.8.2"]="2.064"
-		["4.8.3"]="2.065 x86 amd64"
-		["4.8.4"]="2.066 x86 amd64"
+	__dlang_gdc_frontend_archmap=(
+		[1]="2.063"
+		[2]="2.064"
+		[3]="2.065 x86 amd64"
+		[4]="2.066 x86 amd64"
+	)
+	__dlang_gdc_frontend_versionmap=(
+		[1]="4.8.1"
+		[2]="4.8.2"
+		[3]="4.8.3"
+		[4]="4.8.4"
 	)
 
 	# LDC
-	__dlang_ldc2_frontend_mapping=(
-		["0.12"]="2.063 x86 amd64"
-		["0.13"]="2.064 x86 amd64"
-		["0.14"]="2.065 x86 amd64"
-		["0.15"]="2.066 x86 amd64"
+	__dlang_ldc2_frontend_archmap=(
+		[1]="2.063 x86 amd64"
+		[2]="2.064 x86 amd64"
+		[3]="2.065 x86 amd64"
+		[4]="2.066 x86 amd64"
 	)
+	__dlang_ldc2_frontend_versionmap=(
+		[1]="0.12"
+		[2]="0.13"
+		[3]="0.14"
+		[4]="0.15"
+	)
+
+	# Error check to avoid mistyping of indices
+	if [ "${!__dlang_dmd_frontend_archmap[*]}" \
+		!= "${!__dlang_dmd_frontend_versionmap[*]}" ] ; then
+		errorstring="__dlang_dmd_frontend_archmap and "
+		errorstring+="__dlang_dmd_frontend_versionmap indices mismatch!"
+		die $errorstring
+	fi
+	if [ "${!__dlang_gdc_frontend_archmap[*]}" \
+		!= "${!__dlang_gdc_frontend_versionmap[*]}" ] ; then
+		errorstring="__dlang_gdc_frontend_archmap and "
+		errorstring+="__dlang_gdc_frontend_versionmap indices mismatch!"
+		die $errorstring
+	fi
+	if [ "${!__dlang_ldc2_frontend_archmap[*]}" \
+		!= "${!__dlang_ldc2_frontend_versionmap[*]}" ] ; then
+		errorstring="__dlang_ldc2_frontend_archmap and "
+		errorstring+="__dlang_ldc2_frontend_versionmap indices mismatch!"
+		die $errorstring
+	fi
 }
 
 fi
