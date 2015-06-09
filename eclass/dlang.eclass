@@ -333,11 +333,12 @@ __dlang_is_in_version_range() {
 }
 
 __dlang_filter_compilers() {
-	local dc_version mapping iuse
+	local indices dc_version mapping iuse
 
 	# filter for DMD
-	for dc_version in ${!__dlang_dmd_frontend_mapping[@]}; do
-		mapping=${__dlang_dmd_frontend_mapping[$dc_version]}
+	for indices in "${!__dlang_dmd_frontend_archmap[@]}"; do
+		dc_version="${__dlang_dmd_frontend_versionmap[${indices}]}"
+		mapping="${__dlang_dmd_frontend_archmap[${indices}]}"
 		if __dlang_is_in_version_range "$mapping" "$1" "$2" "$KEYWORDS"; then
 			iuse=dmd-$(replace_all_version_separators _ $dc_version)
 			__dlang_compiler_iuse+=("$iuse")
@@ -350,8 +351,9 @@ __dlang_filter_compilers() {
 	done
 
 	# GDC (doesn't support sub-slots, due to low EAPI requirement)
-	for dc_version in ${!__dlang_gdc_frontend_mapping[@]}; do
-		mapping=${__dlang_gdc_frontend_mapping[$dc_version]}
+	for indices in "${!__dlang_gdc_frontend_archmap[@]}"; do
+		dc_version="${__dlang_gdc_frontend_versionmap[${indices}]}"
+		mapping="${__dlang_gdc_frontend_archmap[${indices}]}"
 		if __dlang_is_in_version_range "$mapping" "$1" "$2" "$KEYWORDS"; then
 			iuse=gdc-$(replace_all_version_separators _ $dc_version)
 			__dlang_compiler_iuse+=("$iuse")
@@ -360,8 +362,9 @@ __dlang_filter_compilers() {
 	done
 
 	# filter for LDC2
-	for dc_version in ${!__dlang_ldc2_frontend_mapping[@]}; do
-		mapping=${__dlang_ldc2_frontend_mapping[$dc_version]}
+	for indices in "${!__dlang_ldc2_frontend_archmap[@]}"; do
+		dc_version="${__dlang_ldc2_frontend_versionmap[${indices}]}";
+		mapping="${__dlang_ldc2_frontend_archmap[${indices}]}"
 		if __dlang_is_in_version_range "$mapping" "$1" "$2" "$KEYWORDS"; then
 			iuse=ldc2-$(replace_all_version_separators _ $dc_version)
 			__dlang_compiler_iuse+=("$iuse")
