@@ -1,0 +1,7 @@
+[Unit]
+Description=Dlang Completion Daemon
+
+[Service]
+EnvironmentFile=/etc/dcd-server.conf
+ExecStart=/usr/bin/dcd-server --port $PORTNUMBER
+ExecStop=/usr/bin/dcd-client --shutdown
