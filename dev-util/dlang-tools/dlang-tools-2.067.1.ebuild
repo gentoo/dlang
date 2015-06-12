@@ -9,7 +9,7 @@ HOMEPAGE="http://dlang.org/"
 LICENSE="Boost-1.0"
 
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 TOOLS="rdmd ddemangle detab dustmite"
 IUSE="+rdmd +ddemangle detab +dman dustmite"
 REQUIRED_USE="|| ( ${TOOLS} dman )"

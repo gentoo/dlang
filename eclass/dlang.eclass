@@ -284,7 +284,7 @@ __dlang_filter_compilers() {
 		fi
 	done
 
-	# GDC (doesn't support sub-slots, due to low EAPI requirement)
+	# GDC (doesn't support sub-slots, to stay compatible with upstream GCC)
 	for indices in "${!__dlang_gdc_frontend_archmap[@]}"; do
 		dc_version="${__dlang_gdc_frontend_versionmap[${indices}]}"
 		mapping="${__dlang_gdc_frontend_archmap[${indices}]}"
@@ -333,7 +333,7 @@ __dlang_filter_versions() {
 	else
 		__dlang_filter_compilers "" ""
 	fi
-	[[ ${#__dlang_compiler_iuse[@]} -ne 0 ]] || die "No D compilers found that satisfy this package's contraints"
+	[[ ${#__dlang_compiler_iuse[@]} -ne 0 ]] || die "No D compilers found that satisfy this package's version range: $DLANG_VERSION_RANGE"
 
 	IUSE="${__dlang_compiler_iuse[@]}"
 	if [[ "${DLANG_PACKAGE_TYPE}" == "single" ]]; then

@@ -16,7 +16,7 @@ RESTRICT="mirror"
 
 # DMD supports amd64/x86 exclusively
 MULTILIB_COMPAT=( abi_x86_{32,64} )
-KEYWORDS="-* ~amd64 ~x86"
+KEYWORDS="-* amd64 x86"
 SLOT="$(get_version_component_range 1-2)"
 IUSE="doc examples tools"
 
