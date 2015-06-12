@@ -74,7 +74,7 @@ dlang_foreach_config() {
 		popd >/dev/null || die
 	}
 
-	multibuild_parallel_foreach_variant multibuild_wrapper "${@}"
+	multibuild_foreach_variant multibuild_wrapper "${@}"
 }
 
 export DLANG_IMPORT_DIR="usr/include/dlang"

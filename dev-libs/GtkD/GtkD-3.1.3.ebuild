@@ -9,7 +9,7 @@ HOMEPAGE="http://gtkd.org/"
 LICENSE="LGPL-3"
 
 SLOT="3"
-KEYWORDS="x86 amd64"
+KEYWORDS="~x86 ~amd64"
 SRC_URI="http://gtkd.org/Downloads/sources/${P}.zip"
 
 DLANG_VERSION_RANGE="2.064 2.066-"
@@ -19,8 +19,8 @@ inherit eutils dlang
 
 DEPEND="app-arch/unzip"
 RDEPEND="
-	>=x11-libs/gtk+-3.14:3[${MULTILIB_USEDEP}]
-	sourceview? ( >=x11-libs/gtksourceview-3.14:3.0 )
+	>=x11-libs/gtk+-3.16:3[${MULTILIB_USEDEP}]
+	sourceview? ( >=x11-libs/gtksourceview-3.16:3.0 )
 	gstreamer? ( >=media-libs/gstreamer-1.2:1.0 )
 	vte? ( >=x11-libs/vte-0.37.4:2.91 )
 "
