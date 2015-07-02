@@ -1,0 +1,12 @@
+diff -U 1 -r a/dub/generators/build.d b/dub/generators/build.d
+--- a/source/dub/generators/build.d	2015-07-02 00:46:00.551385284 -0400
++++ b/source/dub/generators/build.d	2015-07-02 00:47:29.806389679 -0400
+@@ -98,6 +98,6 @@
+ 		// make all paths relative to shrink the command line
+-		string makeRelative(string path) { auto p = Path(path); if (p.absolute) p = p.relativeTo(cwd); return p.toNativeString(); }
++		/*string makeRelative(string path) { auto p = Path(path); if (p.absolute) p = p.relativeTo(cwd); return p.toNativeString(); }
+ 		foreach (ref f; buildsettings.sourceFiles) f = makeRelative(f);
+ 		foreach (ref p; buildsettings.importPaths) p = makeRelative(p);
+-		foreach (ref p; buildsettings.stringImportPaths) p = makeRelative(p);
++		foreach (ref p; buildsettings.stringImportPaths) p = makeRelative(p);*/
+ 
