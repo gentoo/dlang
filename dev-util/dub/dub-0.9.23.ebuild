@@ -23,6 +23,10 @@ inherit eutils dlang
 DEPEND="net-misc/curl"
 RDEPEND="${DEPEND}"
 
+src_prepare() {
+	epatch "${FILESDIR}/${P}-gdc-dmd-pathfix.patch"
+}
+
 d_src_compile() {
 	local imports=source versions=DubUseCurl libs="curl z"
 	dlang_compile_bin bin/dub $(<build-files.txt)
