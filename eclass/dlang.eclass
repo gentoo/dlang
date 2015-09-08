@@ -89,7 +89,7 @@ dlang_single_config() {
 
 dlang_has_shared_lib_support() {
 	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
-		[[ "$(get_major_version ${DLANG_VERSION})" -eq 2 ]] && [[ "$(get_after_major_version ${DLANG_VERSION})" -ge 063 ]]
+		[[ $(get_major_version ${DLANG_VERSION}) -eq 2 ]] && [[ $((10#$(get_after_major_version ${DLANG_VERSION}))) -ge 63 ]]
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
 		return 1
 	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
@@ -247,10 +247,10 @@ __dlang_is_in_version_range() {
 	local compiler_keywords=${1:${#dlang_version}}
 	local compiler_keyword package_keyword stability_satisfied
 	if [[ -n "$2" ]]; then
-		[[ ${dlang_version#*.} -lt ${2#*.} ]] && return 1
+		[[ $((10#${dlang_version#*.})) -lt $((10#${2#*.})) ]] && return 1
 	fi
 	if [[ -n "$3" ]]; then
-		[[ ${dlang_version#*.} -gt ${3#*.} ]] && return 1
+		[[ $((10#${dlang_version#*.})) -gt $((10#${3#*.})) ]] && return 1
 	fi
 	# Check the stability requirements (package archs not prefixed with ~)
 	for package_keyword in $KEYWORDS; do
