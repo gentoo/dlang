@@ -9,47 +9,53 @@ HOMEPAGE="https://github.com/Hackerpilot/DCD"
 LICENSE="GPL-3"
 
 SLOT="0"
-KEYWORDS="x86 amd64"
-CONTAINERS="d732a67e76f60fd037547c3ffe8776c6deda6bab"
-LIBDPARSE="32f6d638e38888e1bb11cf43e93fe2d11132a98f"
+KEYWORDS="~x86 ~amd64"
+CONTAINERS="04158caa5d651562ac99d40cd9aec2cd06a15508"
+ALLOCATOR="cd8196a5b063b9019ea5529239da3181cc4fdc4f"
+DSYMBOL="c9ac0cbf1a4496c2c015829bf08fd96c08c53ff7"
+LIBDPARSE="d5e1d359b63d011608af2638f224f54912bd4401"
 MSGPACK="878fcb1852160d1c3d206df933f6becba18aa222"
 SRC_URI="
 	https://github.com/Hackerpilot/DCD/archive/v${PV}.tar.gz -> ${PN}-${PV}.tar.gz
 	https://github.com/economicmodeling/containers/archive/${CONTAINERS}.tar.gz -> containers-${CONTAINERS}.tar.gz
+	https://github.com/Hackerpilot/experimental_allocator/archive/${ALLOCATOR}.tar.gz -> experimental_allocator-${ALLOCATOR}.tar.gz
+	https://github.com/Hackerpilot/dsymbol/archive/${DSYMBOL}.tar.gz -> dsymbol-${DSYMBOL}.tar.gz
 	https://github.com/Hackerpilot/libdparse/archive/${LIBDPARSE}.tar.gz -> libdparse-${LIBDPARSE}.tar.gz
 	https://github.com/msgpack/msgpack-d/archive/${MSGPACK}.tar.gz -> msgpack-d-${MSGPACK}.tar.gz
 	"
 
-DLANG_VERSION_RANGE="2.066-"
+DLANG_VERSION_RANGE="2.068-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit dlang systemd
 
 src_prepare() {
-	rm "../containers-${CONTAINERS}/src/std/allocator.d" || die "Could not delete std.allocator.d"
 	echo "" > githash.txt || die "Could not generate githash.txt"
 }
 
 d_src_compile() {
-	local imports="src ../containers-${CONTAINERS}/src ../libdparse-${LIBDPARSE}/src ../msgpack-d-${MSGPACK}/src"
+	local imports="src ../containers-${CONTAINERS}/src ../experimental_allocator-${ALLOCATOR}/src"
 	local string_imports="."
 
 	mkdir -p bin || die "Failed to create 'bin' directory."
 
 	dlang_compile_bin bin/dcd-server\
-		src/{actypes,autocomplete,constants,messages,modulecache,semantic,server,string_interning,stupidlog}.d\
-		src/conversion/{astconverter,first,second,third}.d\
-		../containers-${CONTAINERS}/src/containers/ttree.d\
-		../containers-${CONTAINERS}/src/containers/internal/node.d\
-		../containers-${CONTAINERS}/src/memory/{allocators,appender}.d\
-		../libdparse-${LIBDPARSE}/src/std/{allocator,lexer}.d\
+		src/common/{constants,messages}.d\
+		src/server/{autocomplete,server}.d\
+		../containers-${CONTAINERS}/src/containers/{unrolledlist,hashset,ttree}.d\
+		../containers-${CONTAINERS}/src/containers/internal/{element_type,hash,node,storage_type}.d\
+		../dsymbol-${DSYMBOL}/src/dsymbol/{cache_entry,deferred,import_,modulecache,scope_,semantic,string_interning,symbol,type_lookup}.d\
+		../dsymbol-${DSYMBOL}/src/dsymbol/builtin/{names,symbols}.d\
+		../dsymbol-${DSYMBOL}/src/dsymbol/conversion/{first,package,second}.d\
+		../experimental_allocator-${ALLOCATOR}/src/std/experimental/allocator/{common,gc_allocator,mallocator,package,typed}.d\
+		../experimental_allocator-${ALLOCATOR}/src/std/experimental/allocator/building_blocks/allocator_list.d\
+		../libdparse-${LIBDPARSE}/src/std/lexer.d\
 		../libdparse-${LIBDPARSE}/src/std/d/{ast,formatter,lexer,parser}.d\
-		../msgpack-d-${MSGPACK}/src/msgpack.d\
-		../containers-${CONTAINERS}/src/containers/{unrolledlist,hashset}.d\
-		../containers-${CONTAINERS}/src/containers/internal/{hash,storage_type}.d
+		../msgpack-d-${MSGPACK}/src/msgpack.d
 
 	dlang_compile_bin bin/dcd-client\
-		src/{client,messages,stupidlog}.d\
+		src/client/client.d\
+		src/common/messages.d\
 		../msgpack-d-${MSGPACK}/src/msgpack.d
 
 	dlang_system_imports > dcd.conf
