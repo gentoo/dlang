@@ -9,7 +9,7 @@ HOMEPAGE="https://github.com/Hackerpilot/dfmt"
 LICENSE="Boost-1.0"
 
 SLOT="0"
-KEYWORDS="~x86 ~amd64"
+KEYWORDS="x86 amd64"
 LIBDPARSE="ccb3d98996f89cfb35799aee6358e640f6f71f67"
 SRC_URI="
 	https://github.com/Hackerpilot/dfmt/archive/v${PV}.tar.gz -> ${PN}-${PV}.tar.gz
