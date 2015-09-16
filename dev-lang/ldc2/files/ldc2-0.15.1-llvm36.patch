@@ -1,0 +1,582 @@
+diff --git a/gen/declarations.cpp b/gen/declarations.cpp
+index 7d3a754..2a8323c 100644
+--- a/gen/declarations.cpp
++++ b/gen/declarations.cpp
+@@ -450,8 +450,13 @@ public:
+                 LibName = tmp;
+ 
+                 // Embedd library name as linker option in object file
++#if LDC_LLVM_VER >= 306
++                llvm::Metadata *Value = llvm::MDString::get(gIR->context(), LibName);
++                gIR->LinkerMetadataArgs.push_back(llvm::MDNode::get(gIR->context(), Value));
++#else
+                 llvm::Value *Value = llvm::MDString::get(gIR->context(), LibName);
+                 gIR->LinkerMetadataArgs.push_back(llvm::MDNode::get(gIR->context(), Value));
++#endif
+             }
+             else
+     #endif
+diff --git a/gen/dibuilder.cpp b/gen/dibuilder.cpp
+index 861a234..eaa94aa 100644
+--- a/gen/dibuilder.cpp
++++ b/gen/dibuilder.cpp
+@@ -156,7 +156,11 @@ llvm::DIType ldc::DIBuilder::CreateEnumType(Type *type)
+ 
+     assert(type->ty == Tenum && "only enums allowed for debug info in dwarfEnumType");
+     TypeEnum *te = static_cast<TypeEnum *>(type);
++#if LDC_LLVM_VER >= 306
++    llvm::SmallVector<llvm::Metadata *, 8> subscripts;
++#else
+     llvm::SmallVector<llvm::Value *, 8> subscripts;
++#endif
+     for (Dsymbols::iterator I = te->sym->members->begin(),
+                             E = te->sym->members->end();
+                             I != E; ++I)
+@@ -164,7 +168,11 @@ llvm::DIType ldc::DIBuilder::CreateEnumType(Type *type)
+         EnumMember *em = (*I)->isEnumMember();
+         llvm::StringRef Name(em->toChars());
+         uint64_t Val = em->value->toInteger();
++#if LDC_LLVM_VER >= 306
++        llvm::Metadata *Subscript = DBuilder.createEnumerator(Name, Val);
++#else
+         llvm::Value *Subscript = DBuilder.createEnumerator(Name, Val);
++#endif
+         subscripts.push_back(Subscript);
+     }
+ 
+@@ -214,7 +222,11 @@ llvm::DIType ldc::DIBuilder::CreateVectorType(Type *type)
+     TypeVector *tv = static_cast<TypeVector *>(t);
+     Type *te = tv->elementType();
+     int64_t Dim = tv->size(Loc()) / te->size(Loc());
++#if LDC_LLVM_VER >= 306
++    llvm::Metadata *subscripts[] =
++#else
+     llvm::Value *subscripts[] =
++#endif
+     {
+         DBuilder.getOrCreateSubrange(0, Dim)
+     };
+@@ -231,13 +243,31 @@ llvm::DIType ldc::DIBuilder::CreateVectorType(Type *type)
+ llvm::DIType ldc::DIBuilder::CreateMemberType(unsigned linnum, Type *type,
+                                                 llvm::DIFile file,
+                                                 const char* c_name,
+-                                                unsigned offset)
++                                                unsigned offset,
++                                                PROT prot)
+ {
+     llvm::Type *T = DtoType(type);
+     Type *t = type->toBasetype();
+ 
+     // find base type
+-    llvm::DIType basetype = CreateTypeDescription(t, NULL, true);
++    llvm::DIType basetype = CreateTypeDescription(t, true);
++
++    unsigned Flags = 0;
++    switch (prot) {
++        case PROTprivate:
++            Flags = llvm::DIDescriptor::FlagPrivate;
++            break;
++        case PROTprotected:
++            Flags = llvm::DIDescriptor::FlagProtected;
++            break;
++#if LDC_LLVM_VER >= 306
++        case PROTpublic:
++            Flags = llvm::DIDescriptor::FlagPublic;
++            break;
++#endif
++        default:
++            break;
++    }
+ 
+     return DBuilder.createMemberType(
+         llvm::DICompileUnit(GetCU()),
+@@ -247,14 +277,18 @@ llvm::DIType ldc::DIBuilder::CreateMemberType(unsigned linnum, Type *type,
+         getTypeBitSize(T), // size (bits)
+         getABITypeAlign(T)*8, // align (bits)
+         offset*8, // offset (bits)
+-//FIXME: need flags?
+-        0, // flags
++        Flags, // flags
+         basetype // derived from
+     );
+ }
+ 
+ void ldc::DIBuilder::AddBaseFields(ClassDeclaration *sd, llvm::DIFile file,
+-                                     std::vector<llvm::Value*> &elems)
++#if LDC_LLVM_VER >= 306
++                                   std::vector<llvm::Metadata*> &elems
++#else
++                                   std::vector<llvm::Value*> &elems
++#endif
++                                   )
+ {
+     if (sd->baseClass)
+     {
+@@ -268,7 +302,7 @@ void ldc::DIBuilder::AddBaseFields(ClassDeclaration *sd, llvm::DIFile file,
+                                    I != E; ++I)
+     {
+         VarDeclaration* vd = *I;
+-        elems.push_back(CreateMemberType(vd->loc.linnum, vd->type, file, vd->toChars(), vd->offset));
++        elems.push_back(CreateMemberType(vd->loc.linnum, vd->type, file, vd->toChars(), vd->offset, vd->prot()));
+     }
+ }
+ 
+@@ -309,7 +343,11 @@ llvm::DIType ldc::DIBuilder::CreateCompositeType(Type *type)
+ #endif
+ 
+     // elements
++#if LDC_LLVM_VER >= 306
++    std::vector<llvm::Metadata *> elems;
++#else
+     std::vector<llvm::Value *> elems;
++#endif
+ 
+     // defaults
+     llvm::StringRef name = sd->toChars();
+@@ -322,7 +360,9 @@ llvm::DIType ldc::DIBuilder::CreateCompositeType(Type *type)
+     // set diCompositeType to handle recursive types properly
+     unsigned tag = (t->ty == Tstruct) ? llvm::dwarf::DW_TAG_structure_type
+                                         : llvm::dwarf::DW_TAG_class_type;
+-#if LDC_LLVM_VER >= 305
++#if LDC_LLVM_VER >= 307
++    ir->diCompositeType = DBuilder.createReplaceableCompositeType(
++#elif LDC_LLVM_VER >= 305
+     ir->diCompositeType = DBuilder.createReplaceableForwardDecl(
+ #else
+     ir->diCompositeType = DBuilder.createForwardDecl(
+@@ -343,7 +383,7 @@ llvm::DIType ldc::DIBuilder::CreateCompositeType(Type *type)
+                                            I != E; ++I)
+             {
+                 VarDeclaration* vd = *I;
+-                llvm::DIType dt = CreateMemberType(vd->loc.linnum, vd->type, file, vd->toChars(), vd->offset);
++                llvm::DIType dt = CreateMemberType(vd->loc.linnum, vd->type, file, vd->toChars(), vd->offset, vd->prot());
+                 elems.push_back(dt);
+             }
+         }
+@@ -368,7 +408,7 @@ llvm::DIType ldc::DIBuilder::CreateCompositeType(Type *type)
+            getTypeBitSize(T), // size in bits
+            getABITypeAlign(T)*8, // alignment in bits
+            0, // offset in bits,
+-           llvm::DIType::FlagFwdDecl, // flags
++           llvm::DIDescriptor::FlagFwdDecl, // flags
+            derivedFrom, // DerivedFrom
+            elemsArray
+         );
+@@ -380,7 +420,7 @@ llvm::DIType ldc::DIBuilder::CreateCompositeType(Type *type)
+            linnum, // line number where defined
+            getTypeBitSize(T), // size in bits
+            getABITypeAlign(T)*8, // alignment in bits
+-           llvm::DIType::FlagFwdDecl, // flags
++           llvm::DIDescriptor::FlagFwdDecl, // flags
+ #if LDC_LLVM_VER >= 303
+            derivedFrom, // DerivedFrom
+ #endif
+@@ -404,10 +444,15 @@ llvm::DIType ldc::DIBuilder::CreateArrayType(Type *type)
+     Loc loc(IR->dmodule, 0, 0);
+     llvm::DIFile file = CreateFile(loc);
+ 
+-    llvm::Value *elems[] = {
+-        CreateMemberType(0, Type::tsize_t, file, "length", 0),
++#if LDC_LLVM_VER >= 306
++    llvm::Metadata *elems[] =
++#else
++    llvm::Value *elems[] =
++#endif
++    {
++        CreateMemberType(0, Type::tsize_t, file, "length", 0, PROTpublic),
+         CreateMemberType(0, t->nextOf()->pointerTo(), file, "ptr",
+-                         global.params.is64bit ? 8 : 4)
++                         global.params.is64bit ? 8 : 4, PROTpublic)
+     };
+ 
+     return DBuilder.createStructType
+@@ -432,12 +477,20 @@ llvm::DIType ldc::DIBuilder::CreateSArrayType(Type *type)
+     Type *t = type->toBasetype();
+ 
+     // find base type
++#if LDC_LLVM_VER >= 306
++    llvm::SmallVector<llvm::Metadata *, 8> subscripts;
++#else
+     llvm::SmallVector<llvm::Value *, 8> subscripts;
++#endif
+     while (t->ty == Tsarray)
+     {
+         TypeSArray *tsa = static_cast<TypeSArray *>(t);
+         int64_t Count = tsa->dim->toInteger();
++#if LDC_LLVM_VER >= 306
++        llvm::Metadata *subscript = DBuilder.getOrCreateSubrange(0, Count - 1);
++#else
+         llvm::Value *subscript = DBuilder.getOrCreateSubrange(0, Count-1);
++#endif
+         subscripts.push_back(subscript);
+         t = t->nextOf();
+     }
+@@ -472,8 +525,12 @@ ldc::DIFunctionType ldc::DIBuilder::CreateFunctionType(Type *type)
+     llvm::DIFile file = CreateFile(loc);
+ 
+     // Create "dummy" subroutine type for the return type
++#if LDC_LLVM_VER >= 306
++    llvm::SmallVector<llvm::Metadata*, 16> Elts;
++#else
+     llvm::SmallVector<llvm::Value*, 16> Elts;
+-    Elts.push_back(CreateTypeDescription(retType, NULL, true));
++#endif
++    Elts.push_back(CreateTypeDescription(retType, true));
+ #if LDC_LLVM_VER >= 306
+     llvm::DITypeArray EltTypeArray = DBuilder.getOrCreateTypeArray(Elts);
+ #else
+@@ -491,7 +548,11 @@ ldc::DIFunctionType ldc::DIBuilder::CreateDelegateType(Type *type)
+     llvm::DIFile file = CreateFile(loc);
+ 
+     // Create "dummy" subroutine type for the return type
++#if LDC_LLVM_VER >= 306
++    llvm::SmallVector<llvm::Metadata*, 16> Elts;
++#else
+     llvm::SmallVector<llvm::Value*, 16> Elts;
++#endif
+     Elts.push_back(
+ #if LDC_LLVM_VER >= 304
+         DBuilder.createUnspecifiedType(type->toChars())
+@@ -510,7 +571,6 @@ ldc::DIFunctionType ldc::DIBuilder::CreateDelegateType(Type *type)
+ ////////////////////////////////////////////////////////////////////////////////
+ 
+ llvm::DIType ldc::DIBuilder::CreateTypeDescription(Type* type,
+-                                                   const char* c_name,
+                                                    bool derefclass)
+ {
+     Type *t = type->toBasetype();
+@@ -568,6 +628,9 @@ void ldc::DIBuilder::EmitCompileUnit(Module *m)
+     llvm::sys::fs::make_absolute(srcpath);
+ 
+ #if LDC_LLVM_VER >= 304
++    // Metadata without a correct version will be stripped by UpgradeDebugInfo.
++    gIR->module->addModuleFlag(llvm::Module::Warning, "Debug Info Version", llvm::DEBUG_METADATA_VERSION);
++
+     CUNode =
+ #endif
+     DBuilder.createCompileUnit(
+@@ -618,8 +681,8 @@ llvm::DISubprogram ldc::DIBuilder::EmitSubProgram(FuncDeclaration *fd)
+     );
+ }
+ 
+-llvm::DISubprogram ldc::DIBuilder::EmitSubProgramInternal(llvm::StringRef prettyname,
+-                                                            llvm::StringRef mangledname)
++llvm::DISubprogram ldc::DIBuilder::EmitModuleCTor(llvm::Function* Fn,
++                                                  llvm::StringRef prettyname)
+ {
+     if (!global.params.symdebug)
+         return llvm::DISubprogram();
+@@ -627,16 +690,19 @@ llvm::DISubprogram ldc::DIBuilder::EmitSubProgramInternal(llvm::StringRef pretty
+     Logger::println("D to dwarf subprogram");
+     LOG_SCOPE;
+ 
++    llvm::DICompileUnit CU(GetCU());
++    assert(CU && CU.Verify() && "Compilation unit missing or corrupted in DIBuilder::EmitSubProgram");
++
+     Loc loc(IR->dmodule, 0, 0);
+     llvm::DIFile file(CreateFile(loc));
+ 
+     // Create "dummy" subroutine type for the return type
+-    llvm::SmallVector<llvm::Value *, 1> Elts;
+-#if LDC_LLVM_VER >= 304
+-    Elts.push_back(DBuilder.createUnspecifiedType(prettyname));
++#if LDC_LLVM_VER >= 306
++    llvm::SmallVector<llvm::Metadata *, 1> Elts;
+ #else
+-    Elts.push_back(llvm::DIType(NULL));
++    llvm::SmallVector<llvm::Value *, 1> Elts;
+ #endif
++    Elts.push_back(CreateTypeDescription(Type::tvoid, true));
+ #if LDC_LLVM_VER >= 306
+     llvm::DITypeArray EltTypeArray = DBuilder.getOrCreateTypeArray(Elts);
+ #else
+@@ -646,15 +712,17 @@ llvm::DISubprogram ldc::DIBuilder::EmitSubProgramInternal(llvm::StringRef pretty
+ 
+     // FIXME: duplicates ?
+     return DBuilder.createFunction(
+-        llvm::DIDescriptor(file), // context
++        CU, // context
+         prettyname, // name
+-        mangledname, // linkage name
++        Fn->getName(), // linkage name
+         file, // file
+         0, // line no
+         DIFnType, // return type. TODO: fill it up
+         true, // is local to unit
+         true, // isdefinition
+-        0 // FIXME: scope line
++        0, // FIXME: scope line
++        false, // FIXME: isOptimized
++        Fn
+     );
+ }
+ 
+@@ -759,7 +827,7 @@ void ldc::DIBuilder::EmitLocalVariable(llvm::Value *ll, VarDeclaration *vd,
+         return;
+ 
+     // get type description
+-    llvm::DIType TD = CreateTypeDescription(vd->type, NULL, true);
++    llvm::DIType TD = CreateTypeDescription(vd->type, true);
+     if (static_cast<llvm::MDNode *>(TD) == 0)
+         return; // unsupported
+ 
+diff --git a/gen/dibuilder.h b/gen/dibuilder.h
+index 4f52e93..1ab1dff 100644
+--- a/gen/dibuilder.h
++++ b/gen/dibuilder.h
+@@ -98,13 +98,13 @@ public:
+     /// \returns        the Dwarf subprogram global.
+     llvm::DISubprogram EmitSubProgram(FuncDeclaration *fd); // FIXME
+ 
+-    /// \brief Emit the Dwarf subprogram global for a internal function.
++    /// \brief Emit the Dwarf subprogram global for a module ctor.
+     /// This is used for generated functions like moduleinfoctors,
+     /// module ctors/dtors and unittests.
++    /// \param Fn           llvm::Function pointer.
+     /// \param prettyname   The name as seen in the source.
+-    /// \param mangledname  The mangled name in the object file.
+     /// \returns       the Dwarf subprogram global.
+-    llvm::DISubprogram EmitSubProgramInternal(llvm::StringRef prettyname, llvm::StringRef mangledname);  // FIXME
++    llvm::DISubprogram EmitModuleCTor(llvm::Function* Fn, llvm::StringRef prettyname);  // FIXME
+ 
+     /// \brief Emits debug info for function start
+     void EmitFuncStart(FuncDeclaration *fd);
+@@ -151,20 +151,25 @@ private:
+ #endif
+         );
+     void AddBaseFields(ClassDeclaration *sd, llvm::DIFile file,
+-                         std::vector<llvm::Value*> &elems);
++#if LDC_LLVM_VER >= 306
++                       std::vector<llvm::Metadata*> &elems
++#else
++                       std::vector<llvm::Value*> &elems
++#endif
++                         );
+     llvm::DIFile CreateFile(Loc& loc);
+     llvm::DIType CreateBasicType(Type *type);
+     llvm::DIType CreateEnumType(Type *type);
+     llvm::DIType CreatePointerType(Type *type);
+     llvm::DIType CreateVectorType(Type *type);
+-    llvm::DIType CreateMemberType(unsigned linnum, Type *type, llvm::DIFile file, const char* c_name, unsigned offset);
++    llvm::DIType CreateMemberType(unsigned linnum, Type *type, llvm::DIFile file, const char* c_name, unsigned offset, PROT);
+     llvm::DIType CreateCompositeType(Type *type);
+     llvm::DIType CreateArrayType(Type *type);
+     llvm::DIType CreateSArrayType(Type *type);
+     llvm::DIType CreateAArrayType(Type *type);
+     DIFunctionType CreateFunctionType(Type *type);
+     DIFunctionType CreateDelegateType(Type *type);
+-    llvm::DIType CreateTypeDescription(Type* type, const char* c_name, bool derefclass = false);
++    llvm::DIType CreateTypeDescription(Type* type, bool derefclass = false);
+ 
+ public:
+     template<typename T>
+diff --git a/gen/irstate.h b/gen/irstate.h
+index babb52b..f75f605 100644
+--- a/gen/irstate.h
++++ b/gen/irstate.h
+@@ -200,8 +200,12 @@ struct IRState
+ 
+ #if LDC_LLVM_VER >= 303
+     /// Vector of options passed to the linker as metadata in object file.
++#if LDC_LLVM_VER >= 306
++    llvm::SmallVector<llvm::Metadata *, 5> LinkerMetadataArgs;
++#else
+     llvm::SmallVector<llvm::Value *, 5> LinkerMetadataArgs;
+ #endif
++#endif
+ };
+ 
+ template <typename T>
+diff --git a/gen/module.cpp b/gen/module.cpp
+index e29786f..66fc48d 100644
+--- a/gen/module.cpp
++++ b/gen/module.cpp
+@@ -190,8 +190,8 @@ static llvm::Function* build_module_function(const std::string &name, const std:
+             return getIrFunc(funcs.front())->func;
+     }
+ 
+-    std::vector<LLType*> argsTy;
+-    LLFunctionType* fnTy = LLFunctionType::get(LLType::getVoidTy(gIR->context()),argsTy,false);
++    // build ctor type
++    LLFunctionType* fnTy = LLFunctionType::get(LLType::getVoidTy(gIR->context()), std::vector<LLType*>(), false);
+ 
+     std::string const symbolName = gABI->mangleForLLVM(name, LINKd);
+     assert(gIR->module->getFunction(symbolName) == NULL);
+@@ -203,7 +203,7 @@ static llvm::Function* build_module_function(const std::string &name, const std:
+     IRBuilder<> builder(bb);
+ 
+     // debug info
+-    gIR->DBuilder.EmitSubProgramInternal(name.c_str(), symbolName.c_str());
++    gIR->DBuilder.EmitModuleCTor(fn, name.c_str());
+ 
+     // Call ctor's
+     typedef std::list<FuncDeclaration*>::const_iterator FuncIterator;
+@@ -319,7 +319,7 @@ static LLFunction* build_module_reference_and_ctor(LLConstant* moduleinfo)
+     IRBuilder<> builder(bb);
+ 
+     // debug info
+-    gIR->DBuilder.EmitSubProgramInternal(fname.c_str(), fname.c_str());
++    gIR->DBuilder.EmitModuleCTor(ctor, fname.c_str());
+ 
+     // get current beginning
+     LLValue* curbeg = builder.CreateLoad(mref, "current");
+@@ -569,9 +569,6 @@ static void codegenModule(Module* m)
+ 
+     if (global.errors) return;
+ 
+-    // finalize debug info
+-    gIR->DBuilder.EmitModuleEnd();
+-
+     // Skip emission of all the additional module metadata if requested by the user.
+     if (!m->noModuleInfo)
+     {
+@@ -591,13 +588,21 @@ static void codegenModule(Module* m)
+         llvm::NamedMDNode *IdentMetadata = gIR->module->getOrInsertNamedMetadata("llvm.ident");
+         std::string Version("ldc version ");
+         Version.append(global.ldc_version);
+-        llvm::Value *IdentNode[] = {
++#if LDC_LLVM_VER >= 306
++        llvm::Metadata *IdentNode[] =
++#else
++        llvm::Value *IdentNode[] =
++#endif
++        {
+             llvm::MDString::get(gIR->context(), Version)
+         };
+         IdentMetadata->addOperand(llvm::MDNode::get(gIR->context(), IdentNode));
+     #endif
+     }
+ 
++    // finalize debug info
++    gIR->DBuilder.EmitModuleEnd();
++
+     // verify the llvm
+     verifyModule(*gIR->module);
+ }
+@@ -648,7 +653,11 @@ llvm::Module* Module::genLLVMModule(llvm::LLVMContext& context)
+ 
+     // set final data layout
+     ir.module->setDataLayout(gDataLayout->getStringRepresentation());
++#if LDC_LLVM_VER >= 307
++    IF_LOG Logger::cout() << "Final data layout: " << ir.module->getDataLayout().getStringRepresentation() << '\n';
++#else
+     IF_LOG Logger::cout() << "Final data layout: " << ir.module->getDataLayout() << '\n';
++#endif
+ 
+     // handle invalid 'objectø module
+     if (!ClassDeclaration::object) {
+diff --git a/gen/passes/GarbageCollect2Stack.cpp b/gen/passes/GarbageCollect2Stack.cpp
+index 64f0f4d..27eafdf 100644
+--- a/gen/passes/GarbageCollect2Stack.cpp
++++ b/gen/passes/GarbageCollect2Stack.cpp
+@@ -294,11 +294,19 @@ namespace {
+ 
+             // Inserting destructor calls is not implemented yet, so classes
+             // with destructors are ignored for now.
++#if LDC_LLVM_VER >= 306
++            auto hasDestructor = mdconst::dyn_extract<Constant>(node->getOperand(CD_Finalize));
++#else
+             Constant* hasDestructor = dyn_cast<Constant>(node->getOperand(CD_Finalize));
++#endif
+             // We can't stack-allocate if the class has a custom deallocator
+             // (Custom allocators don't get turned into this runtime call, so
+             // those can be ignored)
++#if LDC_LLVM_VER >= 306
++            auto hasCustomDelete = mdconst::dyn_extract<Constant>(node->getOperand(CD_CustomDelete));
++#else
+             Constant* hasCustomDelete = dyn_cast<Constant>(node->getOperand(CD_CustomDelete));
++#endif
+             if (hasDestructor == NULL || hasCustomDelete == NULL)
+                 return false;
+ 
+@@ -306,7 +314,11 @@ namespace {
+                     != ConstantInt::getFalse(A.M.getContext()))
+                 return false;
+ 
+-            Ty =node->getOperand(CD_BodyType)->getType();
++#if LDC_LLVM_VER >= 306
++            Ty = mdconst::dyn_extract<Constant>(node->getOperand(CD_BodyType))->getType();
++#else
++            Ty = node->getOperand(CD_BodyType)->getType();
++#endif
+             return A.DL.getTypeAllocSize(Ty) < SizeLimit;
+         }
+ 
+@@ -579,11 +591,19 @@ Type* Analysis::getTypeFor(Value* typeinfo) const {
+     if (node->getNumOperands() != TD_NumFields)
+         return NULL;
+ 
++#if LDC_LLVM_VER >= 306
++    Value* ti = llvm::MetadataAsValue::get(node->getContext(), node->getOperand(TD_TypeInfo));
++#else
+     Value* ti = node->getOperand(TD_TypeInfo);
++#endif
+     if (!ti || ti->stripPointerCasts() != ti_global)
+         return NULL;
+ 
++#if LDC_LLVM_VER >= 306
++    return llvm::MetadataAsValue::get(node->getContext(), node->getOperand(TD_Type))->getType();
++#else
+     return node->getOperand(TD_Type)->getType();
++#endif
+ }
+ 
+ /// Returns whether Def is used by any instruction that is reachable from Alloc
+diff --git a/gen/typinf.cpp b/gen/typinf.cpp
+index 87b45d1..77187d1 100644
+--- a/gen/typinf.cpp
++++ b/gen/typinf.cpp
+@@ -306,9 +306,15 @@ static void emitTypeMetadata(TypeInfoDeclaration *tid)
+ 
+         if (!meta) {
+             // Construct the fields
++#if LDC_LLVM_VER >= 306
++            llvm::Metadata* mdVals[TD_NumFields];
++            mdVals[TD_TypeInfo] = llvm::ValueAsMetadata::get(getIrGlobal(tid)->value);
++            mdVals[TD_Type] = llvm::ConstantAsMetadata::get(llvm::UndefValue::get(DtoType(tid->tinfo)));
++#else
+             MDNodeField* mdVals[TD_NumFields];
+             mdVals[TD_TypeInfo] = llvm::cast<MDNodeField>(getIrGlobal(tid)->value);
+             mdVals[TD_Type] = llvm::UndefValue::get(DtoType(tid->tinfo));
++#endif
+ 
+             // Construct the metadata and insert it into the module.
+             llvm::NamedMDNode* node = gIR->module->getOrInsertNamedMetadata(metaname);
+@@ -607,13 +613,11 @@ public:
+         unsigned hasptrs = tc->hasPointers() ? 1 : 0;
+         b.push_uint(hasptrs);
+ 
+-        ClassDeclaration* tscd = Type::typeinfostruct;
+-
+         // On x86_64, class TypeInfo_Struct contains 2 additional fields
+         // (m_arg1/m_arg2) which are used for the X86_64 System V ABI varargs
+         // implementation. They are not present on any other cpu/os.
+-        assert((global.params.targetTriple.getArch() != llvm::Triple::x86_64 && tscd->fields.dim == 11) ||
+-               (global.params.targetTriple.getArch() == llvm::Triple::x86_64 && tscd->fields.dim == 13));
++        assert((global.params.targetTriple.getArch() != llvm::Triple::x86_64 && Type::typeinfostruct->fields.dim == 11) ||
++               (global.params.targetTriple.getArch() == llvm::Triple::x86_64 && Type::typeinfostruct->fields.dim == 13));
+ 
+         //void function(void*)                    xdtor;
+         b.push_funcptr(sd->dtor);
+diff --git a/ir/irclass.cpp b/ir/irclass.cpp
+index bcc2e36..ae66359 100644
+--- a/ir/irclass.cpp
++++ b/ir/irclass.cpp
+@@ -97,10 +97,17 @@ LLGlobalVariable * IrAggr::getClassInfoSymbol()
+         bool hasDestructor = (classdecl->dtor != NULL);
+         bool hasCustomDelete = (classdecl->aggDelete != NULL);
+         // Construct the fields
++#if LDC_LLVM_VER >= 306
++        llvm::Metadata* mdVals[CD_NumFields];
++        mdVals[CD_BodyType] = llvm::ConstantAsMetadata::get(llvm::UndefValue::get(bodyType));
++        mdVals[CD_Finalize] = llvm::ConstantAsMetadata::get(LLConstantInt::get(LLType::getInt1Ty(gIR->context()), hasDestructor));
++        mdVals[CD_CustomDelete] = llvm::ConstantAsMetadata::get(LLConstantInt::get(LLType::getInt1Ty(gIR->context()), hasCustomDelete));
++#else
+         MDNodeField* mdVals[CD_NumFields];
+         mdVals[CD_BodyType] = llvm::UndefValue::get(bodyType);
+         mdVals[CD_Finalize] = LLConstantInt::get(LLType::getInt1Ty(gIR->context()), hasDestructor);
+         mdVals[CD_CustomDelete] = LLConstantInt::get(LLType::getInt1Ty(gIR->context()), hasCustomDelete);
++#endif
+         // Construct the metadata and insert it into the module.
+         llvm::SmallString<64> name;
+         llvm::NamedMDNode* node = gIR->module->getOrInsertNamedMetadata(
