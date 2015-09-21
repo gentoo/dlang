@@ -17,11 +17,12 @@ LICENSE="BSD"
 SLOT="$(get_version_component_range 1-2)/1"
 IUSE=""
 
-RDEPEND="<sys-devel/llvm-3.6
-	>=sys-devel/llvm-3.1-r2
-	>=dev-libs/libconfig-1.4.7
-	>=app-admin/eselect-dlang-20140709"
+RDEPEND="<dev-libs/libconfig-1.5
+         >=dev-libs/libconfig-1.4.7
+	 >=app-admin/eselect-dlang-20140709"
 DEPEND=">=dev-util/cmake-2.8
+	<sys-devel/llvm-3.6
+	>=sys-devel/llvm-3.1-r2
 	${RDEPEND}"
 
 src_prepare() {
