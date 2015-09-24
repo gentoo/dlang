@@ -3,6 +3,7 @@ dmd-2_064 - Build for DMD 2.064
 dmd-2_065 - Build for DMD 2.065
 dmd-2_066 - Build for DMD 2.066
 dmd-2_067 - Build for DMD 2.067
+dmd-2_068 - Build for DMD 2.068
 gdc-4_8_1 - Build for GCC 4.8.1
 gdc-4_8_2 - Build for GCC 4.8.2
 gdc-4_8_3 - Build for GCC 4.8.3
@@ -11,3 +12,4 @@ ldc2-0_12 - Build for ldc2 0.12
 ldc2-0_13 - Build for ldc2 0.13
 ldc2-0_14 - Build for ldc2 0.14
 ldc2-0_15 - Build for ldc2 0.15
+ldc2-0_16 - Build for ldc2 0.16
