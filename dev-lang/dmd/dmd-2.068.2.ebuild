@@ -155,9 +155,9 @@ EOF
 	install_library() {
 		emake -C phobos -f posix.mak LIB_DIR="$(get_libdir)" MODEL=${MODEL} install
 		dolib.a install/linux/lib${MODEL}/libphobos2.a
-		dolib.so install/linux/lib${MODEL}/libphobos2.so.0.68.1
+		dolib.so install/linux/lib${MODEL}/libphobos2.so.0.68.2
 		dolib.so install/linux/lib${MODEL}/libphobos2.so
-		dosym libphobos2.so.0.68.1 ${PREFIX}/$(get_libdir)/libphobos2.so.0.68
+		dosym libphobos2.so.0.68.2 ${PREFIX}/$(get_libdir)/libphobos2.so.0.68
 	}
 	dmd_foreach_abi install_library
 	insinto ${PREFIX}/import
