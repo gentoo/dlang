@@ -1,6 +1,6 @@
 # Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: $
+# $Id$
 EAPI=5
 
 inherit cmake-utils versionator
@@ -18,8 +18,8 @@ SLOT="$(get_version_component_range 1-2)/1"
 IUSE=""
 
 RDEPEND="<dev-libs/libconfig-1.5
-         >=dev-libs/libconfig-1.4.7
-	 >=app-admin/eselect-dlang-20140709"
+	>=dev-libs/libconfig-1.4.7
+	>=app-admin/eselect-dlang-20140709"
 DEPEND=">=dev-util/cmake-2.8
 	<sys-devel/llvm-3.8
 	>=sys-devel/llvm-3.1-r2
