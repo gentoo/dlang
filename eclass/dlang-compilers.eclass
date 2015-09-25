@@ -25,7 +25,7 @@ dlang-compilers_declare_versions() {
 		[3]="2.065 x86 amd64"
 		[4]="2.066 x86 amd64"
 		[5]="2.067 x86 amd64"
-		[6]="2.068"
+		[6]="2.068 ~x86 ~amd64"
 	)
 	__dlang_dmd_frontend_versionmap=(
 		[1]="2.063"
@@ -38,10 +38,10 @@ dlang-compilers_declare_versions() {
 
 	# GDC
 	__dlang_gdc_frontend_archmap=(
-		[1]="2.063"
-		[2]="2.064"
-		[3]="2.065 x86 amd64"
-		[4]="2.066 x86 amd64"
+		[1]="2.063 ~x86 ~amd64 ~arm"
+		[2]="2.064 ~x86 ~amd64 ~arm"
+		[3]="2.065 x86 amd64 arm"
+		[4]="2.066 x86 amd64 arm"
 	)
 	__dlang_gdc_frontend_versionmap=(
 		[1]="4.8.1"
@@ -56,7 +56,7 @@ dlang-compilers_declare_versions() {
 		[2]="2.064 x86 amd64"
 		[3]="2.065 x86 amd64"
 		[4]="2.066 x86 amd64"
-		[5]="2.067"
+		[5]="2.067 ~x86 ~amd64"
 	)
 	__dlang_ldc2_frontend_versionmap=(
 		[1]="0.12"
