@@ -36,6 +36,9 @@ dlang-compilers_declare_versions
 # DLANG_VENDOR: Either DigitalMars, GNU or LDC.
 # DC: D compiler command. E.g. /opt/dmd-2.067/bin/dmd, /opt/ldc2-0.12.0/bin/ldc2
 #   or /usr/x86_64-pc-linux-gnu/gcc-bin/4.8.1/x86_64-pc-linux-gnu-gdc
+# DMD: DMD compiler command. E.g. /opt/dmd-2.069/bin/dmd,
+#   /opt/ldc2-0.16/bin/ldmd2 or
+#   /usr/x86_64-pc-linux-gnu/gcc-bin/4.8.4/x86_64-pc-linux-gnu-gdmd
 # DC_VERSION: Release version of the compiler. This is the version excluding any
 #   Patch releases. So dmd 2.064.2 would still be 2.064. This version is used
 #   to separate potentially incompatible ABIs and to create the library path.
@@ -257,7 +260,10 @@ __dlang_compiler_masked_archs_for_version_range() {
 	for package_keyword in $KEYWORDS; do
 		nomatch=1
 		for compiler_keyword in $compiler_keywords; do
-			if [[ "$package_keyword" == "$compiler_keyword" ]]; then
+			if [[ "$package_keyword" == "-*" ]]; then
+				nomatch=0
+				break
+			elif [[ "$package_keyword" == "$compiler_keyword" ]]; then
 				nomatch=0
 				break
 			elif [[ "$package_keyword" == "~$compiler_keyword" ]]; then
@@ -476,8 +482,8 @@ __dlang_use_build_vars() {
 		export DLANG_SO_FLAGS="-shared -defaultlib=libphobos2.so -fPIC"
 		export DLANG_OUTPUT_FLAG="-of"
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
-		export DC="/usr/${__DLANG_CHOST}/gcc-bin/${DC_VERSION}/gdc"
-		export DMD="/usr/${__DLANG_CHOST}/gcc-bin/${DC_VERSION}/gdmd"
+		export DC="/usr/${__DLANG_CHOST}/gcc-bin/${DC_VERSION}/${__DLANG_CHOST}-gdc"
+		export DMD="/usr/${__DLANG_CHOST}/gcc-bin/${DC_VERSION}/${__DLANG_CHOST}-gdmd"
 		if [[ "${DLANG_PACKAGE_TYPE}" == "multi" ]] && multilib_is_native_abi; then
 			export LIBDIR_${ABI}="lib/gcc/${__DLANG_CHOST}/${DC_VERSION}"
 		else
