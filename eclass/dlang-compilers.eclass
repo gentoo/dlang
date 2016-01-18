@@ -25,8 +25,8 @@ dlang-compilers_declare_versions() {
 		[3]="2.065 x86 amd64"
 		[4]="2.066 x86 amd64"
 		[5]="2.067 x86 amd64"
-		[6]="2.068 ~x86 ~amd64"
-		[7]="2.069 ~x86 ~amd64"
+		[6]="2.068 x86 amd64"
+		[7]="2.069 x86 amd64"
 	)
 	__dlang_dmd_frontend_versionmap=(
 		[1]="2.063"
