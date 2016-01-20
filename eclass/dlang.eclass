@@ -241,107 +241,96 @@ dlang_system_imports() {
 
 ### Non-public helper functions ###
 
+declare -a __dlang_compiler_requse
 declare -a __dlang_compiler_iuse
 declare -a __dlang_depends
 
 __dlang_compiler_masked_archs_for_version_range() {
+	local iuse=$1
+	local depend=$2
+	local dlang_version=${3%% *}
+	local compiler_keywords=${3:${#dlang_version}}
+	local compiler_keyword package_keyword nomatch anyworks usable arch have_one
+	local -a masked_archs usemask
+
 	# Check the version range
-	local dlang_version=${1%% *}
-	local compiler_keywords=${1:${#dlang_version}}
-	local compiler_keyword package_keyword nomatch anyworks masked_archs
-	if [[ -n "$2" ]]; then
-		[[ $((10#${dlang_version#*.})) -lt $((10#${2#*.})) ]] && return 1
+	if [[ -n "$4" ]]; then
+		[[ $((10#${dlang_version#*.})) -lt $((10#${4#*.})) ]] && return 1
 	fi
-	if [[ -n "$3" ]]; then
-		[[ $((10#${dlang_version#*.})) -gt $((10#${3#*.})) ]] && return 1
+	if [[ -n "$5" ]]; then
+		[[ $((10#${dlang_version#*.})) -gt $((10#${5#*.})) ]] && return 1
 	fi
-	# Check the stability requirements (package archs not prefixed with ~)
-	anyworks=0
+
+	# Check the stability requirements
+	# (This currently doesn't deal with 'missing keyword' as opposed to '-*'.)
+	have_one=0
 	for package_keyword in $KEYWORDS; do
-		nomatch=1
-		for compiler_keyword in $compiler_keywords; do
-			if [[ "$package_keyword" == "-*" ]]; then
-				nomatch=0
-				break
-			elif [[ "$package_keyword" == "$compiler_keyword" ]]; then
-				nomatch=0
-				break
-			elif [[ "$package_keyword" == "~$compiler_keyword" ]]; then
-				nomatch=0
-				break
+		if [ "${package_keyword}" != "-*" ]; then
+			usable=0
+			for compiler_keyword in $compiler_keywords; do
+				if [ "$package_keyword" == "$compiler_keyword" -o "$package_keyword" == "~$compiler_keyword" ]; then
+					usable=1
+					break
+				fi
+			done
+			if [ $usable -eq 0 ]; then
+				if [ "${package_keyword:0:1}" == "~" ]; then
+					masked_archs+=( ${package_keyword:1} )
+				else
+					masked_archs+=( ${package_keyword} )
+				fi
+			else
+				have_one=1
 			fi
-		done
-		if [[ $nomatch -eq 0 ]]; then
-			anyworks=1
-		elif [[ "${package_keyword:0:1}" == "~" ]]; then
-			masked_archs+="${package_keyword:1}"
-		else
-			masked_archs+="${package_keyword}"
 		fi
 	done
-	[[ anyworks -eq 1 ]] || return 1
-	echo -n "$masked_archs"
+	[ $have_one -eq 0 ] && return 1
+
+	__dlang_compiler_iuse+=( $iuse )
+	if [ "${#masked_archs[@]}" -ne 0 ]; then
+		for arch in ${masked_archs[@]}; do
+			usemask+=( !${arch} )
+			depend="!${arch}? ( ${depend} )"
+		done
+		iuse="${iuse}? ( ${usemask[@]} )"
+	fi
+	__dlang_compiler_requse+=( $iuse )
+	__dlang_depends+=( "$depend" )
 }
 
 __dlang_filter_compilers() {
-	local indices dc_version mapping iuse masked_archs masked_arch depend
+	local dc_version mapping iuse depend
 
-	# filter for DMD
+	# filter for DMD (hardcoding support for x86 and amd64 only)
 	for index in "${!__dlang_dmd_frontend_archmap[@]}"; do
 		dc_version="${__dlang_dmd_frontend_versionmap[${index}]}"
 		mapping="${__dlang_dmd_frontend_archmap[${index}]}"
-		masked_archs=`__dlang_compiler_masked_archs_for_version_range "$mapping" "$1" "$2" "$KEYWORDS"`
-		if [[ $? -eq 0 ]]; then
-			iuse=dmd-$(replace_all_version_separators _ $dc_version)
-			if [[ "${DLANG_PACKAGE_TYPE}" == "single" ]]; then
-				depend="$iuse? ( dev-lang/dmd:$dc_version= )"
-			else
-				depend="$iuse? ( dev-lang/dmd:$dc_version=[${MULTILIB_USEDEP}] )"
-			fi
-			if [[ -n "$masked_archs" ]]; then
-				for masked_arch in "$masked_archs"; do
-					depend="!$masked_arch? ( $depend )"
-				done
-			fi
-			__dlang_compiler_iuse+=("$iuse")
-			__dlang_depends+=("$depend")
+		iuse=dmd-$(replace_all_version_separators _ $dc_version)
+		if [ "${DLANG_PACKAGE_TYPE}" == "single" ]; then
+			depend=""
+		else
+			depend="[${MULTILIB_USEDEP}]"
 		fi
+		depend="$iuse? ( dev-lang/dmd:$dc_version=$depend )"
+		__dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
 	done
 
 	# GDC (doesn't support sub-slots, to stay compatible with upstream GCC)
 	for index in "${!__dlang_gdc_frontend_archmap[@]}"; do
 		dc_version="${__dlang_gdc_frontend_versionmap[${index}]}"
 		mapping="${__dlang_gdc_frontend_archmap[${index}]}"
-		masked_archs=`__dlang_compiler_masked_archs_for_version_range "$mapping" "$1" "$2" "$KEYWORDS"`
-		if [[ $? -eq 0 ]]; then
-			iuse=gdc-$(replace_all_version_separators _ $dc_version)
-			depend=("$iuse? ( =sys-devel/gcc-${dc_version}*[d] )")
-			if [[ -n "$masked_archs" ]]; then
-				for masked_arch in "$masked_archs"; do
-					depend="!$masked_arch? ( $depend )"
-				done
-			fi
-			__dlang_compiler_iuse+=("$iuse")
-			__dlang_depends+=("$depend")
-		fi
+		iuse=gdc-$(replace_all_version_separators _ $dc_version)
+		depend=("$iuse? ( =sys-devel/gcc-${dc_version}*[d] )")
+		__dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
 	done
 
 	# filter for LDC2
 	for index in "${!__dlang_ldc2_frontend_archmap[@]}"; do
 		dc_version="${__dlang_ldc2_frontend_versionmap[${index}]}";
 		mapping="${__dlang_ldc2_frontend_archmap[${index}]}"
-		masked_archs=`__dlang_compiler_masked_archs_for_version_range "$mapping" "$1" "$2" "$KEYWORDS"`
-		if [[ $? -eq 0 ]]; then
-			iuse=ldc2-$(replace_all_version_separators _ $dc_version)
-			depend=("$iuse? ( dev-lang/ldc2:${dc_version}= )")
-			if [[ -n "$masked_archs" ]]; then
-				for masked_arch in "$masked_archs"; do
-					depend="!$masked_arch? ( $depend )"
-				done
-			fi
-			__dlang_compiler_iuse+=("$iuse")
-			__dlang_depends+=("$depend")
-		fi
+		iuse=ldc2-$(replace_all_version_separators _ $dc_version)
+		depend=("$iuse? ( dev-lang/ldc2:${dc_version}= )")
+		__dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
 	done
 }
 
@@ -371,13 +360,14 @@ __dlang_filter_versions() {
 	else
 		__dlang_filter_compilers "" ""
 	fi
-	[[ ${#__dlang_compiler_iuse[@]} -ne 0 ]] || die "No D compilers found that satisfy this package's version range: $DLANG_VERSION_RANGE"
+
+	[ ${#__dlang_compiler_requse[@]} -eq 0 ] && die "No D compilers found that satisfy this package's version range: $DLANG_VERSION_RANGE"
 
 	IUSE="${__dlang_compiler_iuse[@]}"
-	if [[ "${DLANG_PACKAGE_TYPE}" == "single" ]]; then
-		REQUIRED_USE="^^ ( ${__dlang_compiler_iuse[@]} )"
+	if [ "${DLANG_PACKAGE_TYPE}" == "single" ]; then
+		REQUIRED_USE="^^ ( ${__dlang_compiler_requse[@]} )"
 	else
-		REQUIRED_USE="|| ( ${__dlang_compiler_iuse[@]} )"
+		REQUIRED_USE="|| ( ${__dlang_compiler_requse[@]} )"
 	fi
 	DEPEND="${__dlang_depends[@]}"
 	RDEPEND="${__dlang_depends[@]}"
