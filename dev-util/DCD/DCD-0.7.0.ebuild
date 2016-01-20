@@ -1,10 +1,10 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
 EAPI=5
 
-DESCRIPTION="The Dlang Completion Daemon is an auto-complete program for the D programming language"
+DESCRIPTION="Auto-complete program for the D programming language"
 HOMEPAGE="https://github.com/Hackerpilot/DCD"
 LICENSE="GPL-3"
 
@@ -42,7 +42,7 @@ d_src_compile() {
 	dlang_compile_bin bin/dcd-server\
 		src/common/{constants,messages}.d\
 		src/server/{autocomplete,server}.d\
-		../containers-${CONTAINERS}/src/containers/{unrolledlist,hashset,ttree}.d\
+		../containers-${CONTAINERS}/src/containers/{hashset,openhashset,ttree,unrolledlist}.d\
 		../containers-${CONTAINERS}/src/containers/internal/{element_type,hash,node,storage_type}.d\
 		../dsymbol-${DSYMBOL}/src/dsymbol/{cache_entry,deferred,import_,modulecache,scope_,semantic,string_interning,symbol,type_lookup}.d\
 		../dsymbol-${DSYMBOL}/src/dsymbol/builtin/{names,symbols}.d\
