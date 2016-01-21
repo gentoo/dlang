@@ -238,6 +238,20 @@ dlang_system_imports() {
 	fi
 }
 
+# @FUNCTION: dlang_phobos_level
+# @DESCRIPTION:
+# Succeeds if we are compiling against a version of Phobos that is at least as
+# high as the argument.
+dlang_phobos_level() {
+	if [ -z "$DLANG_VERSION" ]; then
+		[ "$DLANG_PACKAGE_TYPE" == "single" ] || die "'dlang_phobos_level' needs 'DLANG_PACKAGE_TYPE == single' when called outside of compiles."
+		local config=`__dlang_build_configurations`
+		local dc="$(echo ${config} | cut -d- -f2)"
+		local dc_version="$(echo ${config} | cut -d- -f3)"
+		local DLANG_VERSION="$(__dlang_compiler_to_dlang_version ${dc} ${dc_version})"
+	fi
+	version_is_at_least "$1" "$DLANG_VERSION"
+}
 
 ### Non-public helper functions ###
 
@@ -471,6 +485,7 @@ __dlang_use_build_vars() {
 		export DLANG_LINKER_FLAG="-L"
 		export DLANG_SO_FLAGS="-shared -defaultlib=libphobos2.so -fPIC"
 		export DLANG_OUTPUT_FLAG="-of"
+		export DLANG_VERSION_FLAG="-version"
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
 		export DC="/usr/${__DLANG_CHOST}/gcc-bin/${DC_VERSION}/${__DLANG_CHOST}-gdc"
 		export DMD="/usr/${__DLANG_CHOST}/gcc-bin/${DC_VERSION}/${__DLANG_CHOST}-gdmd"
@@ -483,16 +498,18 @@ __dlang_use_build_vars() {
 		export DLANG_LINKER_FLAG="-Xlinker "
 		export DLANG_SO_FLAGS="-shared -fPIC"
 		export DLANG_OUTPUT_FLAG="-o "
+		export DLANG_VERSION_FLAG="-fversion"
 	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
 		export LIBDIR_${ABI}="../opt/${DC}-${DC_VERSION}/lib${MODEL}"
 		export DMD="/opt/${DC}-${DC_VERSION}/bin/ldmd2"
 		export DC="/opt/${DC}-${DC_VERSION}/bin/ldc2"
 		# To allow separate compilation and avoid object file name collisions,
-		# we append -oq (fully qualified module names for object file names).
-		export DCFLAGS="${LDCFLAGS} -oq"
+		# we append -op (do not strip paths from source file).
+		export DCFLAGS="${LDCFLAGS} -op"
 		export DLANG_LINKER_FLAG="-L="
 		export DLANG_SO_FLAGS="-shared -relocation-model=pic"
 		export DLANG_OUTPUT_FLAG="-of="
+		export DLANG_VERSION_FLAG="-d-version"
 	else
 		die "Could not detect D compiler vendor!"
 	fi
