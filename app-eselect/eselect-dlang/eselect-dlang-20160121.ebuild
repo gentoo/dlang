@@ -12,7 +12,7 @@ SLOT="0"
 KEYWORDS="amd64 x86 ~ppc ~ppc64"
 IUSE=""
 
-RDEPEND="app-admin/eselect"
+RDEPEND="app-admin/eselect !app-admin/eselect-dlang"
 DEPEND=""
 
 S="${FILESDIR}"

@@ -36,7 +36,7 @@ fi
 
 COMMON_DEPEND="
 	net-misc/curl[${MULTILIB_USEDEP}]
-	>=app-admin/eselect-dlang-20140709
+	>=app-eselect/eselect-dlang-20140709
 	"
 
 DEPEND="
