@@ -15,7 +15,7 @@ IUSE="debug"
 GITHUB_URI="https://codeload.github.com/D-Programming-Language"
 SRC_URI="${GITHUB_URI}/${PN}/tar.gz/v${PV} -> ${PN}-${PV}.tar.gz"
 
-DLANG_VERSION_RANGE="2.066-2.068"
+DLANG_VERSION_RANGE="2.066-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit eutils dlang
