@@ -24,6 +24,11 @@ DEPEND=">=dev-util/cmake-2.8
 	>=sys-devel/llvm-3.1-r2
 	${RDEPEND}"
 
+src_prepare() {
+	EPATCH_OPTS="-p1"
+	epatch "${FILESDIR}/ldc2-$(version_format_string '$1.$2.$3')-trailing_space.patch"
+}
+
 src_configure() {
 	local mycmakeargs=(
 		-DD_VERSION=2
