@@ -1,8 +1,8 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=2
+EAPI=4
 
 DESCRIPTION="Wrapper script for gdc that emulates the dmd command"
 HOMEPAGE="http://www.gdcproject.org/"
@@ -22,5 +22,5 @@ src_install() {
 	local binPath="/usr/${CHOST}/gcc-bin/${PV}"
 	exeinto "${binPath}"
 	newexe dmd-script "${CHOST}-gdmd"
-	dohard "${binPath}/${CHOST}-gdmd" "${binPath}/gdmd"
+	ln -f "${binPath}/${CHOST}-gdmd" "${binPath}/gdmd"
 }
