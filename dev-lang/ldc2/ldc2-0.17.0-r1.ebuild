@@ -17,8 +17,8 @@ LICENSE="BSD"
 SLOT="$(get_version_component_range 1-2)/1"
 IUSE=""
 
-RDEPEND=">=dev-libs/libconfig-1.4.7
-	>=app-eselect/eselect-dlang-20140709"
+RDEPEND="dev-libs/libconfig
+	app-eselect/eselect-dlang"
 DEPEND=">=dev-util/cmake-2.8
 	<sys-devel/llvm-3.9
 	>=sys-devel/llvm-3.5
