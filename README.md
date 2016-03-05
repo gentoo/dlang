@@ -1,7 +1,9 @@
 dlang - overlay for Gentoo Linux
 ================================
 
-This overlay aims to make parallel installation of D compilers easy and offer
+[![Build Status](https://travis-ci.org/gentoo/dlang.png?branch=master)](https://travis-ci.org/gentoo/dlang)
+
+This overlay aims to make parallel installation of D compilers easy and offers
 some of the most popular D libraries. Features it offers:
 * Installation of DMD, GDC and LDC in parallel
 * Customizable »CFLAGS« for each D compiler

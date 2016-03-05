@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 EAPI=5
@@ -17,7 +17,7 @@ LICENSE="BSD"
 SLOT="$(get_version_component_range 1-2)/1"
 IUSE=""
 
-RDEPEND=">=dev-libs/libconfig-1.4.7
+RDEPEND="dev-libs/libconfig
 	>=app-eselect/eselect-dlang-20140709"
 DEPEND=">=dev-util/cmake-2.8
 	<sys-devel/llvm-3.8

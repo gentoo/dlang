@@ -9,8 +9,8 @@
 if [[ ${___ECLASS_ONCE_DLANG} != "recur -_+^+_- spank" ]] ; then
 ___ECLASS_ONCE_DLANG="recur -_+^+_- spank"
 
-if has ${EAPI:-0} 0 1 2 3; then
-	die "EAPI must be >= 4 for dlang packages."
+if has ${EAPI:-0} 0 1 2 3 4; then
+	die "EAPI must be >= 5 for dlang packages."
 fi
 
 inherit flag-o-matic versionator dlang-compilers
