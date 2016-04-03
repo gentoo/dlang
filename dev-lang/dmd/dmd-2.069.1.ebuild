@@ -141,7 +141,7 @@ EOF
 
 	# DMD
 	einfo "Installing ${PN}..."
-	emake -C dmd/src -f posix.mak TARGET_CPU=X86 RELEASE=1 install
+	emake -C dmd/src -f posix.mak TARGET_CPU=X86 HOST_DMD="${DMD}" RELEASE=1 install
 	into ${PREFIX}
 	dobin install/linux/bin${MODEL}/dmd
 	insinto ${PREFIX}/bin
