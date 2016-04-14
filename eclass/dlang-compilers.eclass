@@ -42,16 +42,10 @@ dlang-compilers_declare_versions() {
 
 	# GDC
 	__dlang_gdc_frontend_archmap=(
-		[1]="2.063 ~x86 ~amd64 ~arm"
-		[2]="2.064 ~x86 ~amd64 ~arm"
-		[3]="2.065 x86 amd64 arm"
-		[4]="2.066 x86 amd64 arm"
+		[1]="2.066 x86 amd64 arm"
 	)
 	__dlang_gdc_frontend_versionmap=(
-		[1]="4.8.1"
-		[2]="4.8.2"
-		[3]="4.8.3"
-		[4]="4.8.4"
+		[1]="4.8.5"
 	)
 
 	# LDC

@@ -9,18 +9,18 @@ HOMEPAGE="http://www.gdcproject.org/"
 LICENSE="GPL-3+"
 
 SLOT="${PV}"
-KEYWORDS="amd64 arm ~ia64 ~mips ppc ppc64 x86 ~amd64-fbsd ~x86-fbsd"
+KEYWORDS="amd64 arm ia64 ppc ppc64 x86 ~amd64-fbsd"
 DEPEND="=sys-devel/gcc-${PV}*[d]"
 RDEPEND=""
 
 EGIT_REPO_URI="git://github.com/D-Programming-GDC/GDMD.git"
-EGIT_COMMIT="37ca1c1f96632decb3a9f766bd25a430ecf770c8"
+EGIT_COMMIT="89d9b01398a38d4a19376485d22ee311932a4525"
 
 inherit git-2
 
 src_install() {
-	local binPath="/usr/${CHOST}/gcc-bin/${PV}"
+	local binPath="usr/${CHOST}/gcc-bin/${PV}"
 	exeinto "${binPath}"
 	newexe dmd-script "${CHOST}-gdmd"
-	ln -f "${binPath}/${CHOST}-gdmd" "${binPath}/gdmd"
+	ln -f "${D}${binPath}/${CHOST}-gdmd" "${D}${binPath}/gdmd" || die "Could not create 'gdmd' hardlink"
 }

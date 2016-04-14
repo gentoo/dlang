@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -6,7 +6,7 @@ EAPI="4"
 
 EGIT_REPO_URI="git://github.com/D-Programming-GDC/GDC.git"
 EGIT_BRANCH="gdc-4.8"
-EGIT_COMMIT="v2.065_gcc4.8"
+EGIT_COMMIT="v2.066.1_gcc4.8"
 EGIT_SOURCEDIR="${WORKDIR}/dev"
 EGIT_NOUNPACK=1
 
@@ -15,11 +15,11 @@ inherit git-2
 IUSE="d"
 
 # Original GCC code starts here
-PATCH_VER="1.1"
+PATCH_VER="1.3"
 UCLIBC_VER="1.0"
 
 # Hardened gcc 4 stuff
-PIE_VER="0.5.9"
+PIE_VER="0.6.2"
 SPECS_VER="0.2.0"
 SPECS_GCC_VER="4.4.3"
 # arch/libc configurations known to be stable with {PIE,SSP}-by-default
@@ -33,7 +33,7 @@ SSP_UCLIBC_STABLE="x86 amd64 mips ppc ppc64 arm"
 
 inherit eutils toolchain
 
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 m68k ~mips ppc ppc64 s390 sh sparc x86 ~amd64-fbsd ~x86-fbsd"
+KEYWORDS="alpha amd64 arm arm64 hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86 ~amd64-fbsd ~x86-fbsd"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
