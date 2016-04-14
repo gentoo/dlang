@@ -1,11 +1,11 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
 EAPI=5
 
 DESCRIPTION="Reference compiler for the D programming language"
-HOMEPAGE="http://dlang.org/"
+HOMEPAGE="http://dlang.org"
 
 # License doesn't allow redistribution
 LICENSE="DMD"
@@ -13,10 +13,10 @@ RESTRICT="mirror"
 
 # DMD supports amd64/x86 exclusively
 MULTILIB_COMPAT=( abi_x86_{32,64} )
-KEYWORDS="-* amd64 x86"
+KEYWORDS="-* ~amd64 ~x86"
 IUSE="doc examples tools"
 
-DLANG_VERSION_RANGE="2.063-"
+DLANG_VERSION_RANGE="2.067-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit eutils dlang versionator multilib-build
@@ -31,7 +31,7 @@ BETA="$(echo $(get_version_component_range 4) | cut -c 5-)"
 if [[ -n "${BETA}" ]]; then
 	SRC_URI="http://downloads.dlang.org/pre-releases/${MAJOR}.x/${VERSION}/${PN}.${VERSION}-b${BETA}.linux.tar.xz"
 else
-	SRC_URI="mirror://aws/2015/${PN}.${PV}.zip"
+	SRC_URI="mirror://aws/2016/${PN}.${PV}.zip"
 fi
 
 COMMON_DEPEND="
@@ -63,10 +63,10 @@ src_prepare() {
 	done
 
 	# Fix the messy directory layout so the three make files can cooperate
-	mv src/druntime druntime
-	mv src/phobos phobos
-	mv src dmd
-	mv dmd/dmd dmd/src
+	mv src/druntime druntime || die
+	mv src/phobos phobos || die
+	mv src dmd || die
+	mv dmd/dmd dmd/src || die
 
 	# User patches
 	epatch_user
@@ -95,7 +95,7 @@ src_compile() {
 	# We cannot use multilib-minimal yet, as we have to be sure dmd for amd64
 	# always gets build first.
 	einfo "Building ${PN}..."
-	emake -C dmd/src -f posix.mak TARGET_CPU=X86 HOST_DC="${DMD}" RELEASE=1
+	emake -C dmd/src -f posix.mak TARGET_CPU=X86 HOST_DMD="${DMD}" RELEASE=1
 
 	compile_libraries() {
 		einfo 'Building druntime...'
@@ -112,7 +112,7 @@ src_test() {
 	test_hello_world() {
 		dmd/src/dmd -m${MODEL} -Iphobos -Idruntime/import -L-Lphobos/generated/linux/release/${MODEL} samples/d/hello.d || die "Failed to build hello.d (${MODEL}-bit)"
 		./hello ${MODEL}-bit || die "Failed to run test sample (${MODEL}-bit)"
-		rm hello.o hello
+		rm hello.o hello || die
 	}
 
 	dmd_foreach_abi test_hello_world
@@ -135,13 +135,13 @@ EOF
 	else
 		cat > dmd/ini/linux/bin${MODEL}/dmd.conf << EOF
 [Environment]
-DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -L-L/${PREFIX}/lib -L-rpath -L/${PREFIX}/lib
+DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -L-L/${PREFIX}/lib${MODEL} -L-rpath -L/${PREFIX}/lib${MODEL}
 EOF
 	fi
 
 	# DMD
 	einfo "Installing ${PN}..."
-	emake -C dmd/src -f posix.mak TARGET_CPU=X86 HOST_DC="${DMD}" RELEASE=1 install
+	emake -C dmd/src -f posix.mak TARGET_CPU=X86 HOST_DMD="${DMD}" RELEASE=1 install
 	into ${PREFIX}
 	dobin install/linux/bin${MODEL}/dmd
 	insinto ${PREFIX}/bin
