@@ -16,7 +16,11 @@ RDEPEND=""
 EGIT_REPO_URI="git://github.com/D-Programming-GDC/GDMD.git"
 EGIT_COMMIT="89d9b01398a38d4a19376485d22ee311932a4525"
 
-inherit git-2
+inherit git-2 eutils
+
+src_prepare() {
+	epatch "${FILESDIR}"/no-dmd-conf.patch
+}
 
 src_install() {
 	local binPath="usr/${CHOST}/gcc-bin/${PV}"
