@@ -233,6 +233,7 @@ dlang_system_imports() {
 		echo "/usr/lib/gcc/${CHOST_default}/${DC_VERSION}/include/d"
 	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
 		echo "/opt/ldc2-${DC_VERSION}/include/d"
+		echo "/opt/ldc2-${DC_VERSION}/include/d/ldc"
 	else
 		die "Could not detect D compiler vendor!"
 	fi

@@ -9,11 +9,13 @@ HOMEPAGE="https://github.com/Hackerpilot/DCD"
 LICENSE="GPL-3"
 
 SLOT="0"
-KEYWORDS="x86 amd64"
+KEYWORDS="~x86 ~amd64"
+IUSE="systemd"
+
 CONTAINERS="c9853bbca9f0840df32a46edebbb9b17c8216cd4"
 ALLOCATOR="e22d5a730db78e54e344e6b003b948a401ad7197"
-DSYMBOL="0605a90a84ac287f879530420c7046cded566b74"
-LIBDPARSE="4d876562b4862a98bf1b6b6bf4fd07af96506a54"
+DSYMBOL="f6aac6cab1ffebdc2a56321f0c5fed2c896f38c4"
+LIBDPARSE="516a053c9b16d05aee30d2606a88b7f815cd55df"
 MSGPACK="878fcb1852160d1c3d206df933f6becba18aa222"
 SRC_URI="
 	https://github.com/Hackerpilot/DCD/archive/v${PV}.tar.gz -> DCD-${PV}.tar.gz
@@ -23,6 +25,7 @@ SRC_URI="
 	https://github.com/Hackerpilot/libdparse/archive/${LIBDPARSE}.tar.gz -> libdparse-${LIBDPARSE}.tar.gz
 	https://github.com/msgpack/msgpack-d/archive/${MSGPACK}.tar.gz -> msgpack-d-${MSGPACK}.tar.gz
 	"
+S="${WORKDIR}/DCD-${PV}"
 
 DLANG_VERSION_RANGE="2.067-"
 DLANG_PACKAGE_TYPE="single"
@@ -61,9 +64,10 @@ d_src_compile() {
 			gdc
 		;;
 	LDC)
+		mkdir -p bin || die "Could not create 'bin' output directory."
 		emake \
 			LDC="$DC" \
-			LDC_CLIENT_FLAGS="$flags -of=bin/dcd-client" \
+			LDC_CLIENT_FLAGS="$flags -g -of=bin/dcd-client" \
 			LDC_SERVER_FLAGS="$flags" \
 			ldc
 		;;
@@ -78,14 +82,13 @@ d_src_compile() {
 d_src_install() {
 	dobin bin/dcd-server
 	dobin bin/dcd-client
-	systemd_dounit "${FILESDIR}"/dcd-server.service
+	use systemd && systemd_douserunit "${FILESDIR}"/dcd-server.service
 	insinto /etc
-	doins "${FILESDIR}"/dcd-server.conf
 	doins dcd.conf
 	dodoc README.md
 	doman man1/dcd-client.1 man1/dcd-server.1
 }
 
 pkg_postinst() {
-	systemd_is_booted && elog "A systemd service for 'dcd-server' has been installed."
+	use systemd && elog "A systemd user service for 'dcd-server' has been installed."
 }
