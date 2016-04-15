@@ -230,7 +230,7 @@ dlang_system_imports() {
 	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
 		echo "/opt/dmd-${DC_VERSION}/import"
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
-		echo "/usr/lib/gcc/${__DLANG_CHOST}/${DC_VERSION}/include/d"
+		echo "/usr/lib/gcc/${CHOST_default}/${DC_VERSION}/include/d"
 	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
 		echo "/opt/ldc2-${DC_VERSION}/include/d"
 	else
@@ -388,9 +388,6 @@ __dlang_filter_versions() {
 }
 __dlang_filter_versions
 
-# We will need the real CHOST to find GDC and its library path.
-__DLANG_CHOST="${CHOST}"
-
 __dlang_phase_wrapper() {
 	dlang_phase() {
 		if declare -f d_src_${1} >/dev/null ; then
@@ -441,24 +438,25 @@ __dlang_compiler_to_dlang_version() {
 }
 
 __dlang_build_configurations() {
-	local variants=() use_flag
+	local variants use_flag
+
 	for use_flag in ${USE}; do
 		case ${use_flag} in
 			dmd-* | gdc-* | ldc-* | ldc2-*)
 				if [[ "${DLANG_PACKAGE_TYPE}" == "single" ]]; then
-					variants+=("default-${use_flag//_/.}")
+					variants="default-${use_flag//_/.}"
 				else
 					for abi in $(multilib_get_enabled_abis); do
-						variants+=("${abi}-${use_flag//_/.}")
+						variants="${variants} ${abi}-${use_flag//_/.}"
 					done
 				fi
 				;;
 		esac
 	done
-	if [ ${#variants[@]} -eq 0 ]; then
+	if [[ -z ${variants} ]]; then
 		die "At least one compiler USE-flag must be selected. This should be checked by REQUIRED_USE in this package."
 	fi
-	echo "${variants[@]}"
+	echo ${variants}
 }
 
 __dlang_use_build_vars() {
@@ -492,12 +490,12 @@ __dlang_use_build_vars() {
 		export DLANG_OUTPUT_FLAG="-of"
 		export DLANG_VERSION_FLAG="-version"
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
-		export DC="/usr/${__DLANG_CHOST}/gcc-bin/${DC_VERSION}/${__DLANG_CHOST}-gdc"
-		export DMD="/usr/${__DLANG_CHOST}/gcc-bin/${DC_VERSION}/${__DLANG_CHOST}-gdmd"
+		export DC="/usr/${CHOST_default}/gcc-bin/${DC_VERSION}/${CHOST_default}-gdc"
+		export DMD="/usr/${CHOST_default}/gcc-bin/${DC_VERSION}/${CHOST_default}-gdmd"
 		if [[ "${DLANG_PACKAGE_TYPE}" == "multi" ]] && multilib_is_native_abi; then
-			export LIBDIR_${ABI}="lib/gcc/${__DLANG_CHOST}/${DC_VERSION}"
+			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/${DC_VERSION}"
 		else
-			export LIBDIR_${ABI}="lib/gcc/${__DLANG_CHOST}/${DC_VERSION}/${MODEL}"
+			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/${DC_VERSION}/${MODEL}"
 		fi
 		export DCFLAGS="${GDCFLAGS}"
 		export DLANG_LINKER_FLAG="-Xlinker "

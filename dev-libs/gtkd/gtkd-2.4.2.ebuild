@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -66,6 +66,10 @@ d_src_compile() {
 	}
 
 	foreach_used_component compile_libs
+}
+
+d_src_test() {
+	emake LINKERFLAG="${DLANG_LINKER_FLAG}" output="${DLANG_OUTPUT_FLAG}\$@" test
 }
 
 d_src_install() {
