@@ -9,14 +9,14 @@ HOMEPAGE="https://github.com/Hackerpilot/DCD"
 LICENSE="GPL-3"
 
 SLOT="0"
-KEYWORDS="~x86 ~amd64"
+KEYWORDS="x86 amd64"
 CONTAINERS="c9853bbca9f0840df32a46edebbb9b17c8216cd4"
 ALLOCATOR="e22d5a730db78e54e344e6b003b948a401ad7197"
 DSYMBOL="0605a90a84ac287f879530420c7046cded566b74"
 LIBDPARSE="4d876562b4862a98bf1b6b6bf4fd07af96506a54"
 MSGPACK="878fcb1852160d1c3d206df933f6becba18aa222"
 SRC_URI="
-	https://github.com/Hackerpilot/DCD/archive/v${PV}.tar.gz -> ${PN}-${PV}.tar.gz
+	https://github.com/Hackerpilot/DCD/archive/v${PV}.tar.gz -> DCD-${PV}.tar.gz
 	https://github.com/economicmodeling/containers/archive/${CONTAINERS}.tar.gz -> containers-${CONTAINERS}.tar.gz
 	https://github.com/Hackerpilot/experimental_allocator/archive/${ALLOCATOR}.tar.gz -> experimental_allocator-${ALLOCATOR}.tar.gz
 	https://github.com/Hackerpilot/dsymbol/archive/${DSYMBOL}.tar.gz -> dsymbol-${DSYMBOL}.tar.gz

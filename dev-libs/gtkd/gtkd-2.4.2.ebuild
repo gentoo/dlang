@@ -10,7 +10,7 @@ LICENSE="LGPL-3"
 
 SLOT="2"
 KEYWORDS="x86 amd64"
-SRC_URI="http://gtkd.org/Downloads/sources/${P}.zip"
+SRC_URI="http://gtkd.org/Downloads/sources/GtkD-${PV}.zip"
 
 DLANG_VERSION_RANGE="2.063-2.064 2.066-"
 DLANG_PACKAGE_TYPE="multi"
@@ -92,7 +92,7 @@ d_src_install_all() {
 	dodoc AUTHORS README
 
 	# Include files
-	insinto "${DLANG_IMPORT_DIR}/gtkd-${MAJOR}"
+	insinto "${DLANG_IMPORT_DIR}/${PN}-${MAJOR}"
 
 	install_headers() {
 		files="${SRC_DIR}/*"

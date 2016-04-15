@@ -1,0 +1,2 @@
+move dev-util/DCD dev-util/dcd
+move dev-libs/GtkD dev-libs/gtkd
