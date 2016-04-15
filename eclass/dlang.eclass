@@ -320,10 +320,10 @@ __dlang_filter_compilers() {
 		dc_version="${__dlang_dmd_frontend_versionmap[${index}]}"
 		mapping="${__dlang_dmd_frontend_archmap[${index}]}"
 		iuse=dmd-$(replace_all_version_separators _ $dc_version)
-		if [ "${DLANG_PACKAGE_TYPE}" == "single" ]; then
-			depend=""
-		else
+		if [ "${DLANG_PACKAGE_TYPE}" == "multi" ]; then
 			depend="[${MULTILIB_USEDEP}]"
+		else
+			depend=""
 		fi
 		depend="$iuse? ( dev-lang/dmd:$dc_version=$depend )"
 		__dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
@@ -480,7 +480,12 @@ __dlang_use_build_vars() {
 	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
 		export DC="/opt/${DC}-${DC_VERSION}/bin/dmd"
 		export DMD="${DC}"
-		export LIBDIR_${ABI}="../opt/dmd-${DC_VERSION}/lib${MODEL}"
+		# "lib" on pure x86, "lib{32,64}" on amd64 (and multilib)
+		if has_multilib_profile || [[ "${MODEL}" == "64" ]]; then
+			export LIBDIR_${ABI}="../opt/dmd-${DC_VERSION}/lib${MODEL}"
+		else
+			export LIBDIR_${ABI}="../opt/dmd-${DC_VERSION}/lib"
+		fi
 		export DCFLAGS="${DMDFLAGS}"
 		export DLANG_LINKER_FLAG="-L"
 		export DLANG_SO_FLAGS="-shared -defaultlib=libphobos2.so -fPIC"
