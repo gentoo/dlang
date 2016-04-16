@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -32,6 +32,10 @@ d_src_compile() {
 		"../libdparse-${LIBDPARSE}/src/std/d/ast.d" \
 		"../libdparse-${LIBDPARSE}/src/std/d/lexer.d" \
 		"../libdparse-${LIBDPARSE}/src/std/d/parser.d"
+}
+
+d_src_test() {
+	cd tests && ./test.sh
 }
 
 d_src_install() {
