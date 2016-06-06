@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 DESCRIPTION="Eselect module for management of multiple D versions"
 HOMEPAGE="https://github.com/gentoo-dlang"
