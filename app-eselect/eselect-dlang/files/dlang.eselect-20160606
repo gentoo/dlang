@@ -213,7 +213,7 @@ find_targets() {
 			ls /opt/dmd-?.???/bin/dmd 2> /dev/null | sed "s#^/opt/dmd-##;s#/.*##"
 			;;
 		ldc2)
-			ls /opt/ldc2-?.??/bin/ldc2 2> /dev/null | sed "s#^/opt/ldc2-##;s#/.*##"
+			ls /opt/ldc2-?.*/bin/ldc2 2> /dev/null | sed "s#^/opt/ldc2-##;s#/.*##"
 			;;
 		*)
 			die "Unknown compiler '$1'"
