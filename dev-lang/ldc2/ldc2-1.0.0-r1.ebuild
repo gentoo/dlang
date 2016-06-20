@@ -18,11 +18,11 @@ SLOT="$(get_version_component_range 1-2)/1"
 IUSE=""
 
 RDEPEND=">=dev-libs/libconfig-1.4.7
-         >=app-eselect/eselect-dlang-20140709"
+	>=app-eselect/eselect-dlang-20140709"
 DEPEND=">=dev-util/cmake-2.8
-        <sys-devel/llvm-3.9
-        >=sys-devel/llvm-3.5
-        ${RDEPEND}"
+	<sys-devel/llvm-3.9
+	>=sys-devel/llvm-3.5
+	${RDEPEND}"
 
 src_prepare() {
 	epatch "${FILESDIR}/${P}-linker-flags.patch"
