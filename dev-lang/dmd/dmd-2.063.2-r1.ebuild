@@ -4,7 +4,7 @@
 
 EAPI=5
 
-KEYWORDS="-* ~amd64 ~x86"
+KEYWORDS="-* amd64 x86"
 YEAR=2013
 ARCHIVE="zip"
 SONAME="libphobos2.so.0.2.0"

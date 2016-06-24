@@ -9,7 +9,7 @@ HOMEPAGE="https://github.com/Hackerpilot/DCD"
 LICENSE="GPL-3"
 
 SLOT="0"
-KEYWORDS="~x86 ~amd64"
+KEYWORDS="x86 amd64"
 IUSE="systemd"
 
 CONTAINERS="c9853bbca9f0840df32a46edebbb9b17c8216cd4"

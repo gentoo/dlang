@@ -27,8 +27,8 @@ dlang-compilers_declare_versions() {
 		[5]="2.067 x86 amd64"
 		[6]="2.068 x86 amd64"
 		[7]="2.069 x86 amd64"
-		[8]="2.070 ~x86 ~amd64"
-		[9]="2.071 ~x86 ~amd64"
+		[8]="2.070 x86 amd64"
+		[9]="2.071 x86 amd64"
 	)
 	__dlang_dmd_frontend_versionmap=(
 		[1]="2.063"
@@ -56,8 +56,8 @@ dlang-compilers_declare_versions() {
 		[2]="2.064 x86 amd64"
 		[3]="2.065 x86 amd64"
 		[4]="2.066 x86 amd64"
-		[5]="2.067 ~x86 ~amd64"
-		[6]="2.068 ~x86 ~amd64 ~arm ~ppc ~ppc64"
+		[5]="2.067 x86 amd64"
+		[6]="2.068 x86 amd64 ~arm ~ppc ~ppc64"
 		[7]="2.070 ~x86 ~amd64 ~arm ~ppc ~ppc64"
 	)
 	__dlang_ldc2_frontend_versionmap=(
