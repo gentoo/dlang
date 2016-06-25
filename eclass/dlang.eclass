@@ -309,7 +309,7 @@ __dlang_compiler_masked_archs_for_version_range() {
 		done
 		iuse="${iuse}? ( ${usemask[@]} )"
 	fi
-	__dlang_compiler_requse+=( $iuse )
+	__dlang_compiler_requse+=( "$iuse" )
 	__dlang_depends+=( "$depend" )
 }
 

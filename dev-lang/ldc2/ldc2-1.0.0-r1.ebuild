@@ -8,6 +8,7 @@ inherit cmake-utils versionator
 MY_PV="$(replace_version_separator '_' '-')"
 MY_P="ldc-${MY_PV}-src"
 SRC_URI="https://github.com/ldc-developers/ldc/releases/download/v${MY_PV}/${MY_P}.tar.gz"
+PATCHES="${FILESDIR}/${P}-linker-flags.patch"
 S=${WORKDIR}/${MY_P}
 
 DESCRIPTION="LLVM D Compiler"
@@ -23,12 +24,6 @@ DEPEND=">=dev-util/cmake-2.8
 	<sys-devel/llvm-3.9
 	>=sys-devel/llvm-3.5
 	${RDEPEND}"
-
-src_prepare() {
-	epatch "${FILESDIR}/${P}-linker-flags.patch"
-
-	default
-}
 
 src_configure() {
 	local mycmakeargs=(
