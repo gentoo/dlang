@@ -4,8 +4,8 @@
 
 EAPI=6
 
-KEYWORDS="-* amd64 x86"
-YEAR=2015
+KEYWORDS="-* ~amd64 ~x86"
+YEAR=2016
 DLANG_VERSION_RANGE="2.067-"
 
 inherit dmd

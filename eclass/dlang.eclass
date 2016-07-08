@@ -387,7 +387,7 @@ __dlang_filter_versions() {
 	DEPEND="${__dlang_depends[@]}"
 	RDEPEND="${__dlang_depends[@]}"
 }
-__dlang_filter_versions
+set -f; __dlang_filter_versions; set +f
 
 __dlang_phase_wrapper() {
 	dlang_phase() {

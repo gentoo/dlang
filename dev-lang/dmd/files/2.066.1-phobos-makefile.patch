@@ -1,5 +1,5 @@
---- phobos/posix.mak
-+++ phobos/posix.mak
+--- dmd2/src/phobos/posix.mak
++++ dmd2/src/phobos/posix.mak
 @@ -276,7 +276,7 @@
  	@[ -d $(dir $@) ] || mkdir -p $(dir $@) || [ -d $(dir $@) ]
  	$(CC) -c $(CFLAGS) $< -o$@

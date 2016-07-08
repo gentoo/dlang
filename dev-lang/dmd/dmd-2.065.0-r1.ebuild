@@ -2,13 +2,15 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 KEYWORDS="-* amd64 x86"
 YEAR=2014
 ARCHIVE="linux.zip"
 
 inherit dmd
+
+PATCHES="2.065-makefile-multilib.patch"
 
 FILES=(
 	[1]="license.txt                license.txt"

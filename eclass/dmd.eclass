@@ -106,15 +106,17 @@ dmd_src_prepare() {
 	done
 
 	# Ebuild patches
-	for p in "${PATCHES}"; do
-		epatch "${FILESDIR}/${p}"
-	done
+	if [ -n "${PATCHES}" ]; then
+		for p in "${PATCHES}"; do
+			eapply "${FILESDIR}/${p}"
+		done
+	fi
 
 	# Run other preparations
 	declare -f dmd_src_prepare_extra > /dev/null && dmd_src_prepare_extra
 
 	# User patches
-	epatch_user
+	eapply_user
 }
 
 dmd_src_compile() {

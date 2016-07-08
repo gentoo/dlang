@@ -1,5 +1,5 @@
---- src/dmd/posix.mak	2014-02-24 05:23:02.000000000 +0100
-+++ src/dmd/posix.mak	2014-03-15 00:48:37.568627267 +0100
+--- dmd2/src/dmd/posix.mak	2014-02-24 05:23:02.000000000 +0100
++++ dmd2/src/dmd/posix.mak	2014-03-15 00:48:37.568627267 +0100
 @@ -649,7 +649,7 @@ install: all
  	mkdir -p $(INSTALL_DIR)/bin
  	cp dmd $(INSTALL_DIR)/bin/dmd
@@ -9,8 +9,8 @@
  	cp backendlicense.txt $(INSTALL_DIR)/dmd-backendlicense.txt
  	cp artistic.txt $(INSTALL_DIR)/dmd-artistic.txt
  
---- src/druntime/posix.mak	2014-02-24 05:23:06.000000000 +0100
-+++ src/druntime/posix.mak	2014-03-14 22:32:23.124022918 +0100
+--- dmd2/src/druntime/posix.mak	2014-02-24 05:23:06.000000000 +0100
++++ dmd2/src/druntime/posix.mak	2014-03-14 22:32:23.124022918 +0100
 @@ -251,8 +251,8 @@ install: target
  	cp -r doc/* $(INSTALL_DIR)/html/
  	mkdir -p $(INSTALL_DIR)/import
@@ -22,8 +22,8 @@
  	cp LICENSE $(INSTALL_DIR)/druntime-LICENSE.txt
  
  clean: $(addsuffix /.clean,$(ADDITIONAL_TESTS))
---- src/phobos/posix.mak	2014-02-24 05:23:10.000000000 +0100
-+++ src/phobos/posix.mak	2014-03-15 00:03:45.274411999 +0100
+--- dmd2/src/phobos/posix.mak	2014-02-24 05:23:10.000000000 +0100
++++ dmd2/src/phobos/posix.mak	2014-03-15 00:03:45.274411999 +0100
 @@ -108,7 +108,7 @@ ifeq ($(OS),win32wine)
  	DMD = wine dmd.exe
  	RUN = wine

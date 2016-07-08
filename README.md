@@ -80,6 +80,12 @@ function that needs to be changed: `dlang_foreach_config()`
 It advertizes compiler specific variables and paths to D ebuilds.
 
 ### Q & A
+  Q: Why does DMD have a circular dependency upon itself?
+  A: Starting with version 2.068 parts of DMD became self-hosting and require an
+     installed D compiler. You can temporarily pick a compatible GDC or LDC
+     version or DMD 2.067, the last C++ based version through the respective USE
+     flag to bootstrap DMD 2.068 and later.
+
   Q: Why are D libraries not installed in their default locations?
   A: D compilers have ABIs that are incompatible with each other. This means
      either sticking to one compiler for anything D, or to change the default

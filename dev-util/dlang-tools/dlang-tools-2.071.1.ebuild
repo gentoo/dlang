@@ -9,9 +9,9 @@ HOMEPAGE="http://dlang.org/"
 LICENSE="Boost-1.0"
 
 SLOT="0"
-KEYWORDS="amd64 x86"
-TOOLS="rdmd ddemangle detab dustmite"
-IUSE="+rdmd +ddemangle detab dustmite"
+KEYWORDS="~amd64 ~x86"
+TOOLS="ddemangle detab dustmite rdmd"
+IUSE="+ddemangle detab dustmite +rdmd"
 REQUIRED_USE="|| ( ${TOOLS} )"
 
 inherit versionator
