@@ -184,36 +184,39 @@ dlang_compile_lib_so() {
 # Makes linker flags meant for GCC understandable for the current D compiler.
 # Basically it replaces -L with what the D compiler uses as linker prefix.
 dlang_convert_ldflags() {
+	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
+		# gc-sections breaks executables for some versions of D
+		# It works with the gold linker on the other hand
+		# See: https://issues.dlang.org/show_bug.cgi?id=879
+		if ! version_is_at_least 2.072 $DLANG_VERSION; then
+			if ! ld -v | grep -q "^GNU gold"; then
+				filter-ldflags {-L,-Xlinker,-Wl,}--gc-sections
+			fi
+		fi
+		# DMD does not undestand LTO flags
+		filter-ldflags -f{no-,}use-linker-plugin -f{no-,}lto -flto=*
+	fi
+
 	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]] || [[ "${DLANG_VENDOR}" == "LDC" ]]; then
-		local set repl flags=()
+		local set prefix flags=()
 		if [[ is_dmd ]]; then
-			repl="-L"
+			prefix="-L"
 		elif [[ is_ldc ]]; then
-			repl="-L="
+			prefix="-L="
 		fi
 		for set in ${LDFLAGS}; do
 			if [[ "${set:0:4}" == "-Wl," ]]; then
-				set=${set/-Wl,/${repl}}
-				flags+=(${set//,/ ${repl}})
+				set=${set/-Wl,/${prefix}}
+				flags+=(${set//,/ ${prefix}})
 			elif [[ "${set:0:9}" == "-Xlinker " ]]; then
-				flags+=(${set/-Xlinker /${repl}})
+				flags+=(${set/-Xlinker /${prefix}})
 			elif [[ "${set:0:2}" == "-L" ]]; then
-				flags+=(${set/-L/${repl}})
+				flags+=(${set/-L/${prefix}})
 			else
 				flags+=(${set})
 			fi
 		done
-		# gc-sections breaks executables for some versions of D.
-		# See: https://issues.dlang.org/show_bug.cgi?id=879
-		if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
-			if version_is_at_least 2.072 $DLANG_VERSION; then
-				echo "${flags[@]}"
-			else
-				echo "${flags[@]} ${repl}--no-gc-sections"
-			fi
-		else
-			echo "${flags[@]}"
-		fi
+		echo "${flags[@]}"
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
 		echo "${LDFLAGS}"
 	else
@@ -518,7 +521,8 @@ __dlang_use_build_vars() {
 		die "Could not detect D compiler vendor!"
 	fi
 	# We need to convert the LDFLAGS, so they are understood by DMD and LDC.
-	LDFLAGS="$(dlang_convert_ldflags)" "${@}"
+	export LDFLAGS=`dlang_convert_ldflags`
+	"${@}"
 }
 
 __dlang_prefix_words() {
