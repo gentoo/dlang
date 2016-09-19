@@ -15,6 +15,7 @@ fi
 
 DESCRIPTION="Reference compiler for the D programming language"
 HOMEPAGE="http://dlang.org/"
+HTML_DOCS="html/*"
 
 # DMD supports amd64/x86 exclusively
 MULTILIB_COMPAT=( abi_x86_{32,64} )
@@ -242,7 +243,12 @@ EOF
 	doins man/man1/dmd.1
 	insinto ${PREFIX}/man/man5
 	doins man/man5/dmd.conf.5
-	use doc && dohtml -r html/*
+	if use doc; then
+		einstalldocs
+		insinto "/usr/share/doc/${PF}/html"
+		doins "${FILESDIR}/dmd-doc.png"
+		make_desktop_entry "xdg-open ${ROOT}/usr/share/doc/${PF}/html/d/index.html" "DMD ${PV}" "${ROOT}/usr/share/doc/${PF}/html/dmd-doc.png" "Development"
+	fi
 	if use examples; then
 		insinto ${PREFIX}/samples
 		doins -r samples/d/*
