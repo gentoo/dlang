@@ -51,6 +51,6 @@ d_src_install() {
 
 	# file icons
 	for size in 16 22 24 32 48 256; do
-		newicon --size ${size} --context mimetypes ${FILESDIR}/icons/${size}/dmd-source.png text-x-dsrc.png
+		newicon --size "${size}" --context mimetypes "${FILESDIR}/icons/${size}/dmd-source.png" text-x-dsrc.png
 	done
 }
