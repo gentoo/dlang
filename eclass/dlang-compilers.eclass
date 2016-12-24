@@ -29,6 +29,7 @@ dlang-compilers_declare_versions() {
 		[7]="2.069 x86 amd64"
 		[8]="2.070 x86 amd64"
 		[9]="2.071 x86 amd64"
+		[10]="2.072 ~x86 ~amd64"
 	)
 	__dlang_dmd_frontend_versionmap=(
 		[1]="2.063"
@@ -40,6 +41,7 @@ dlang-compilers_declare_versions() {
 		[7]="2.069"
 		[8]="2.070"
 		[9]="2.071"
+		[10]="2.072"
 	)
 
 	# GDC
