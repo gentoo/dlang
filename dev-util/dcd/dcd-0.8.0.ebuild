@@ -1,8 +1,8 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 DESCRIPTION="Auto-complete program for the D programming language"
 HOMEPAGE="https://github.com/Hackerpilot/DCD"
@@ -43,6 +43,8 @@ src_prepare() {
 	touch githash || die "Could not generate githash"
 	# Phobos 2.069 comes with allocators and would result in conflicting modules when linked as shared library.
 	dlang_phobos_level 2.069 && rm -rf containers/experimental_allocator
+	# Apply patches
+	dlang_src_prepare
 }
 
 d_src_compile() {

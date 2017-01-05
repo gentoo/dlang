@@ -1,8 +1,8 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 DESCRIPTION="Dfmt is a formatter for D source code"
 HOMEPAGE="https://github.com/Hackerpilot/dfmt"
@@ -29,6 +29,8 @@ src_prepare() {
 	mv -T "../experimental_allocator-${ALLOCATOR}" libdparse/experimental_allocator || die
 	# Phobos 2.069 comes with allocators and would result in conflicting modules when linked as shared library.
 	dlang_phobos_level 2.069 && rm -rf libdparse/experimental_allocator
+	# Apply patches
+	dlang_src_prepare
 }
 
 d_src_compile() {

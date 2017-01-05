@@ -9,8 +9,8 @@
 if [[ ${___ECLASS_ONCE_DMD} != "recur -_+^+_- spank" ]] ; then
 ___ECLASS_ONCE_DMD="recur -_+^+_- spank"
 
-if has ${EAPI:-0} 0 1 2 3 4; then
-	die "EAPI must be >= 5 for dmd packages."
+if has ${EAPI:-0} 0 1 2 3 4 5; then
+	die "EAPI must be >= 6 for dmd packages."
 fi
 
 DESCRIPTION="Reference compiler for the D programming language"

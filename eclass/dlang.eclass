@@ -9,8 +9,8 @@
 if [[ ${___ECLASS_ONCE_DLANG} != "recur -_+^+_- spank" ]] ; then
 ___ECLASS_ONCE_DLANG="recur -_+^+_- spank"
 
-if has ${EAPI:-0} 0 1 2 3; then
-	die "EAPI must be >= 4 for dlang packages."
+if has ${EAPI:-0} 0 1 2 3 4 5; then
+	die "EAPI must be >= 6 for dlang packages."
 fi
 
 inherit flag-o-matic versionator dlang-compilers
@@ -484,7 +484,6 @@ __dlang_use_build_vars() {
 		"ldc") export DLANG_VENDOR="LDC" ;;
 	esac
 	export DLANG_VERSION="$(__dlang_compiler_to_dlang_version ${DC} ${DC_VERSION})"
-	echo $DLANG_VERSION
 	case "${ABI}" in
 		"default") ;;
 		"x86"*)    export MODEL=32 ;;
