@@ -63,6 +63,7 @@ dlang-compilers_declare_versions() {
 		[5]="2.067 x86 amd64"
 		[6]="2.068 x86 amd64 ~arm ~ppc ~ppc64"
 		[7]="2.070 x86 amd64 ~arm ~ppc ~ppc64"
+		[8]="2.071 ~x86 ~amd64 ~arm ~ppc ~ppc64"
 	)
 	__dlang_ldc2_frontend_versionmap=(
 		[1]="0.12"
@@ -72,6 +73,7 @@ dlang-compilers_declare_versions() {
 		[5]="0.16"
 		[6]="0.17"
 		[7]="1.0"
+		[8]="1.1"
 	)
 
 	# Error check to avoid mistyping of indices
