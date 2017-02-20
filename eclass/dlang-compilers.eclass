@@ -1,7 +1,6 @@
 # @ECLASS: dlang-compilers.eclass
 # @MAINTAINER: marco.leise@gmx.de
-# @BLURB:
-# Support data for dlang.eclass
+# @BLURB: Support data for dlang.eclass
 # @DESCRIPTION:
 # Contains the available D compiler versions with their stable archs.
 

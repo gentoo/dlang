@@ -1,7 +1,6 @@
 # @ECLASS: dlang.eclass
 # @MAINTAINER: marco.leise@gmx.de
-# @BLURB:
-# install D libraries in multiple locations for each D version and compiler
+# @BLURB: install D libraries in multiple locations for each D version and compiler
 # @DESCRIPTION:
 # The dlang eclass faciliates creating dependiencies on D libraries for use
 # with different D compilers and D versions.

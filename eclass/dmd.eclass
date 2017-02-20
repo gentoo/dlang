@@ -1,7 +1,6 @@
 # @ECLASS: dmd.eclass
 # @MAINTAINER: marco.leise@gmx.de
-# @BLURB:
-# Captures most of the logic for installing DMD.
+# @BLURB: Captures most of the logic for installing DMD
 # @DESCRIPTION:
 # Helps with the maintenance of the various DMD versions by capturing common
 # logic.
