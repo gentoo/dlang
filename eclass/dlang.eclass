@@ -268,7 +268,7 @@ declare -a __dlang_depends
 
 __dlang_compiler_masked_archs_for_version_range() {
 	local iuse=$1
-	local depend="!ppc-aix? ( !ppc64-linux? ( !ppc-macos? ( !ppc-openbsd? ( $iuse? ( $2 ) ) ) ) )"
+	local depend="!ppc-aix? ( !ppc64-linux? ( !ppc-macos? ( $iuse? ( $2 ) ) ) )"
 	local dlang_version=${3%% *}
 	local compiler_keywords=${3:${#dlang_version}}
 	local compiler_keyword package_keyword nomatch anyworks usable arch have_one
