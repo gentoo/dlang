@@ -1,4 +1,4 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 EAPI=5
@@ -12,12 +12,13 @@ S=${WORKDIR}/${MY_P}
 
 DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://ldc-developers.github.com/ldc"
-KEYWORDS="x86 amd64 ~ppc64"
+KEYWORDS="~x86 ~amd64"
 LICENSE="BSD"
 SLOT="$(get_version_component_range 1-2)/1"
 IUSE=""
 
-RDEPEND=">=sys-devel/llvm-3.1-r2
+RDEPEND="<sys-devel/llvm-3.6
+	>=sys-devel/llvm-3.1-r2:0
 	dev-libs/libconfig
 	>=app-eselect/eselect-dlang-20140709"
 DEPEND=">=dev-util/cmake-2.8
