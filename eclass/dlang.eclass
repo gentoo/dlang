@@ -325,9 +325,8 @@ __dlang_filter_compilers() {
 	local dc_version mapping iuse depend
 
 	# filter for DMD (hardcoding support for x86 and amd64 only)
-	for index in "${!__dlang_dmd_frontend_archmap[@]}"; do
-		dc_version="${__dlang_dmd_frontend_versionmap[${index}]}"
-		mapping="${__dlang_dmd_frontend_archmap[${index}]}"
+	for dc_version in "${!__dlang_dmd_frontend[@]}"; do
+		mapping="${__dlang_dmd_frontend[${dc_version}]}"
 		iuse="dmd-$(replace_all_version_separators _ $dc_version)"
 		if [ "${DLANG_PACKAGE_TYPE}" == "multi" ]; then
 			depend="[${MULTILIB_USEDEP}]"
@@ -339,18 +338,16 @@ __dlang_filter_compilers() {
 	done
 
 	# GDC (doesn't support sub-slots, to stay compatible with upstream GCC)
-	for index in "${!__dlang_gdc_frontend_archmap[@]}"; do
-		dc_version="${__dlang_gdc_frontend_versionmap[${index}]}"
-		mapping="${__dlang_gdc_frontend_archmap[${index}]}"
+	for dc_version in "${!__dlang_gdc_frontend[@]}"; do
+		mapping="${__dlang_gdc_frontend[${dc_version}]}"
 		iuse=gdc-$(replace_all_version_separators _ $dc_version)
 		depend="=sys-devel/gcc-${dc_version}*[d]"
 		__dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
 	done
 
 	# filter for LDC2
-	for index in "${!__dlang_ldc2_frontend_archmap[@]}"; do
-		dc_version="${__dlang_ldc2_frontend_versionmap[${index}]}";
-		mapping="${__dlang_ldc2_frontend_archmap[${index}]}"
+	for dc_version in "${!__dlang_ldc2_frontend[@]}"; do
+		mapping="${__dlang_ldc2_frontend[${dc_version}]}"
 		iuse=ldc2-$(replace_all_version_separators _ $dc_version)
 		depend="dev-lang/ldc2:${dc_version}="
 		__dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
@@ -418,28 +415,16 @@ __dlang_phase_wrapper() {
 }
 
 __dlang_compiler_to_dlang_version() {
-	local i dc_version mapping
+	local mapping
 	case "$1" in
 		"dmd")
 			mapping="$2"
 		;;
 		"gdc")
-			for (( i=1; i<=${#__dlang_gdc_frontend_versionmap[@]}; i++ )); do
-				dc_version="${__dlang_gdc_frontend_versionmap[$i]%% *}"
-				if [[ "${dc_version}" == "$2" ]]; then
-					mapping=`echo ${__dlang_gdc_frontend_archmap[$i]} | cut -f 1 -d " "`
-					break
-				fi
-			done
+			mapping=`echo ${__dlang_gdc_frontend[$2]} | cut -f 1 -d " "`
 		;;
 		"ldc2")
-			for (( i=1; i<=${#__dlang_ldc2_frontend_versionmap[@]}; i++ )); do
-				dc_version="${__dlang_ldc2_frontend_versionmap[$i]%% *}"
-				if [[ "${dc_version}" == "$2" ]]; then
-					mapping=`echo ${__dlang_ldc2_frontend_archmap[$i]} | cut -f 1 -d " "`
-					break
-				fi
-			done
+			mapping=`echo ${__dlang_ldc2_frontend[$2]} | cut -f 1 -d " "`
 		;;
 	esac
 	[ -n "${mapping}" ] || die "Could not retrieve dlang version for '$1-$2'."

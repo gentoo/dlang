@@ -11,84 +11,38 @@ ___ECLASS_ONCE_DLANG_COMPILERS="recur -_+^+_- spank"
 EXPORT_FUNCTIONS declare_versions
 
 dlang-compilers_declare_versions() {
-	declare -ga __dlang_dmd_frontend_archmap
-	declare -ga __dlang_dmd_frontend_versionmap
-	declare -ga __dlang_gdc_frontend_archmap
-	declare -ga __dlang_gdc_frontend_versionmap
-	declare -ga __dlang_ldc2_frontend_archmap
-	declare -ga __dlang_ldc2_frontend_versionmap
+	declare -gA __dlang_dmd_frontend
+	declare -gA __dlang_gdc_frontend
+	declare -gA __dlang_ldc2_frontend
 
 	# DMD
-	__dlang_dmd_frontend_archmap=(
-		[1]="2.063 x86 amd64"
-		[2]="2.064 x86 amd64"
-		[3]="2.065 x86 amd64"
-		[4]="2.066 x86 amd64"
-		[5]="2.067 x86 amd64"
-		[6]="2.068 x86 amd64"
-		[7]="2.069 x86 amd64"
-		[8]="2.070 x86 amd64"
-		[9]="2.071 x86 amd64"
-		[10]="2.072 x86 amd64"
-	)
-	__dlang_dmd_frontend_versionmap=(
-		[1]="2.063"
-		[2]="2.064"
-		[3]="2.065"
-		[4]="2.066"
-		[5]="2.067"
-		[6]="2.068"
-		[7]="2.069"
-		[8]="2.070"
-		[9]="2.071"
-		[10]="2.072"
+	__dlang_dmd_frontend=(
+		["2.063"]="2.063 x86 amd64"
+		["2.064"]="2.064 x86 amd64"
+		["2.065"]="2.065 x86 amd64"
+		["2.066"]="2.066 x86 amd64"
+		["2.067"]="2.067 x86 amd64"
+		["2.068"]="2.068 x86 amd64"
+		["2.069"]="2.069 x86 amd64"
+		["2.070"]="2.070 x86 amd64"
+		["2.071"]="2.071 x86 amd64"
+		["2.072"]="2.072 x86 amd64"
 	)
 
 	# GDC (alpha, hppa, sparc: masked "d" USE-flag)
-	__dlang_gdc_frontend_archmap=(
-		[1]="2.066 x86 amd64 arm"
-		[2]="2.068 ~amd64 ~arm arm64 ~ia64 m68k ~mips ~ppc ~ppc64 s390 sh ~x86 ~amd64-fbsd ~x86-fbsd"
-	)
-	__dlang_gdc_frontend_versionmap=(
-		[1]="4.8.5"
-		[2]="4.9.4"
+	__dlang_gdc_frontend=(
+		["4.8.5"]="2.066 x86 amd64 arm"
+		["4.9.4"]="2.068 ~amd64 ~arm arm64 ~ia64 m68k ~mips ~ppc ~ppc64 s390 sh ~x86 ~amd64-fbsd ~x86-fbsd"
 	)
 
 	# LDC
-	__dlang_ldc2_frontend_archmap=(
-		[1]="2.065 ~x86 ~amd64"
-		[2]="2.066 ~x86 ~amd64"
-		[3]="2.067 x86 amd64"
-		[4]="2.068 x86 amd64 ~arm ~ppc ~ppc64"
-		[5]="2.070 x86 amd64 ~arm ~ppc ~ppc64"
+	__dlang_ldc2_frontend=(
+		["0.14"]="2.065 ~x86 ~amd64"
+		["0.15"]="2.066 ~x86 ~amd64"
+		["0.16"]="2.067 x86 amd64"
+		["0.17"]="2.068 x86 amd64 ~arm ~ppc ~ppc64"
+		["1.0"]="2.070 x86 amd64 ~arm ~ppc ~ppc64"
 	)
-	__dlang_ldc2_frontend_versionmap=(
-		[1]="0.14"
-		[2]="0.15"
-		[3]="0.16"
-		[4]="0.17"
-		[5]="1.0"
-	)
-
-	# Error check to avoid mistyping of indices
-	if [ "${!__dlang_dmd_frontend_archmap[*]}" \
-		!= "${!__dlang_dmd_frontend_versionmap[*]}" ] ; then
-		errorstring="__dlang_dmd_frontend_archmap and "
-		errorstring+="__dlang_dmd_frontend_versionmap indices mismatch!"
-		die $errorstring
-	fi
-	if [ "${!__dlang_gdc_frontend_archmap[*]}" \
-		!= "${!__dlang_gdc_frontend_versionmap[*]}" ] ; then
-		errorstring="__dlang_gdc_frontend_archmap and "
-		errorstring+="__dlang_gdc_frontend_versionmap indices mismatch!"
-		die $errorstring
-	fi
-	if [ "${!__dlang_ldc2_frontend_archmap[*]}" \
-		!= "${!__dlang_ldc2_frontend_versionmap[*]}" ] ; then
-		errorstring="__dlang_ldc2_frontend_archmap and "
-		errorstring+="__dlang_ldc2_frontend_versionmap indices mismatch!"
-		die $errorstring
-	fi
 }
 
 fi
