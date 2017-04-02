@@ -268,11 +268,11 @@ declare -a __dlang_depends
 
 __dlang_compiler_masked_archs_for_version_range() {
 	local iuse=$1
-	local depend="!ppc-aix? ( !ppc64-linux? ( !ppc-macos? ( !ppc-openbsd? ( $iuse? ( $2 ) ) ) ) )"
+	local depend="$iuse? ( $2 )"
 	local dlang_version=${3%% *}
 	local compiler_keywords=${3:${#dlang_version}}
-	local compiler_keyword package_keyword nomatch anyworks usable arch have_one
-	local -a masked_archs comp_stab ebuild_stab
+	local compiler_keyword package_keyword nomatch anyworks usable arch
+	local -a masked_archs
 
 	# Check the version range
 	if [[ -n "$4" ]]; then
@@ -283,7 +283,7 @@ __dlang_compiler_masked_archs_for_version_range() {
 	fi
 
 	# Check the stability requirements
-	have_one=0
+	local ebuild_stab comp_stab have_one=0
 	for arch in $USE_EXPAND_VALUES_ARCH; do
 		ebuild_stab=0
 		for package_keyword in $KEYWORDS; do
