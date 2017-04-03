@@ -12,22 +12,17 @@ S=${WORKDIR}/${MY_P}
 
 DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://ldc-developers.github.com/ldc"
-KEYWORDS="~x86 ~amd64"
+KEYWORDS="~x86 ~amd64 ~arm"
 LICENSE="BSD"
-SLOT="$(get_version_component_range 1-2)/1"
+SLOT="$(get_version_component_range 1-2)/0"
 IUSE=""
 
 RDEPEND="dev-libs/libconfig
-	>=app-eselect/eselect-dlang-20140709"
+	app-eselect/eselect-dlang"
 DEPEND=">=dev-util/cmake-2.8
-	<sys-devel/llvm-3.8
-	>=sys-devel/llvm-3.1-r2
+	<sys-devel/llvm-3.9
+	>=sys-devel/llvm-3.5
 	${RDEPEND}"
-
-src_prepare() {
-	EPATCH_OPTS="-p1"
-	epatch "${FILESDIR}/ldc2-$(version_format_string '$1.$2.$3')-issue1101.patch"
-}
 
 src_configure() {
 	local mycmakeargs=(

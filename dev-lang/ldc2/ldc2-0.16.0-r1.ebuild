@@ -14,21 +14,15 @@ DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://ldc-developers.github.com/ldc"
 KEYWORDS="~x86 ~amd64"
 LICENSE="BSD"
-SLOT="$(get_version_component_range 1-2)/1"
+SLOT="$(get_version_component_range 1-2)/0"
 IUSE=""
 
-RDEPEND="<sys-devel/llvm-3.6
-	>=sys-devel/llvm-3.1-r2:0
-	dev-libs/libconfig
+RDEPEND="dev-libs/libconfig
 	>=app-eselect/eselect-dlang-20140709"
 DEPEND=">=dev-util/cmake-2.8
+	<sys-devel/llvm-3.8
+	>=sys-devel/llvm-3.1-r2
 	${RDEPEND}"
-
-src_prepare() {
-	EPATCH_OPTS="-p1"
-	epatch "${FILESDIR}/ldc2-$(version_format_string '$1.$2.$3')-issue703.patch"
-	epatch "${FILESDIR}/ldc2-$(version_format_string '$1.$2.$3')-ctpop.patch"
-}
 
 src_configure() {
 	local mycmakeargs=(
