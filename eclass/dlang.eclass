@@ -4,6 +4,17 @@
 # @DESCRIPTION:
 # The dlang eclass faciliates creating dependiencies on D libraries for use
 # with different D compilers and D versions.
+# DLANG_VERSION_RANGE can be set in the ebuild to limit the search on the known
+# compatible Dlang front-end versions. It is a space separated list with each item
+# can be a single version, an open or a closed range (e.g. "2.063 2.065-2.067 2.070-").
+# The range can be open in either direction.
+# DLANG_PACKAGE_TYPE determines whether the current ebuild can be compiled for
+# multiple Dlang compilers (i.e. is a library to be installed for different
+# versions of dmd, gdc or ldc2) or a single compiler (i.e. is an application).
+# For a single compiler use "single", for multiple compilers use "multi".
+# DLANG_USE_COMPILER, if set, inhibits the generation of IUSE, REQUIRED_USE, DEPEND
+# and RDEPEND for Dlang compilers based on above variables. The ebuild is responsible
+# for providing them as required by the function it uses from this eclass.
 
 if [[ ${___ECLASS_ONCE_DLANG} != "recur -_+^+_- spank" ]] ; then
 ___ECLASS_ONCE_DLANG="recur -_+^+_- spank"
@@ -266,11 +277,28 @@ declare -a __dlang_compiler_iuse_mask
 declare -a __dlang_depends
 
 __dlang_compiler_masked_archs_for_version_range() {
+	# Given a Dlang compiler represented through an IUSE flag (e.g. "ldc2-1_1")
+	# and DEPEND atom (e.g. "dev-lang/ldc2:1.1="), this function tests if the
+	# current ebuild can depend and thus be compiled with that compiler on
+	# one or more architectures.
+	# A compiler that is less stable than the current ebuild for all
+	# architectures, is dropped completely. A compiler that disqualifies
+	# for only some, but not all architectures, on the other hand, is disabled
+	# though REQUIRED_USE (e.g. "!amd64? ( ldc2-1_1? ( dev-lang/ldc2:1.1= ) )").
+	# Available compilers are accumulated in the __dlang_compiler_iuse array,
+	# which is later turned into the IUSE variable.
+	# Partially available compilers are additionally masked out for particular
+	# architectures by adding them to the __dlang_compiler_iuse_mask array,
+	# which is later appended to REQUIRED_USE.
+	# Finally, the __dlang_depends array receives the USE-flag enabled
+	# dependencies on Dlang compilers, which is later turned into DEPEND and
+	# RDEPEND.
+
 	local iuse=$1
 	local depend="$iuse? ( $2 )"
 	local dlang_version=${3%% *}
 	local compiler_keywords=${3:${#dlang_version}}
-	local compiler_keyword package_keyword nomatch anyworks usable arch
+	local compiler_keyword package_keyword arch
 	local -a masked_archs
 
 	# Check the version range
@@ -321,6 +349,12 @@ __dlang_compiler_masked_archs_for_version_range() {
 }
 
 __dlang_filter_compilers() {
+	# Given a range of Dlang front-end version that the current ebuild can be built with,
+	# this function goes through each compatible Dlang compilers as provided by the file
+	# dlang-compilers.eclass and then calls __dlang_compiler_masked_archs_for_version_range
+	# where they will be further scrutinized for architecture stability requirements and
+	# then either dropped as option or partially masked.
+
 	local dc_version mapping iuse depend
 
 	# filter for DMD (hardcoding support for x86 and amd64 only)
@@ -354,6 +388,14 @@ __dlang_filter_compilers() {
 }
 
 __dlang_filter_versions() {
+	# This function sets up the preliminary REQUIRED_USE, DEPEND and RDEPEND ebuild
+	# variables with compiler requirements for the current ebuild.
+	# If DLANG_VERSION_RANGE is set in the ebuild, this variable will be parsed to
+	# limit the search on the known compatible Dlang front-end versions.
+	# DLANG_PACKAGE_TYPE determines whether the current ebuild can be compiled for
+	# multiple Dlang compilers (i.e. is a library to be installed for different
+	# versions of dmd, gdc or ldc2) or a single compiler (i.e. is an application).
+
 	local range start stop matches d_version versions do_start
 	local -A valid
 
@@ -380,7 +422,7 @@ __dlang_filter_versions() {
 		__dlang_filter_compilers "" ""
 	fi
 
-	[ ${#__dlang_compiler_iuse[@]} -eq 0 ] && die "No D compilers found that satisfy this package's version range: $DLANG_VERSION_RANGE"
+	[ ${#__dlang_compiler_iuse[@]} -eq 0 ] && die "No Dlang compilers found that satisfy this package's version range: $DLANG_VERSION_RANGE"
 
 	IUSE="${__dlang_compiler_iuse[@]}"
 	if [ "${DLANG_PACKAGE_TYPE}" == "single" ]; then
