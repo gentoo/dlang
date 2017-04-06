@@ -309,9 +309,17 @@ __dlang_compiler_masked_archs_for_version_range() {
 		[[ $((10#${dlang_version#*.})) -gt $((10#${5#*.})) ]] && return 1
 	fi
 
+	# If we run portage, check if our list of known architectures is
+	# still up to date.
+	if [ -n "$USE_EXPAND_VALUES_ARCH" ]; then
+		if [ "$USE_EXPAND_VALUES_ARCH" != "$__dlang_archs" ]; then
+			ewarn "Dlang overlay maintenance: __dlang_archs diverged from Portage's USE_EXPAND_VALUES_ARCH"
+		fi
+	fi
+
 	# Check the stability requirements
 	local ebuild_stab comp_stab have_one=0
-	for arch in $USE_EXPAND_VALUES_ARCH; do
+	for arch in $__dlang_archs; do
 		ebuild_stab=0
 		for package_keyword in $KEYWORDS; do
 			if [ "$package_keyword" == "~$arch" ]; then
