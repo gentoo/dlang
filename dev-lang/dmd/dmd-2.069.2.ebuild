@@ -1,4 +1,4 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -9,3 +9,12 @@ YEAR=2015
 DLANG_VERSION_RANGE="2.067-"
 
 inherit dmd
+
+FILES=(
+	[1]="license.txt                license.txt"
+	[2]="src/druntime/LICENSE       druntime-LICENSE.txt"
+	[3]="src/druntime/README.md     druntime-README.md"
+	[4]="src/phobos/LICENSE_1_0.txt phobos-LICENSE_1_0.txt"
+	[5]="src/dmd/backendlicense.txt dmd-backendlicense.txt"
+	[6]="src/dmd/boostlicense.txt   dmd-boostlicense.txt"
+)

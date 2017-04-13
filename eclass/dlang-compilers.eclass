@@ -25,6 +25,7 @@ dlang-compilers_declare_versions() {
 		["2.071"]="2.071 x86 amd64"
 		["2.072"]="2.072 x86 amd64"
 		["2.073"]="2.073 ~x86 ~amd64"
+		["2.074"]="2.074 ~x86 ~amd64"
 	)
 
 	# GDC (alpha, hppa, sparc: masked "d" USE-flag)
