@@ -309,39 +309,32 @@ __dlang_compiler_masked_archs_for_version_range() {
 		[[ $((10#${dlang_version#*.})) -gt $((10#${5#*.})) ]] && return 1
 	fi
 
-	# If we run portage, check if our list of known architectures is
-	# still up to date.
-	if [ -n "$USE_EXPAND_VALUES_ARCH" ]; then
-		if [ "$USE_EXPAND_VALUES_ARCH" != "$__dlang_archs" ]; then
-			ewarn "Dlang overlay maintenance: __dlang_archs diverged from Portage's USE_EXPAND_VALUES_ARCH"
-		fi
-	fi
-
 	# Check the stability requirements
 	local ebuild_stab comp_stab have_one=0
-	for arch in $__dlang_archs; do
-		ebuild_stab=0
-		for package_keyword in $KEYWORDS; do
-			if [ "$package_keyword" == "~$arch" ]; then
-				ebuild_stab=1
-			elif [ "$package_keyword" == "$arch" ]; then
-				ebuild_stab=2
+	for package_keyword in $KEYWORDS; do
+		if [ "${package_keyword:0:1}" == "-" ]; then
+			# Skip "-arch" and "-*"
+			continue
+		elif [ "${package_keyword:0:1}" == "~" ]; then
+			ebuild_stab=1
+			arch=${package_keyword:1}
+		else
+			ebuild_stab=2
+			arch=$package_keyword
+		fi
+
+		comp_stab=0
+		for compiler_keyword in $compiler_keywords; do
+			if [ "$compiler_keyword" == "~$arch" ]; then
+				comp_stab=1
+			elif [ "$compiler_keyword" == "$arch" ]; then
+				comp_stab=2
 			fi
 		done
-		if [ $ebuild_stab -gt 0 ]; then
-			comp_stab=0
-			for compiler_keyword in $compiler_keywords; do
-				if [ "$compiler_keyword" == "~$arch" ]; then
-					comp_stab=1
-				elif [ "$compiler_keyword" == "$arch" ]; then
-					comp_stab=2
-				fi
-			done
-			if [ $comp_stab -lt $ebuild_stab ]; then
-				masked_archs+=( $arch )
-			else
-				have_one=1
-			fi
+		if [ $comp_stab -lt $ebuild_stab ]; then
+			masked_archs+=( $arch )
+		else
+			have_one=1
 		fi
 	done
 	[ $have_one -eq 0 ] && return 1

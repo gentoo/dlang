@@ -11,7 +11,6 @@ dlang-compilers_declare_versions() {
 	declare -gA __dlang_dmd_frontend
 	declare -gA __dlang_gdc_frontend
 	declare -gA __dlang_ldc2_frontend
-	declare -g __dlang_archs="alpha amd64 amd64-fbsd amd64-linux arm arm-linux arm64 hppa ia64 m68k m68k-mint mips nios2 ppc ppc64 ppc64-linux ppc-aix ppc-macos riscv s390 sh sparc sparc64-solaris sparc-fbsd sparc-solaris x64-cygwin x64-macos x64-solaris x86 x86-cygwin x86-fbsd x86-linux x86-macos x86-solaris x86-winnt"
 
 	# DMD
 	__dlang_dmd_frontend=(
