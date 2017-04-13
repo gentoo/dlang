@@ -29,15 +29,6 @@ RDEPEND="
 GTKD_USE_FLAGS=(gtk  opengl sourceview        gstreamer    vte    peas   )
 GTKD_LIB_NAMES=(gtkd gtkdgl gtkdsv            gstreamerd   vted   peasd  )
 GTKD_SRC_DIRS=( src  srcgl  srcsv             srcgstreamer srcvte srcpeas)
-GTKD_PC_NAMES=( GtkD GtkDGL "GtkD SourceView" GstreamerD   VteD   PeasD  )
-GTKD_PC_DESCS=(
-	"A D binding and OO wrapper for GTK+."
-	"OpenGL capabilities for GtkD."
-	"A D binding and OO wrapper for GtkSourceView."
-	"A D binding and OO wrapper for Gstreamer."
-	"A D binding and OO wrapper for Vte."
-	"A D binding and OO wrapper for Peas."
-)
 IUSE="${GTKD_USE_FLAGS[@]:1} static-libs"
 
 MAJOR=$(get_major_version)
@@ -111,34 +102,6 @@ d_src_install_all() {
 	install_headers() {
 		files="${SRC_DIR}/*"
 		doins -r ${files}
-
-		# pkgconfig files
-		local fname linker_flag
-		mkdir -p "${D}usr/share/pkgconfig" || die "Cannot create output directory ${D}usr/share/pkgconfig"
-		for dc in dmd gdc ldc; do
-			fname=${D}usr/share/pkgconfig/${LIB_NAME}-${MAJOR}-${dc}.pc
-			case $dc in
-				dmd)
-					linker_flag="-L"
-					;;
-				gdc)
-					linker_flag="-Xlinker "
-					;;
-				ldc)
-					linker_flag="-L="
-					;;
-			esac
-			echo "Name: ${PC_NAME}" > $fname
-			echo "Description: ${PC_DESC}" >> $fname
-			echo "Version: ${PV}" >> $fname
-			if [ "${LIB_NAME}" == "gtkd" ]; then
-				echo "Libs: ${linker_flag}-lgtkd-${MAJOR} ${linker_flag}-ldl" >> $fname
-				echo "Cflags: -I${EPREFIX}/usr/include/dlang/gtkd-${MAJOR}/" >> $fname
-			else
-				echo "Libs: ${linker_flag}-lgtkd-${MAJOR}" >> $fname
-				echo "Requires: gtkd-${MAJOR}" >> $fname
-			fi
-		done
 	}
 
 	foreach_used_component install_headers
@@ -147,7 +110,7 @@ d_src_install_all() {
 foreach_used_component() {
 	for (( i = 0 ; i < ${#GTKD_LIB_NAMES[@]} ; i++ )); do
 		if [[ "${GTKD_LIB_NAMES[$i]}" == "gtkd" ]] || use ${GTKD_USE_FLAGS[$i]}; then
-			LIB_NAME=${GTKD_LIB_NAMES[$i]} SRC_DIR=${GTKD_SRC_DIRS[$i]} PC_NAME=${GTKD_PC_NAMES[$i]} PC_DESC=${GTKD_PC_DESCS[$i]} ${@}
+			LIB_NAME=${GTKD_LIB_NAMES[$i]} SRC_DIR=${GTKD_SRC_DIRS[$i]} ${@}
 		fi
 	done
 }
