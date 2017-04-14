@@ -33,9 +33,7 @@ EXPORT_FUNCTIONS src_prepare src_configure src_compile src_test src_install
 
 
 # Definition of know compilers and supported front-end versions from dlang-compilers.eclass
-
 dlang-compilers_declare_versions
-
 
 # @FUNCTION: dlang_foreach_config
 # @DESCRIPTION:
@@ -434,6 +432,12 @@ __dlang_filter_versions() {
 	REQUIRED_USE="${REQUIRED_USE} ( ${__dlang_compiler_iuse[@]} ) ${__dlang_compiler_iuse_mask[@]}"
 	DEPEND="${__dlang_depends[@]}"
 	RDEPEND="$DEPEND"
+
+	local -a compiler
+	for compiler in ${__dlang_compiler_iuse[@]}; do
+		DLANG_COMPILER_USE="${DLANG_COMPILER_USE}${compiler}?,"
+	done
+	DLANG_COMPILER_USE="${DLANG_COMPILER_USE:0:-1}"
 }
 
 __dlang_phase_wrapper() {
