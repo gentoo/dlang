@@ -506,6 +506,10 @@ __dlang_build_configurations() {
 
 __dlang_use_build_vars() {
 	# Now we define some variables and then call the function.
+	# LIBDIR_${ABI} is used by the dolib.* functions, that's why we override it per compiler.
+	# The original value is exported as LIBDIR_HOST.
+	local libdir_var="LIBDIR_${ABI}"
+	export LIBDIR_HOST="${!libdir_var}"
 	export ABI="$(echo ${MULTIBUILD_VARIANT} | cut -d- -f1)"
 	export DC="$(echo ${MULTIBUILD_VARIANT} | cut -d- -f2)"
 	export DC_VERSION="$(echo ${MULTIBUILD_VARIANT} | cut -d- -f3)"
@@ -535,8 +539,9 @@ __dlang_use_build_vars() {
 		export DLANG_OUTPUT_FLAG="-of"
 		export DLANG_VERSION_FLAG="-version"
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
+		# Note that ldc2 expects the compiler name to be 'gdmd', not 'x86_64-pc-linux-gnu-gdmd'.
 		export DC="/usr/${CHOST_default}/gcc-bin/${DC_VERSION}/${CHOST_default}-gdc"
-		export DMD="/usr/${CHOST_default}/gcc-bin/${DC_VERSION}/${CHOST_default}-gdmd"
+		export DMD="/usr/${CHOST_default}/gcc-bin/${DC_VERSION}/gdmd"
 		if [[ "${DLANG_PACKAGE_TYPE}" == "multi" ]] && multilib_is_native_abi; then
 			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/${DC_VERSION}"
 		else
