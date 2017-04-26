@@ -41,8 +41,9 @@ src_unpack() {
 d_src_compile() {
 	compile_libs() {
 		# Build the shared library version of the component
+		# The test phase expects no version extension on the .so
 		if dlang_has_shared_lib_support; then
-			dlang_compile_lib_so lib${LIB_NAME}-${MAJOR}.so.0.${MINOR} \
+			dlang_compile_lib_so lib${LIB_NAME}-${MAJOR}.so \
 				lib${LIB_NAME}-${MAJOR}.so.0 -Isrc ${GTKD_SRC_DIRS[$i]}/*/*.d
 		else
 			ewarn "${DC} does not have shared library support."
@@ -78,9 +79,9 @@ d_src_install() {
 		# Install the shared library version of the component
 		if dlang_has_shared_lib_support; then
 			local libfile="lib${LIB_NAME}-${MAJOR}.so"
-			dolib.so "${libfile}.0.${MINOR}"
-			dosym "${libfile}.0.${MINOR}" "/usr/$(get_libdir)/${libfile}.0"
-			dosym "${libfile}.0.${MINOR}" "/usr/$(get_libdir)/${libfile}"
+			ln -s "${libfile}" "${libfile}.0"
+			ln -s "${libfile}" "${libfile}.0.${MINOR}"
+			dolib.so "${libfile}.0.${MINOR}" "${libfile}.0" "${libfile}"
 		fi
 
 		# Install the static library version
