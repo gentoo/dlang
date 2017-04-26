@@ -26,7 +26,8 @@ DEPEND=">=dev-util/cmake-2.8
 
 src_prepare() {
 	EPATCH_OPTS="-p1"
-	epatch "${FILESDIR}/ldc2-$(version_format_string '$1.$2.$3')-trailing_space.patch"
+	epatch "${FILESDIR}/ldc2-$(version_format_string '$1.$2')-trailing_space.patch"
+	epatch "${FILESDIR}/ldc2-$(version_format_string '$1.$2')-issue1395.patch"
 }
 
 src_configure() {
