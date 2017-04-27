@@ -24,7 +24,7 @@ DEPEND=">=dev-util/cmake-2.8
 	>=sys-devel/llvm-3.5
 	${RDEPEND}"
 
-DLANG_VERSION_RANGE="2.068-2.073"
+DLANG_VERSION_RANGE="2.068-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit dlang
