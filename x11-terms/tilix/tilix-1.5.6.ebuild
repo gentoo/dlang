@@ -9,6 +9,7 @@ LICENSE="MPL-2.0"
 
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
+IUSE="+crypt"
 
 DLANG_VERSION_RANGE="2.070-"
 DLANG_PACKAGE_TYPE="single"
@@ -22,7 +23,8 @@ SRC_URI="${GITHUB_URI}/${PN}/tar.gz/${PV} -> ${PN}-${PV}.tar.gz"
 
 RDEPEND="
 	>=sys-devel/gettext-0.19.7
-	>=dev-libs/gtkd-3.5.0:3[vte,${DLANG_COMPILER_USE}]"
+	>=dev-libs/gtkd-3.5.0:3[vte,${DLANG_COMPILER_USE}]
+	x11-libs/vte:2.91[crypt?]"
 DEPEND="
 	>=sys-devel/autoconf-2.69
 	=sys-devel/automake-1.15 ${DEPEND}"
