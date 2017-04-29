@@ -11,7 +11,10 @@
 # DLANG_PACKAGE_TYPE determines whether the current ebuild can be compiled for
 # multiple Dlang compilers (i.e. is a library to be installed for different
 # versions of dmd, gdc or ldc2) or a single compiler (i.e. is an application).
-# For a single compiler use "single", for multiple compilers use "multi".
+# "single" - An application is built and the package will be built using one compiler.
+# "multi" - A library is built and multiple compiler versions and vendors can be selected.
+# "dmd" - Special case for dmd, which is like "single", but picking no compiler USE flag
+#         is allowed and results in a self-hosting dmd.
 # DLANG_USE_COMPILER, if set, inhibits the generation of IUSE, REQUIRED_USE, DEPEND
 # and RDEPEND for Dlang compilers based on above variables. The ebuild is responsible
 # for providing them as required by the function it uses from this eclass.
@@ -162,7 +165,7 @@ dlang_exec() {
 # Aditionally, if the ebuild offers the "debug" use flag, we will automatically
 # raise the debug level to 1 during compilation.
 dlang_compile_bin() {
-	[[ "${DLANG_PACKAGE_TYPE}" == "single" ]] || die "Currently ${FUNCTION} only works with DLANG_PACKAGE_TYPE=\"single\"."
+	[[ "${DLANG_PACKAGE_TYPE}" == "multi" ]] && die "${FUNCTION} does not work with DLANG_PACKAGE_TYPE=\"multi\" currently."
 
 	local binname="${1}"
 	local sources="${@:2}"
@@ -259,7 +262,7 @@ dlang_system_imports() {
 # high as the argument.
 dlang_phobos_level() {
 	if [ -z "$DLANG_VERSION" ]; then
-		[ "$DLANG_PACKAGE_TYPE" == "single" ] || die "'dlang_phobos_level' needs 'DLANG_PACKAGE_TYPE == single' when called outside of compiles."
+		[ "$DLANG_PACKAGE_TYPE" != "multi" ] || die "'dlang_phobos_level' needs 'DLANG_PACKAGE_TYPE != multi' when called outside of compiles."
 		local config=`__dlang_build_configurations`
 		local dc="$(echo ${config} | cut -d- -f2)"
 		local dc_version="$(echo ${config} | cut -d- -f3)"
@@ -424,12 +427,14 @@ __dlang_filter_versions() {
 	[ ${#__dlang_compiler_iuse[@]} -eq 0 ] && die "No Dlang compilers found that satisfy this package's version range: $DLANG_VERSION_RANGE"
 
 	IUSE="${__dlang_compiler_iuse[@]}"
-	if [ "${DLANG_PACKAGE_TYPE}" == "single" ]; then
-		REQUIRED_USE="^^"
-	else
-		REQUIRED_USE="||"
+	if [ "${DLANG_PACKAGE_TYPE}" != "dmd" ]; then
+		if [ "${DLANG_PACKAGE_TYPE}" == "single" ]; then
+			REQUIRED_USE="^^"
+		else
+			REQUIRED_USE="||"
+		fi
+		REQUIRED_USE="${REQUIRED_USE} ( ${__dlang_compiler_iuse[@]} ) ${__dlang_compiler_iuse_mask[@]}"
 	fi
-	REQUIRED_USE="${REQUIRED_USE} ( ${__dlang_compiler_iuse[@]} ) ${__dlang_compiler_iuse_mask[@]}"
 	DEPEND="${__dlang_depends[@]}"
 	RDEPEND="$DEPEND"
 
@@ -449,14 +454,14 @@ __dlang_phase_wrapper() {
 		fi
 	}
 
-	if [[ "${DLANG_PACKAGE_TYPE}" == "single" ]]; then
-		dlang_single_config dlang_phase "${1}"
-	else
+	if [[ "${DLANG_PACKAGE_TYPE}" == "multi" ]]; then
 		dlang_foreach_config dlang_phase "${1}"
 		# Handle any compiler & arch independent installation steps
 		if declare -f d_src_${1}_all >/dev/null ; then
 			d_src_${1}_all
 		fi
+	else
+		dlang_single_config dlang_phase "${1}"
 	fi
 }
 
@@ -488,18 +493,22 @@ __dlang_build_configurations() {
 	for use_flag in $use_flags; do
 		case ${use_flag} in
 			dmd-* | gdc-* | ldc-* | ldc2-*)
-				if [[ "${DLANG_PACKAGE_TYPE}" == "single" ]]; then
-					variants="default-${use_flag//_/.}"
-				else
+				if [ "${DLANG_PACKAGE_TYPE}" == "multi" ]; then
 					for abi in $(multilib_get_enabled_abis); do
 						variants="${variants} ${abi}-${use_flag//_/.}"
 					done
+				else
+					variants="default-${use_flag//_/.}"
 				fi
 				;;
 		esac
 	done
-	if [[ -z ${variants} ]]; then
-		die "At least one compiler USE-flag must be selected. This should be checked by REQUIRED_USE in this package."
+	if [ -z ${variants} ]; then
+		if [ "${DLANG_PACKAGE_TYPE}" == "dmd" ]; then
+			variants="default-dmd-selfhost"
+		else
+			die "At least one compiler USE-flag must be selected. This should be checked by REQUIRED_USE in this package."
+		fi
 	fi
 	echo ${variants}
 }
@@ -525,8 +534,10 @@ __dlang_use_build_vars() {
 		*)         export MODEL=64 ;;
 	esac
 	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
-		export DC="/opt/${DC}-${DC_VERSION}/bin/dmd"
-		export DMD="${DC}"
+		if [ "${DC_VERSION}" != "selfhost" ]; then
+			export DC="/opt/${DC}-${DC_VERSION}/bin/dmd"
+			export DMD="${DC}"
+		fi
 		# "lib" on pure x86, "lib{32,64}" on amd64 (and multilib)
 		if has_multilib_profile || [[ "${MODEL}" == "64" ]]; then
 			export LIBDIR_${ABI}="../opt/dmd-${DC_VERSION}/lib${MODEL}"

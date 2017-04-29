@@ -32,7 +32,13 @@ MINOR="$((10#$(get_version_component_range 2)))"
 PATCH="$(get_version_component_range 3)"
 VERSION="$(get_version_component_range 1-3)"
 BETA="$(echo $(get_version_component_range 4) | cut -c 5-)"
-ARCHIVE="${ARCHIVE-linux.tar.xz}"
+if [ "${KERNEL}" != "FreeBSD" ]; then
+	ARCHIVE="${ARCHIVE-linux.tar.xz}"
+elif [ "${ARCH}" == "x86" ]; then
+	ARCHIVE="${ARCHIVE-freebsd-32.tar.xz}"
+else
+	ARCHIVE="${ARCHIVE-freebsd-64.tar.xz}"
+fi
 SONAME="${SONAME-libphobos2.so.0.${MINOR}.${PATCH}}"
 SONAME_SYM="$(echo ${SONAME} | cut -d. -f5 --complement)"
 declare -ga FILES=(
@@ -57,14 +63,14 @@ dmd_selfhosting() {
 
 # Self-hosting DMD is handled as a 'dlang' package with compiler choices.
 DLANG_VERSION_RANGE="${DLANG_VERSION_RANGE-${SLOT}}"
-DLANG_PACKAGE_TYPE=single
+DLANG_PACKAGE_TYPE=dmd
 dmd_selfhosting && inherit dlang
 
 # Call EXPORT_FUNCTIONS after any imports
 EXPORT_FUNCTIONS src_prepare src_compile src_test src_install pkg_postinst pkg_postrm
 
 if [[ -n "${BETA}" ]]; then
-	SRC_URI="http://downloads.dlang.org/pre-releases/${MAJOR}.x/${VERSION}/${PN}.${VERSION}-b${BETA}.linux.tar.xz"
+	SRC_URI="http://downloads.dlang.org/pre-releases/${MAJOR}.x/${VERSION}/${PN}.${VERSION}-b${BETA}.${ARCHIVE}"
 else
 	SRC_URI="mirror://aws/${YEAR}/${PN}.${PV}.${ARCHIVE}"
 fi
@@ -129,8 +135,26 @@ dmd_src_compile() {
 	# A native build of dmd is used to compile the runtimes for both x86 and amd64
 	# We cannot use multilib-minimal yet, as we have to be sure dmd for amd64
 	# always gets build first.
-	einfo "Building ${PN}..."
+	einfo "Building dmd..."
+
+	# 2.068 used HOST_DC instead of HOST_DMD
 	[[ "${SLOT}" == "2.068" ]] && HOST_DMD="HOST_DC" || HOST_DMD="HOST_DMD"
+
+	# Special case for self-hosting (i.e. no compiler USE flag selected).
+	local kernel model
+	if [ "${DC_VERSION}" == "selfhost" ]; then
+		case "${KERNEL}" in
+			"linux")   kernel="linux";;
+			"FreeBSD") kernel="freebsd";;
+			*) die "Self-hosting dmd on ${KERNEL} is not currently supported."
+		esac
+		case "${ARCH}" in
+			"x86")   model=32;;
+			"amd64") model=64;;
+			*) die "Self-hosting dmd on ${ARCH} is not currently supported."
+		esac
+		export DMD="../../${kernel}/bin${model}/dmd"
+	fi
 	emake -C src/dmd -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" RELEASE=1
 
 	# Don't pick up /etc/dmd.conf when calling src/dmd/dmd !
