@@ -38,6 +38,6 @@ src_prepare() {
 d_src_configure()
 {
 	export GTKD_CFLAGS="-I/usr/include/dlang/gtkd-3"
-	export GTKD_LIBS="${DLANG_LINKER_FLAG}-ldl ${DLANG_LINKER_FLAG}-lgtkd-3 ${DLANG_LINKER_FLAG}-lvted-3"
+	export GTKD_LIBS="${DLANG_LINKER_FLAG}-ldl ${DLANG_LINKER_FLAG}-lvted-3 ${DLANG_LINKER_FLAG}-lgtkd-3"
 	LINGUAS=`l10n_get_locales` default_src_configure
 }
