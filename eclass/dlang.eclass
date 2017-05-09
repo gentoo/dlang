@@ -426,17 +426,21 @@ __dlang_filter_versions() {
 
 	[ ${#__dlang_compiler_iuse[@]} -eq 0 ] && die "No Dlang compilers found that satisfy this package's version range: $DLANG_VERSION_RANGE"
 
-	IUSE="${__dlang_compiler_iuse[@]}"
-	if [ "${DLANG_PACKAGE_TYPE}" != "dmd" ]; then
-		if [ "${DLANG_PACKAGE_TYPE}" == "single" ]; then
-			REQUIRED_USE="^^"
-		else
-			REQUIRED_USE="||"
-		fi
-		REQUIRED_USE="${REQUIRED_USE} ( ${__dlang_compiler_iuse[@]} ) ${__dlang_compiler_iuse_mask[@]}"
+	if [ "${DLANG_PACKAGE_TYPE}" != "multi" ]; then
+		REQUIRED_USE="^^"
+	else
+		REQUIRED_USE="||"
 	fi
 	DEPEND="${__dlang_depends[@]}"
-	RDEPEND="$DEPEND"
+	# DMD, is statically linked and does not have its host compiler as a runtime dependency.
+	if [ "${DLANG_PACKAGE_TYPE}" == "dmd" ]; then
+		IUSE="${__dlang_compiler_iuse[@]} +selfhost"
+		__dlang_compiler_iuse+=( selfhost )
+	else
+		RDEPEND="$DEPEND"
+		IUSE="${__dlang_compiler_iuse[@]}"
+	fi
+	REQUIRED_USE="${REQUIRED_USE} ( ${__dlang_compiler_iuse[@]} ) ${__dlang_compiler_iuse_mask[@]}"
 
 	local -a compiler
 	for compiler in ${__dlang_compiler_iuse[@]}; do
@@ -501,14 +505,15 @@ __dlang_build_configurations() {
 					variants="default-${use_flag//_/.}"
 				fi
 				;;
+			selfhost)
+				if [ "${DLANG_PACKAGE_TYPE}" == "dmd" ]; then
+					variants="default-dmd-selfhost"
+				fi
+				;;
 		esac
 	done
 	if [ -z ${variants} ]; then
-		if [ "${DLANG_PACKAGE_TYPE}" == "dmd" ]; then
-			variants="default-dmd-selfhost"
-		else
-			die "At least one compiler USE-flag must be selected. This should be checked by REQUIRED_USE in this package."
-		fi
+		die "At least one compiler USE-flag must be selected. This should be checked by REQUIRED_USE in this package."
 	fi
 	echo ${variants}
 }

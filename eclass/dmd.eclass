@@ -25,7 +25,6 @@ inherit multilib-build versionator
 LICENSE="DMD"
 RESTRICT="mirror"
 
-IUSE="doc examples static-libs tools"
 SLOT="$(get_version_component_range 1-2)"
 MAJOR="$(get_major_version)"
 MINOR="$((10#$(get_version_component_range 2)))"
@@ -61,10 +60,12 @@ dmd_selfhosting() {
 	[[ "${MAJOR}" -ge 2 ]] && [[ "${MINOR}" -ge 68 ]]
 }
 
-# Self-hosting DMD is handled as a 'dlang' package with compiler choices.
-DLANG_VERSION_RANGE="${DLANG_VERSION_RANGE-${SLOT}}"
-DLANG_PACKAGE_TYPE=dmd
-dmd_selfhosting && inherit dlang
+IUSE="doc examples static-libs tools"
+if dmd_selfhosting; then
+	DLANG_VERSION_RANGE="${DLANG_VERSION_RANGE-${SLOT}}"
+	DLANG_PACKAGE_TYPE=dmd
+	inherit dlang
+fi
 
 # Call EXPORT_FUNCTIONS after any imports
 EXPORT_FUNCTIONS src_prepare src_compile src_test src_install pkg_postinst pkg_postrm
