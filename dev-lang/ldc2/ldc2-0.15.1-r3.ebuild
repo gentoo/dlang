@@ -1,7 +1,7 @@
 # Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=5
+EAPI=6
 
 inherit cmake-utils versionator
 
@@ -9,26 +9,26 @@ MY_PV="$(replace_version_separator '_' '-')"
 MY_P="ldc-${MY_PV}-src"
 SRC_URI="https://github.com/ldc-developers/ldc/releases/download/v${MY_PV}/${MY_P}.tar.gz"
 S=${WORKDIR}/${MY_P}
+PATCHES=(
+	"${FILESDIR}/${P}-version.patch"
+	"${FILESDIR}/${P}-issue809.patch"
+	"${FILESDIR}/${P}-issue1395.patch"
+)
 
 DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://ldc-developers.github.com/ldc"
-KEYWORDS="x86 amd64"
+KEYWORDS="~x86 ~amd64"
 LICENSE="BSD"
-SLOT="$(get_version_component_range 1-2)/1"
+SLOT="$(get_version_component_range 1-2)/$(get_version_component_range 3)"
+
 IUSE=""
 
 RDEPEND="dev-libs/libconfig
 	>=app-eselect/eselect-dlang-20140709"
 DEPEND=">=dev-util/cmake-2.8
-	<sys-devel/llvm-3.8
 	>=sys-devel/llvm-3.1-r2
+	<sys-devel/llvm-3.6
 	${RDEPEND}"
-
-src_prepare() {
-	EPATCH_OPTS="-p1"
-	epatch "${FILESDIR}/ldc2-$(version_format_string '$1.$2')-trailing_space.patch"
-	epatch "${FILESDIR}/ldc2-$(version_format_string '$1.$2')-issue1395.patch"
-}
 
 src_configure() {
 	local mycmakeargs=(

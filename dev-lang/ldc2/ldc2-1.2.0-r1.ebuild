@@ -8,23 +8,25 @@ inherit cmake-utils versionator
 MY_PV="$(replace_version_separator '_' '-')"
 MY_P="ldc-${MY_PV}-src"
 SRC_URI="https://github.com/ldc-developers/ldc/releases/download/v${MY_PV}/${MY_P}.tar.gz"
-PATCHES=""
 S=${WORKDIR}/${MY_P}
+PATCHES=""
 
 DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://ldc-developers.github.com/ldc"
 KEYWORDS="~x86 ~amd64 ~arm"
 LICENSE="BSD"
-SLOT="$(get_version_component_range 1-2)/1"
+SLOT="$(get_version_component_range 1-2)/$(get_version_component_range 3)"
+
 IUSE=""
 
 RDEPEND=">=dev-libs/libconfig-1.4.7
+	>=sys-devel/llvm-3.5:=
+	<sys-devel/llvm-4.1:=
 	>=app-eselect/eselect-dlang-20140709"
 DEPEND=">=dev-util/cmake-2.8
-	>=sys-devel/llvm-3.5
 	${RDEPEND}"
 
-DLANG_VERSION_RANGE="2.068-2.073"
+DLANG_VERSION_RANGE="2.068-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit dlang
