@@ -27,7 +27,7 @@ RDEPEND="
 	x11-libs/vte:2.91[crypt?]"
 DEPEND="
 	>=sys-devel/autoconf-2.69
-	=sys-devel/automake-1.15 ${DEPEND}"
+	sys-devel/automake:1.15 ${DEPEND}"
 
 src_prepare() {
 	eapply_user
