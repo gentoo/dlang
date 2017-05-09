@@ -4,7 +4,7 @@
 EAPI=6
 
 DESCRIPTION="Dfmt is a formatter for D source code"
-HOMEPAGE="https://github.com/Hackerpilot/dfmt"
+HOMEPAGE="https://github.com/dlang-community/dfmt"
 LICENSE="Boost-1.0"
 
 SLOT="0"
@@ -12,8 +12,8 @@ KEYWORDS="x86 amd64"
 LIBDPARSE="db1a9364b1815eec82ac853a9765d5532571db43"
 ALLOCATOR="13df2925b83b4df95140677323e25c9cf93097db"
 SRC_URI="
-	https://github.com/Hackerpilot/dfmt/archive/v${PV}.tar.gz -> ${PN}-${PV}.tar.gz
-	https://github.com/Hackerpilot/libdparse/archive/${LIBDPARSE}.tar.gz -> libdparse-${LIBDPARSE}.tar.gz
+	https://github.com/dlang-community/dfmt/archive/v${PV}.tar.gz -> ${PN}-${PV}.tar.gz
+	https://github.com/dlang-community/libdparse/archive/${LIBDPARSE}.tar.gz -> libdparse-${LIBDPARSE}.tar.gz
 	https://github.com/Hackerpilot/experimental_allocator/archive/${ALLOCATOR}.tar.gz -> experimental_allocator-${ALLOCATOR}.tar.gz
 	"
 
