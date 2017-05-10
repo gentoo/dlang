@@ -42,8 +42,13 @@ d_src_compile() {
 		# Build the shared library version of the component
 		# The test phase expects no version extension on the .so
 		if dlang_has_shared_lib_support; then
+			# Avoid some undefined references in the optional libraries by linking against gtkd.
+			local lib
+			if [ "${LIB_NAME}" != "gtkd" ]; then
+				lib="${DLANG_LINKER_FLAG}-L. ${DLANG_LINKER_FLAG}-lgtkd-${MAJOR}"
+			fi
 			dlang_compile_lib_so lib${LIB_NAME}-${MAJOR}.so \
-				lib${LIB_NAME}-${MAJOR}.so.0 -Isrc ${GTKD_SRC_DIRS[$i]}/*/*.d
+				lib${LIB_NAME}-${MAJOR}.so.0 -Isrc ${GTKD_SRC_DIRS[$i]}/*/*.d ${lib}
 		else
 			ewarn "${DC} does not have shared library support."
 			ewarn "Only static ${LIB_NAME} will be compiled if selected through the static-libs USE flag."
