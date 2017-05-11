@@ -218,8 +218,9 @@ EOF
 DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -L-L/${PREFIX}/lib -L-rpath -L/${PREFIX}/lib
 EOF
 	fi
-	insinto ${PREFIX}/bin
-	doins linux/bin${MODEL}/dmd.conf
+	insinto "etc/dmd"
+	newins "linux/bin${MODEL}/dmd.conf" "${SLOT}.conf"
+	dosym "../../../etc/dmd/${SLOT}.conf" "${PREFIX}/bin/dmd.conf"
 
 	# DMD
 	einfo "Installing ${PN}..."
