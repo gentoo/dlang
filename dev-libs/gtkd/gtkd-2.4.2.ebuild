@@ -11,7 +11,8 @@ SLOT="2"
 KEYWORDS="x86 amd64"
 SRC_URI="http://gtkd.org/Downloads/sources/GtkD-${PV}.zip"
 
-DLANG_VERSION_RANGE="2.063-2.064 2.066-"
+# 2.068 through 2.070 suffer from https://forum.gtkd.org/groups/GtkD/thread/302/
+DLANG_VERSION_RANGE="2.063-2.067 2.071-"
 DLANG_PACKAGE_TYPE="multi"
 
 inherit eutils dlang
