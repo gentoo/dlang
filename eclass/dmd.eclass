@@ -145,6 +145,8 @@ dmd_src_compile() {
 
 	# 2.068 used HOST_DC instead of HOST_DMD
 	[[ "${SLOT}" == "2.068" ]] && HOST_DMD="HOST_DC" || HOST_DMD="HOST_DMD"
+	# 2.072 and 2.073 have support for LTO, but would need a Makefile patch
+	[[ "${SLOT}" != "2.072" && "${SLOT}" != "2.073" ]] && LTO="ENABLE_LTO=1"
 
 	# Special case for self-hosting (i.e. no compiler USE flag selected).
 	local kernel model
@@ -161,7 +163,7 @@ dmd_src_compile() {
 		esac
 		export DMD="../../${kernel}/bin${model}/dmd"
 	fi
-	emake -C src/dmd -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" RELEASE=1 ENABLE_LTO=1
+	emake -C src/dmd -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" RELEASE=1 ${LTO}
 
 	# Don't pick up /etc/dmd.conf when calling src/dmd/dmd !
 	if [ ! -f src/dmd/dmd.conf ]; then
