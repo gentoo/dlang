@@ -156,7 +156,7 @@ dmd_src_compile() {
 		esac
 		export DMD="../../${kernel}/bin${model}/dmd"
 	fi
-	emake -C src/dmd -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" RELEASE=1
+	emake -C src/dmd -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" RELEASE=1 ENABLE_LTO=1
 
 	# Don't pick up /etc/dmd.conf when calling src/dmd/dmd !
 	if [ ! -f src/dmd/dmd.conf ]; then
