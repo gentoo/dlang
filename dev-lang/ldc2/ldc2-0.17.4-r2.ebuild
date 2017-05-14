@@ -26,11 +26,16 @@ RDEPEND=">=dev-libs/libconfig-1.4.7
 DEPEND=">=dev-util/cmake-2.8
 	${RDEPEND}"
 
+detect_hardened() {
+	gcc --version | grep -o Hardened
+}
+
 src_configure() {
 	local mycmakeargs=(
 		-DD_VERSION=2
 		-DCMAKE_INSTALL_PREFIX=/opt/ldc2-$(get_version_component_range 1-2)
 	)
+	detect_hardened && mycmakeargs+=( -DADDITIONAL_DEFAULT_LDC_SWITCHES=', "-relocation-model=pic"' )
 	cmake-utils_src_configure
 }
 

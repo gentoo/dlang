@@ -60,6 +60,10 @@ dmd_selfhosting() {
 	[[ "${MAJOR}" -ge 2 ]] && [[ "${MINOR}" -ge 68 ]]
 }
 
+detect_hardened() {
+	gcc --version | grep -o Hardened
+}
+
 IUSE="doc examples static-libs tools"
 if dmd_selfhosting; then
 	DLANG_VERSION_RANGE="${DLANG_VERSION_RANGE-${SLOT}}"
@@ -127,10 +131,11 @@ dmd_src_prepare() {
 }
 
 dmd_src_compile() {
-	#Need to set PIC if GCC is hardened, otherwise users will be unable to link Phobos
-	if [[ $(gcc --version | grep -o Hardened) ]]; then
+	# Need to set PIC if GCC is hardened, otherwise linking will fail
+	if detect_hardened; then
 		einfo "Hardened GCC detected - setting PIC"
 		PIC="PIC=1"
+		ENABLE_PIC="ENABLE_PIC=1"
 	fi
 
 	# A native build of dmd is used to compile the runtimes for both x86 and amd64
@@ -180,7 +185,8 @@ dmd_src_compile() {
 
 dmd_src_test() {
 	test_hello_world() {
-		src/dmd/dmd -m${MODEL} -Isrc/phobos -Isrc/druntime/import -L-Lsrc/phobos/generated/linux/release/${MODEL} samples/d/hello.d || die "Failed to build hello.d (${MODEL}-bit)"
+		detect_hardened && PIC="-fPIC"
+		src/dmd/dmd -m${MODEL} ${PIC} -Isrc/phobos -Isrc/druntime/import -L-Lsrc/phobos/generated/linux/release/${MODEL} samples/d/hello.d || die "Failed to build hello.d (${MODEL}-bit)"
 		./hello ${MODEL}-bit || die "Failed to run test sample (${MODEL}-bit)"
 		rm hello.o hello || die "Could not remove temporary files"
 	}
@@ -198,10 +204,11 @@ dmd_src_install() {
 	done
 
 	# dmd.conf
+	detect_hardened && PIC=" -fPIC"
 	if has_multilib_profile; then
 		cat > linux/bin${MODEL}/dmd.conf << EOF
 [Environment]
-DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2
+DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2${PIC}
 [Environment32]
 DFLAGS=%DFLAGS% -L-L/${PREFIX}/lib32 -L-rpath -L/${PREFIX}/lib32
 [Environment64]
@@ -215,7 +222,7 @@ EOF
 	else
 		cat > linux/bin${MODEL}/dmd.conf << EOF
 [Environment]
-DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -L-L/${PREFIX}/lib -L-rpath -L/${PREFIX}/lib
+DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2${PIC} -L-L/${PREFIX}/lib -L-rpath -L/${PREFIX}/lib
 EOF
 	fi
 	insinto "etc/dmd"

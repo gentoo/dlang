@@ -26,10 +26,14 @@ RDEPEND=">=dev-libs/libconfig-1.4.7
 DEPEND=">=dev-util/cmake-2.8
 	${RDEPEND}"
 
-DLANG_VERSION_RANGE="2.068-2.073"
+DLANG_VERSION_RANGE="2.068-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit dlang
+
+detect_hardened() {
+	gcc --version | grep -o Hardened
+}
 
 d_src_configure() {
 	# Make sure libphobos2 is installed into ldc2's directory.
@@ -40,6 +44,7 @@ d_src_configure() {
 		-DD_COMPILER="${DMD}"
 		-DD_COMPILER_DMD_COMPAT=1
 	)
+	detect_hardened && mycmakeargs+=( -DADDITIONAL_DEFAULT_LDC_SWITCHES=', "-relocation-model=pic"' )
 	cmake-utils_src_configure
 }
 
