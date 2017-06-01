@@ -4,8 +4,7 @@
 EAPI="4"
 
 EGIT_REPO_URI="git://github.com/D-Programming-GDC/GDC.git"
-EGIT_BRANCH="gdc-4.8"
-EGIT_COMMIT="v2.066.1_gcc4.8"
+EGIT_COMMIT="v2.066.1r2_gcc4.9"
 EGIT_SOURCEDIR="${WORKDIR}/dev"
 EGIT_NOUNPACK=1
 
@@ -14,11 +13,11 @@ inherit git-2
 IUSE="d"
 
 # Original GCC code starts here
-PATCH_VER="1.3"
+PATCH_VER="1.5"
 UCLIBC_VER="1.0"
 
 # Hardened gcc 4 stuff
-PIE_VER="0.6.2"
+PIE_VER="0.6.4"
 SPECS_VER="0.2.0"
 SPECS_GCC_VER="4.4.3"
 # arch/libc configurations known to be stable with {PIE,SSP}-by-default
@@ -32,13 +31,13 @@ SSP_UCLIBC_STABLE="x86 amd64 mips ppc ppc64 arm"
 
 inherit eutils toolchain
 
-KEYWORDS="alpha amd64 arm ~arm64 hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86 ~amd64-fbsd ~x86-fbsd"
+KEYWORDS="amd64 arm ~arm64 ia64 m68k ppc ppc64 s390 sh x86 ~amd64-fbsd ~x86-fbsd"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
 	elibc_glibc? ( >=sys-libs/glibc-2.8 )
 	>=${CATEGORY}/binutils-2.20"
-PDEPEND="d? ( =dev-util/gdmd-${PV}* )"
+PDEPEND="d? ( ~dev-util/gdmd-${PV} )"
 
 GCC_FILESDIR=${PORTDIR}/sys-devel/gcc/files
 
