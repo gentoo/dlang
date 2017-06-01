@@ -8,7 +8,7 @@ HOMEPAGE="http://code.dlang.org/"
 LICENSE="MIT"
 
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~arm"
+KEYWORDS="amd64 x86 ~arm"
 IUSE="debug"
 
 GITHUB_URI="https://codeload.github.com/D-Programming-Language"
