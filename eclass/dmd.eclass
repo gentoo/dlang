@@ -59,10 +59,6 @@ dmd_selfhosting() {
 	[[ "${MAJOR}" -ge 2 ]] && [[ "${MINOR}" -ge 68 ]]
 }
 
-detect_hardened() {
-	gcc --version | grep -o Hardened
-}
-
 IUSE="doc examples static-libs tools"
 if dmd_selfhosting; then
 	DLANG_VERSION_RANGE="${DLANG_VERSION_RANGE-${SLOT}}"
@@ -130,13 +126,6 @@ dmd_src_prepare() {
 }
 
 dmd_src_compile() {
-	# Need to set PIC if GCC is hardened, otherwise linking will fail
-	if detect_hardened; then
-		einfo "Hardened GCC detected - setting PIC"
-		PIC="PIC=1"
-		ENABLE_PIC="ENABLE_PIC=1"
-	fi
-
 	# A native build of dmd is used to compile the runtimes for both x86 and amd64
 	# We cannot use multilib-minimal yet, as we have to be sure dmd for amd64
 	# always gets build first.
@@ -172,10 +161,10 @@ dmd_src_compile() {
 
 	compile_libraries() {
 		einfo 'Building druntime...'
-		emake -C src/druntime -f posix.mak DMD=../dmd/dmd MODEL=${MODEL} MANIFEST= ${PIC}
+		emake -C src/druntime -f posix.mak DMD=../dmd/dmd MODEL=${MODEL} PIC=1 MANIFEST=
 
 		einfo 'Building Phobos 2...'
-		emake -C src/phobos -f posix.mak DMD=../dmd/dmd MODEL=${MODEL} VERSION=../VERSION CUSTOM_DRUNTIME=1 ${PIC}
+		emake -C src/phobos -f posix.mak DMD=../dmd/dmd MODEL=${MODEL} PIC=1 VERSION=../VERSION CUSTOM_DRUNTIME=1
 	}
 
 	dmd_foreach_abi compile_libraries
@@ -186,8 +175,7 @@ dmd_src_compile() {
 
 dmd_src_test() {
 	test_hello_world() {
-		detect_hardened && PIC="-fPIC"
-		src/dmd/dmd -m${MODEL} ${PIC} -Isrc/phobos -Isrc/druntime/import -L-Lsrc/phobos/generated/linux/release/${MODEL} samples/d/hello.d || die "Failed to build hello.d (${MODEL}-bit)"
+		src/dmd/dmd -m${MODEL} -fPIC -Isrc/phobos -Isrc/druntime/import -L-Lsrc/phobos/generated/linux/release/${MODEL} samples/d/hello.d || die "Failed to build hello.d (${MODEL}-bit)"
 		./hello ${MODEL}-bit || die "Failed to run test sample (${MODEL}-bit)"
 		rm hello.o hello || die "Could not remove temporary files"
 	}
@@ -205,11 +193,10 @@ dmd_src_install() {
 	done
 
 	# dmd.conf
-	detect_hardened && PIC=" -fPIC"
 	if has_multilib_profile; then
 		cat > linux/bin${MODEL}/dmd.conf << EOF
 [Environment]
-DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2${PIC}
+DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -fPIC
 [Environment32]
 DFLAGS=%DFLAGS% -L-L/${PREFIX}/lib32 -L-rpath -L/${PREFIX}/lib32
 [Environment64]
@@ -223,7 +210,7 @@ EOF
 	else
 		cat > linux/bin${MODEL}/dmd.conf << EOF
 [Environment]
-DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2${PIC} -L-L/${PREFIX}/lib -L-rpath -L/${PREFIX}/lib
+DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -fPIC -L-L/${PREFIX}/lib -L-rpath -L/${PREFIX}/lib
 EOF
 	fi
 	insinto "etc/dmd"

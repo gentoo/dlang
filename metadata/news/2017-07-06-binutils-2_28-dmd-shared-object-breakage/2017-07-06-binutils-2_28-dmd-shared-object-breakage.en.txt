@@ -1,0 +1,37 @@
+Title: binutils 2.28 breaks dmd shared objects
+Author: Marco Leise <marco.leise@gmx.de>
+Content-Type: text/plain
+Posted: 2017-07-06
+Revision: 1
+News-Item-Format: 2.0
+Display-If-Installed: dev-lang/dmd
+
+We currently have two issues with the linkers in binutils. Since 2.27,
+the gold linker refuses to work with dmd, but that can be worked around
+by using ld.bfd (which is the default).
+
+Now with binutils 2.28 we face a new issue. The way the druntime scans
+shared libraries for modules got broken and you see error messages of
+the form:
+
+# Fatal Error while loading '/usr/lib/libphobos2.so.XX':
+#     The module '<...>' is already defined in '<...>'
+
+The bug report about that was first opened in May and as of now the
+answer is to compile all code with '-fPIC'.
+
+# https://issues.dlang.org/show_bug.cgi?id=17375
+
+For you reading this, there are three options to get there:
+
+1. Append '-fPIC' to the DFLAGS of the DMD versions you need to work
+   with binutils 2.28. If you only have one, it is in /etc/dmd.conf, if
+   you have multiple versions installed pick them from /etc/dmd/.
+2. Have the ebuilds append the flags during a reinstall of DMD.
+   a) Using the 'selfhost' USE-flag.
+   b) By first reinstalling DMD 2.067 (the last C++ based version) and
+      then using that to compile one of the later (self-hosting)
+      versions.
+3. Install binutils 2.27, use
+   # sudo binutils-config x86_64-pc-linux-gnu-2.27
+   to activate it, reinstall DMD, then switch back to binutils 2.28.
