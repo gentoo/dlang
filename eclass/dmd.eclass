@@ -267,7 +267,7 @@ EOF
 		einstalldocs
 		insinto "/usr/share/doc/${PF}/html"
 		doins "${FILESDIR}/dmd-doc.png"
-		make_desktop_entry "xdg-open ${ROOT}/usr/share/doc/${PF}/html/d/index.html" "DMD ${PV}" "${ROOT}/usr/share/doc/${PF}/html/dmd-doc.png" "Development"
+		make_desktop_entry "xdg-open ${ROOT}usr/share/doc/${PF}/html/d/index.html" "DMD ${PV}" "${ROOT}usr/share/doc/${PF}/html/dmd-doc.png" "Development"
 	fi
 	if use examples; then
 		insinto ${PREFIX}/samples
