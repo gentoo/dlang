@@ -13,7 +13,7 @@ PATCHES="${FILESDIR}/${P}-issue1395.patch"
 
 DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://ldc-developers.github.com/ldc"
-KEYWORDS="~x86 ~amd64 ~arm"
+KEYWORDS="x86 amd64 ~arm"
 LICENSE="BSD"
 SLOT="$(get_version_component_range 1-2)/$(get_version_component_range 3)"
 
