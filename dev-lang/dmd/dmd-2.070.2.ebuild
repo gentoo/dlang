@@ -5,9 +5,11 @@ EAPI=6
 
 KEYWORDS="-* amd64 x86"
 YEAR=2016
-DLANG_VERSION_RANGE="2.067-"
+DLANG_VERSION_RANGE="2.067-2.073"
 
 inherit dmd
+
+PATCHES="2.070-disable-dwarf.patch"
 
 FILES=(
 	[1]="license.txt                license.txt"
