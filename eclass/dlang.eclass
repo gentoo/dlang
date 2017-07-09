@@ -107,7 +107,7 @@ dlang_has_shared_lib_support() {
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
 		[[ $(get_major_version ${DLANG_VERSION}) -eq 2 ]] && [[ $((10#$(get_after_major_version ${DLANG_VERSION}))) -ge 68 ]]
 	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
-		return 1
+		[[ $(get_major_version ${DLANG_VERSION}) -eq 2 ]] && [[ $((10#$(get_after_major_version ${DLANG_VERSION}))) -ge 73 ]]
 	else
 		die "Could not detect D compiler vendor!"
 	fi
@@ -445,7 +445,7 @@ __dlang_filter_versions() {
 
 	local -a compiler
 	for compiler in ${__dlang_compiler_iuse[@]}; do
-		DLANG_COMPILER_USE="${DLANG_COMPILER_USE}${compiler}?,"
+		DLANG_COMPILER_USE="${DLANG_COMPILER_USE}${compiler}?(-),"
 	done
 	DLANG_COMPILER_USE="${DLANG_COMPILER_USE:0:-1}"
 }
