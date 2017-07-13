@@ -9,7 +9,6 @@ MY_PV="$(replace_version_separator '_' '-')"
 MY_P="ldc-${MY_PV}-src"
 SRC_URI="https://github.com/ldc-developers/ldc/releases/download/v${MY_PV}/${MY_P}.tar.gz"
 S=${WORKDIR}/${MY_P}
-PATCHES="${FILESDIR}/${P}-shared-libs.patch"
 
 DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://ldc-developers.github.com/ldc"
@@ -32,6 +31,14 @@ inherit dlang
 
 detect_hardened() {
 	gcc --version | grep -o Hardened
+}
+
+src_prepare() {
+	sed -i 's/@MULTILIB_ADDITIONAL_INSTALL_PATH@/"-L-rpath", "-L@CMAKE_INSTALL_LIBDIR@",/' ldc2_install.conf.in || die "Cannot patch ldc2_install.conf.in"
+	if use static-libs; then
+		sed -i 's/phobos2-ldc,druntime-ldc/phobos2-ldc-shared,druntime-ldc-shared/;s/phobos2-ldc-debug,druntime-ldc-debug/phobos2-ldc-debug-shared,druntime-ldc-debug-shared/' ldc2_install.conf.in || die "Cannot patch ldc2_install.conf.in"
+	fi
+	eapply_user
 }
 
 d_src_configure() {

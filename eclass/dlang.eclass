@@ -445,7 +445,7 @@ __dlang_filter_versions() {
 
 	local -a compiler
 	for compiler in ${__dlang_compiler_iuse[@]}; do
-		DLANG_COMPILER_USE="${DLANG_COMPILER_USE}${compiler}?(-),"
+		DLANG_COMPILER_USE="${DLANG_COMPILER_USE}${compiler}?,"
 	done
 	DLANG_COMPILER_USE="${DLANG_COMPILER_USE:0:-1}"
 }
