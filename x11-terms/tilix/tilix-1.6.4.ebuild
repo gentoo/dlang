@@ -13,7 +13,7 @@ IUSE="+crypt"
 
 DLANG_VERSION_RANGE="2.070-"
 DLANG_PACKAGE_TYPE="single"
-PLOCALES="ak ar_MA bg cs de el en es fr he id it ja ko lt nl pl pt_BR pt_PT ru sv tr uk zh_CN zh_TW"
+PLOCALES="ak ar_MA bg cs de el en es fi fr he id it ja ko lt nl pl pt_BR pt_PT ru sr sv tr uk zh_CN zh_TW"
 PLOCALE_BACKUP="en"
 
 inherit gnome2 dlang l10n
