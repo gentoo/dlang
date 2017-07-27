@@ -312,7 +312,7 @@ __dlang_compiler_masked_archs_for_version_range() {
 	fi
 
 	# Check the stability requirements
-	local ebuild_stab comp_stab have_one=0
+	local ebuild_stab comp_stab=0 have_one=0
 	for package_keyword in $KEYWORDS; do
 		if [ "${package_keyword:0:1}" == "-" ]; then
 			# Skip "-arch" and "-*"
@@ -335,7 +335,8 @@ __dlang_compiler_masked_archs_for_version_range() {
 		done
 		if [ $comp_stab -lt $ebuild_stab ]; then
 			masked_archs+=( $arch )
-		else
+		fi
+		if [ $comp_stab -gt 0 ]; then
 			have_one=1
 		fi
 	done
