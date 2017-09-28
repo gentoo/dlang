@@ -30,7 +30,7 @@ MAJOR="$(get_major_version)"
 MINOR="$((10#$(get_version_component_range 2)))"
 PATCH="$(get_version_component_range 3)"
 VERSION="$(get_version_component_range 1-3)"
-BETA="$(echo $(get_version_component_range 4) | cut -c 5-)"
+BETA="$(get_version_component_range 4)"
 if [ "${KERNEL}" != "FreeBSD" ]; then
 	ARCHIVE="${ARCHIVE-linux.tar.xz}"
 elif [ "${ARCH}" == "x86" ]; then
@@ -70,7 +70,7 @@ fi
 EXPORT_FUNCTIONS src_prepare src_compile src_test src_install pkg_postinst pkg_postrm
 
 if [[ -n "${BETA}" ]]; then
-	SRC_URI="http://downloads.dlang.org/pre-releases/${MAJOR}.x/${VERSION}/${PN}.${VERSION}-b${BETA}.${ARCHIVE}"
+	SRC_URI="http://downloads.dlang.org/pre-releases/${MAJOR}.x/${VERSION}/${PN}.${VERSION}-b${BETA:4}.${ARCHIVE}"
 else
 	SRC_URI="mirror://aws/${YEAR}/${PN}.${PV}.${ARCHIVE}"
 fi
