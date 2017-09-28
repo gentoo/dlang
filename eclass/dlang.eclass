@@ -105,7 +105,7 @@ dlang_has_shared_lib_support() {
 	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
 		[[ $(get_major_version ${DLANG_VERSION}) -eq 2 ]] && [[ $((10#$(get_after_major_version ${DLANG_VERSION}))) -ge 63 ]]
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
-		[[ $(get_major_version ${DLANG_VERSION}) -eq 2 ]] && [[ $((10#$(get_after_major_version ${DLANG_VERSION}))) -ge 68 ]]
+		true
 	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
 		[[ $(get_major_version ${DLANG_VERSION}) -eq 2 ]] && [[ $((10#$(get_after_major_version ${DLANG_VERSION}))) -ge 73 ]]
 	else
