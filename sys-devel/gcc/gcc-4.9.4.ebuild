@@ -60,6 +60,7 @@ src_prepare() {
 		# Get GDC sources into the tree.
 		git-2_src_unpack
 		cd ../dev || die "Changing into Git checkout directory failed."
+		use pgo && epatch "${FILESDIR}"/gdc-pgo.patch
 		./setup-gcc.sh ../gcc-${GCC_PV} || die "Could not setup GDC."
 	fi
 }
