@@ -205,6 +205,8 @@ dlang_convert_ldflags() {
 				filter-ldflags {-L,-Xlinker,-Wl,}--gc-sections
 			fi
 		fi
+		# Filter ld.gold ICF flag. (https://issues.dlang.org/show_bug.cgi?id=17515)
+		filter-ldflags {-L,-Xlinker,-Wl,}--icf={none,all,safe}
 	fi
 
 	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]] || [[ "${DLANG_VENDOR}" == "GNU" ]]; then
