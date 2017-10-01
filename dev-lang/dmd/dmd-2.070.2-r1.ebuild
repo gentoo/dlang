@@ -13,9 +13,9 @@ PATCHES="2.070-disable-dwarf.patch"
 
 FILES=(
 	[1]="license.txt                license.txt"
-	[2]="src/druntime/LICENSE       druntime-LICENSE.txt"
-	[3]="src/druntime/README.md     druntime-README.md"
-	[4]="src/phobos/LICENSE_1_0.txt phobos-LICENSE_1_0.txt"
-	[5]="src/dmd/backendlicense.txt dmd-backendlicense.txt"
-	[6]="src/dmd/boostlicense.txt   dmd-boostlicense.txt"
+	[2]="druntime/LICENSE           druntime-LICENSE.txt"
+	[3]="druntime/README.md         druntime-README.md"
+	[4]="phobos/LICENSE_1_0.txt     phobos-LICENSE_1_0.txt"
+	[5]="dmd/src/backendlicense.txt dmd-backendlicense.txt"
+	[6]="dmd/src/boostlicense.txt   dmd-boostlicense.txt"
 )

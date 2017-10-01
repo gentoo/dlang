@@ -1,5 +1,5 @@
---- dmd2/src/dmd/backend/backconfig.c	2016-03-03 11:42:12.000000000 +0100
-+++ dmd2/src/dmd/backend/backconfig.c	2017-07-06 16:32:03.540184944 +0200
+--- dmd2/dmd/src/backend/backconfig.c	2016-03-03 11:42:12.000000000 +0100
++++ dmd2/dmd/src/backend/backconfig.c	2017-07-06 16:32:03.540184944 +0200
 @@ -95,7 +95,7 @@
  #if TARGET_LINUX
      if (model == 64)

@@ -11,15 +11,15 @@ inherit dmd
 
 FILES=(
 	[1]="license.txt                license.txt"
-	[2]="src/druntime/LICENSE       druntime-LICENSE.txt"
-	[3]="src/druntime/README.md     druntime-README.md"
-	[4]="src/phobos/LICENSE_1_0.txt phobos-LICENSE_1_0.txt"
-	[5]="src/dmd/backendlicense.txt dmd-backendlicense.txt"
-	[6]="src/dmd/boostlicense.txt   dmd-boostlicense.txt"
+	[2]="druntime/LICENSE           druntime-LICENSE.txt"
+	[3]="druntime/README.md         druntime-README.md"
+	[4]="phobos/LICENSE_1_0.txt     phobos-LICENSE_1_0.txt"
+	[5]="dmd/src/backendlicense.txt dmd-backendlicense.txt"
+	[6]="dmd/src/boostlicense.txt   dmd-boostlicense.txt"
 )
 
 dmd_src_prepare_extra() {
 	# Copy default DDOC theme file into resource directory
-	mkdir "src/res" || die "Failed to create 'src/res' directory"
-	cp "${FILESDIR}/default_ddoc_theme.ddoc" "src/res/default_ddoc_theme.ddoc" || die "Failed to copy default_ddoc_theme.ddoc file into 'src/res' directory."
+	mkdir "dmd/res" || die "Failed to create 'dmd/res' directory"
+	cp "${FILESDIR}/2.073-default_ddoc_theme.ddoc" "dmd/res/default_ddoc_theme.ddoc" || die "Failed to copy 'default_ddoc_theme.ddoc' file into 'src/res' directory."
 }

@@ -42,10 +42,10 @@ SONAME="${SONAME-libphobos2.so.0.${MINOR}.${PATCH}}"
 SONAME_SYM="${SONAME%.*}"
 declare -ga FILES=(
 	[1]="license.txt                     license.txt"
-	[2]="src/druntime/LICENSE            druntime-LICENSE.txt"
-	[3]="src/druntime/README.md          druntime-README.md"
-	[4]="src/phobos/LICENSE_1_0.txt      phobos-LICENSE_1_0.txt"
-	[5]="src/dmd/ddmd/boostlicense.txt   dmd-boostlicense.txt"
+	[2]="druntime/LICENSE                druntime-LICENSE.txt"
+	[3]="druntime/README.md              druntime-README.md"
+	[4]="phobos/LICENSE_1_0.txt          phobos-LICENSE_1_0.txt"
+	[5]="dmd/src/ddmd/boostlicense.txt   dmd-boostlicense.txt"
 )
 
 dmd_symlinkable() {
@@ -106,6 +106,16 @@ dmd_foreach_abi() {
 }
 
 dmd_src_prepare() {
+	# Reorganize directories
+	mkdir dmd || die "Failed to create directories 'dmd', 'druntime' and 'phobos'"
+	mv src/dmd      dmd/src     || die "Failed to move 'src/dmd' to 'dmd/src'"
+	mv src/VERSION  dmd/VERSION || die "Failed to move 'src/VERSION' to 'dmd/VERSION'"
+	mv src/druntime druntime    || die "Failed to move 'src/druntime' to 'druntime'"
+	mv src/phobos   phobos      || die "Failed to move 'src/phobos' to 'phobos'"
+	# Symlinks used by dmd in the selfhosting case
+	ln -s ../druntime src/druntime || die "Failed to symlink 'druntime' to 'src/druntime'"
+	ln -s ../phobos   src/phobos   || die "Failed to symlink 'phobos' to 'src/phobos'"
+
 	# Convert line-endings of file-types that start as cr-lf and are installed later on
 	for file in $( find . -name "*.txt" -o -name "*.html" -o -name "*.d" -o -name "*.di" -o -name "*.ddoc" -type f ); do
 		edos2unix $file || die "Failed to convert DOS line-endings to Unix."
@@ -151,31 +161,31 @@ dmd_src_compile() {
 		esac
 		export DMD="../../${kernel}/bin${model}/dmd"
 	fi
-	emake -C src/dmd -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" RELEASE=1 ${LTO}
+	emake -C dmd/src -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" RELEASE=1 ${LTO}
 
-	# Don't pick up /etc/dmd.conf when calling src/dmd/dmd !
-	if [ ! -f src/dmd/dmd.conf ]; then
+	# Don't pick up /etc/dmd.conf when calling dmd/src/dmd !
+	if [ ! -f dmd/src/dmd.conf ]; then
 		einfo "Creating a dummy dmd.conf"
-		touch src/dmd/dmd.conf || die "Could not create dummy dmd.conf"
+		touch dmd/src/dmd.conf || die "Could not create dummy dmd.conf"
 	fi
 
 	compile_libraries() {
 		einfo 'Building druntime...'
-		emake -C src/druntime -f posix.mak DMD=../dmd/dmd MODEL=${MODEL} PIC=1 MANIFEST=
+		emake -C druntime -f posix.mak DMD=../dmd/src/dmd MODEL=${MODEL} PIC=1 MANIFEST=
 
 		einfo 'Building Phobos 2...'
-		emake -C src/phobos -f posix.mak DMD=../dmd/dmd MODEL=${MODEL} PIC=1 VERSION=../VERSION CUSTOM_DRUNTIME=1
+		emake -C phobos -f posix.mak DMD=../dmd/src/dmd MODEL=${MODEL} PIC=1 CUSTOM_DRUNTIME=1
 	}
 
 	dmd_foreach_abi compile_libraries
 
 	# Not needed after compilation. Would otherwise be installed as imports.
-	rm -r src/phobos/etc/c/zlib
+	rm -r phobos/etc/c/zlib
 }
 
 dmd_src_test() {
 	test_hello_world() {
-		src/dmd/dmd -m${MODEL} -fPIC -Isrc/phobos -Isrc/druntime/import -L-Lsrc/phobos/generated/linux/release/${MODEL} samples/d/hello.d || die "Failed to build hello.d (${MODEL}-bit)"
+		dmd/src/dmd -m${MODEL} -fPIC -Iphobos -Idruntime/import -L-Lphobos/generated/linux/release/${MODEL} samples/d/hello.d || die "Failed to build hello.d (${MODEL}-bit)"
 		./hello ${MODEL}-bit || die "Failed to run test sample (${MODEL}-bit)"
 		rm hello.o hello || die "Could not remove temporary files"
 	}
@@ -221,12 +231,12 @@ EOF
 	einfo "Installing ${PN}..."
 	dmd_symlinkable && dosym "../../${PREFIX}/bin/dmd" "${ROOT}/usr/bin/dmd-${SLOT}"
 	into ${PREFIX}
-	dobin "src/dmd/dmd"
+	dobin "dmd/src/dmd"
 
 	# druntime
 	einfo 'Installing druntime...'
 	insinto ${PREFIX}
-	doins -r src/druntime/import
+	doins -r druntime/import
 
 	# Phobos 2
 	einfo 'Installing Phobos 2...'
@@ -240,7 +250,7 @@ EOF
 		fi
 
 		# Install shared lib.
-		dolib.so src/phobos/generated/linux/release/${MODEL}/"${SONAME}"
+		dolib.so phobos/generated/linux/release/${MODEL}/"${SONAME}"
 		dosym "${SONAME}" /usr/"$(get_libdir)"/"${SONAME_SYM}"
 		dosym ../../../usr/"$(get_libdir)"/"${SONAME}" /usr/"${libdir}"/libphobos2.so
 
@@ -251,12 +261,12 @@ EOF
 			else
 				export LIBDIR_${ABI}="../opt/dmd-${SLOT}/lib"
 			fi
-			dolib.a src/phobos/generated/linux/release/${MODEL}/libphobos2.a
+			dolib.a phobos/generated/linux/release/${MODEL}/libphobos2.a
 		fi
 	}
 	dmd_foreach_abi install_phobos_2
 	insinto ${PREFIX}/import
-	doins -r src/phobos/{etc,std}
+	doins -r phobos/{etc,std}
 
 	# man pages, docs and samples
 	insinto ${PREFIX}/man/man1

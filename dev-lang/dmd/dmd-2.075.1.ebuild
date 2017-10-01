@@ -11,6 +11,6 @@ inherit dmd
 
 dmd_src_prepare_extra() {
 	# Copy default DDOC theme file into resource directory
-	mkdir "src/res" || die "Failed to create 'src/res' directory"
-	cp "${FILESDIR}/default_ddoc_theme.ddoc" "src/res/default_ddoc_theme.ddoc" || die "Failed to copy default_ddoc_theme.ddoc file into 'src/res' directory."
+	mkdir "dmd/res" || die "Failed to create 'dmd/res' directory"
+	cp "${FILESDIR}/2.073-default_ddoc_theme.ddoc" "dmd/res/default_ddoc_theme.ddoc" || die "Failed to copy 'default_ddoc_theme.ddoc' file into 'src/res' directory."
 }
