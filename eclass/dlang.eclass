@@ -414,8 +414,8 @@ __dlang_filter_versions() {
 				start=
 				stop="${range#-}"
 			elif [[ "${range}" == *?-?* ]]; then
-				start="$(echo "${range}" | cut -d- -f1)"
-				stop="$(echo "${range}" | cut -d- -f2)"
+				start="${range%-*}"
+				stop="${range#*-}"
 			else
 				start="${range}"
 				stop="${range}"

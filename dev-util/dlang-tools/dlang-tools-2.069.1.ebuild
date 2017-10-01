@@ -18,11 +18,11 @@ inherit versionator
 DLANG_SLOT="$(get_version_component_range 1-2)"
 RESTRICT="mirror"
 GITHUB_URI="https://github.com/D-Programming-Language/tools/archive"
-BETA="$(echo $(get_version_component_range 4) | cut -c 5-)"
+BETA="$(get_version_component_range 4)"
 VERSION="$(get_version_component_range 1-3)"
 
 if [[ -n "${BETA}" ]]; then
-	VERSION="${VERSION}-b${BETA}"
+	VERSION="${VERSION}-b${BETA:4}"
 fi
 SRC_URI="${GITHUB_URI}/v${VERSION}.tar.gz -> dlang-tools-${VERSION}.tar.gz"
 

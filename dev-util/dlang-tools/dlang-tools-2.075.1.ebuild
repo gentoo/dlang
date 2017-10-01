@@ -18,11 +18,11 @@ inherit versionator
 DLANG_SLOT="$(get_version_component_range 1-2)"
 RESTRICT="mirror"
 
-BETA="$(echo $(get_version_component_range 4) | cut -c 5-)"
+BETA="$(get_version_component_range 4)"
 VERSION="$(get_version_component_range 1-3)"
 
 if [[ -n "${BETA}" ]]; then
-	VERSION="${VERSION}-b${BETA}"
+	VERSION="${VERSION}-b${BETA:4}"
 fi
 SRC_URI="https://codeload.github.com/D-Programming-Language/tools/tar.gz/v${VERSION} -> dlang-tools-${VERSION}.tar.gz"
 

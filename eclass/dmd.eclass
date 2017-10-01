@@ -39,7 +39,7 @@ else
 	ARCHIVE="${ARCHIVE-freebsd-64.tar.xz}"
 fi
 SONAME="${SONAME-libphobos2.so.0.${MINOR}.${PATCH}}"
-SONAME_SYM="$(echo ${SONAME} | cut -d. -f5 --complement)"
+SONAME_SYM="${SONAME%.*}"
 declare -ga FILES=(
 	[1]="license.txt                     license.txt"
 	[2]="src/druntime/LICENSE            druntime-LICENSE.txt"
