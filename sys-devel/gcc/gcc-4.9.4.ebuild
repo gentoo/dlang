@@ -3,16 +3,6 @@
 
 EAPI="5"
 
-EGIT_REPO_URI="git://github.com/D-Programming-GDC/GDC.git"
-EGIT_COMMIT="v2.068.2_gcc4.9"
-EGIT_SOURCEDIR="${WORKDIR}/dev"
-EGIT_NOUNPACK=1
-
-inherit git-2
-
-IUSE="d"
-
-# Original GCC code starts here
 PATCH_VER="1.0"
 UCLIBC_VER="1.0"
 
@@ -37,11 +27,21 @@ RDEPEND=""
 DEPEND="${RDEPEND}
 	elibc_glibc? ( >=sys-libs/glibc-2.8 )
 	>=${CATEGORY}/binutils-2.20"
-PDEPEND="d? ( ~dev-util/gdmd-${PV} )"
 
 if [[ ${CATEGORY} != cross-* ]] ; then
 	PDEPEND="${PDEPEND} elibc_glibc? ( >=sys-libs/glibc-2.8 )"
 fi
+
+IUSE="d"
+PDEPEND="${PDEPEND} d? ( ~dev-util/gdmd-${PV} )"
+SRC_URI="${SRC_URI}
+	https://codeload.github.com/D-Programming-GDC/GDC/tar.gz/v2.068.2_gcc$GCC_BRANCH_VER -> gdc-2.068.2_gcc-$GCC_BRANCH_VER.tar.gz"
+
+src_unpack() {
+	toolchain_src_unpack
+
+	use d && unpack gdc-2.068.2_gcc-$GCC_BRANCH_VER.tar.gz
+}
 
 src_prepare() {
 	if has_version '<sys-libs/glibc-2.12' ; then
@@ -58,8 +58,7 @@ src_prepare() {
 
 	if use d ; then
 		# Get GDC sources into the tree.
-		git-2_src_unpack
-		cd ../dev || die "Changing into Git checkout directory failed."
+		cd ../GDC-2.068.2_gcc4.9 || die "Changing into GDC directory failed."
 		use pgo && epatch "${FILESDIR}"/gdc-pgo.patch
 		./setup-gcc.sh ../gcc-${GCC_PV} || die "Could not setup GDC."
 	fi
