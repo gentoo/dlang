@@ -516,7 +516,7 @@ __dlang_build_configurations() {
 				;;
 		esac
 	done
-	if [ -z ${variants} ]; then
+	if [ -z "${variants}" ]; then
 		die "At least one compiler USE-flag must be selected. This should be checked by REQUIRED_USE in this package."
 	fi
 	echo ${variants}
