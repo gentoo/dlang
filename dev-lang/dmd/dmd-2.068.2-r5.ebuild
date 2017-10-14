@@ -9,4 +9,4 @@ DLANG_VERSION_RANGE="2.063-"
 
 inherit dmd
 
-PATCHES="${FILESDIR}/2.067-no-narrowing.patch"
+PATCHES=( "${FILESDIR}/2.067-no-narrowing.patch" "${FILESDIR}/replace-bits-mathdef-h.patch" )

@@ -9,4 +9,4 @@ ARCHIVE="linux.zip"
 
 inherit dmd
 
-PATCHES=( "${FILESDIR}/2.066-no-narrowing.patch" "${FILESDIR}/2.066.1-phobos-makefile.patch" )
+PATCHES=( "${FILESDIR}/2.066-no-narrowing.patch" "${FILESDIR}/replace-bits-mathdef-h.patch" "${FILESDIR}/2.066.1-phobos-makefile.patch" )

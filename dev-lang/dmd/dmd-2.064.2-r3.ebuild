@@ -10,7 +10,7 @@ SONAME="libphobos2.so.0.64.0"
 
 inherit dmd
 
-PATCHES=( "${FILESDIR}/2.064-no-narrowing.patch" "${FILESDIR}/2.064-makefile-multilib.patch" )
+PATCHES=( "${FILESDIR}/2.064-no-narrowing.patch" "${FILESDIR}/replace-bits-mathdef-h.patch" "${FILESDIR}/2.064-makefile-multilib.patch" )
 
 dmd_src_prepare_extra() {
 	# Move dmd.conf man page into correct slot.
