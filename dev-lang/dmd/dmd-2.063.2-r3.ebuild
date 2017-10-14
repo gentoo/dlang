@@ -10,16 +10,6 @@ SONAME="libphobos2.so.0.2.0"
 
 inherit dmd
 
-FILES=(
-	[1]="license.txt                 license.txt"
-	[2]="druntime/LICENSE            druntime-LICENSE.txt"
-	[3]="druntime/README             druntime-README.txt"
-	[4]="${FILESDIR}/LICENSE_1_0.txt phobos-LICENSE_1_0.txt"
-	[5]="dmd/src/backendlicense.txt  dmd-backendlicense.txt"
-	[6]="dmd/src/artistic.txt        dmd-artistic.txt"
-	[7]="dmd/src/gpl.txt             dmd-gpl.txt"
-)
-
 dmd_src_prepare_extra() {
 	# Move dmd.conf man page into correct slot.
 	mkdir man/man5 || die "Failed to create man/man5."

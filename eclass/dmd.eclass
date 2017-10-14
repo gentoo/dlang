@@ -21,10 +21,9 @@ MULTILIB_COMPAT=( abi_x86_{32,64} )
 
 inherit multilib-build versionator
 
-# License doesn't allow redistribution
-LICENSE="DMD"
+# For reliable download statistics, we don't mirror.
 RESTRICT="mirror"
-
+LICENSE="Boost-1.0"
 SLOT="$(get_version_component_range 1-2)"
 MAJOR="$(get_major_version)"
 MINOR="$((10#$(get_version_component_range 2)))"
@@ -40,13 +39,6 @@ else
 fi
 SONAME="${SONAME-libphobos2.so.0.${MINOR}.${PATCH}}"
 SONAME_SYM="${SONAME%.*}"
-declare -ga FILES=(
-	[1]="license.txt                     license.txt"
-	[2]="druntime/LICENSE                druntime-LICENSE.txt"
-	[3]="druntime/README.md              druntime-README.md"
-	[4]="phobos/LICENSE_1_0.txt          phobos-LICENSE_1_0.txt"
-	[5]="dmd/src/ddmd/boostlicense.txt   dmd-boostlicense.txt"
-)
 
 dmd_symlinkable() {
 	# Return whether dmd will find dmd.conf in the executable directory, if we
@@ -196,12 +188,6 @@ dmd_src_test() {
 dmd_src_install() {
 	local MODEL=$(dmd_abi_to_model)
 
-	# Licenses
-	insinto ${PREFIX}
-	for file in "${FILES[@]}"; do
-		newins $file
-	done
-
 	# dmd.conf
 	if has_multilib_profile; then
 		cat > linux/bin${MODEL}/dmd.conf << EOF
@@ -290,7 +276,6 @@ dmd_pkg_postinst() {
 	# Update active dmd
 	"${ROOT}"/usr/bin/eselect dlang update dmd
 
-	elog "License files are in: /${PREFIX}"
 	use examples && elog "Examples can be found in: /${PREFIX}/samples"
 	use doc && elog "HTML documentation is in: /usr/share/doc/${PF}/html"
 }
