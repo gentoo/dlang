@@ -19,7 +19,7 @@ HTML_DOCS="html/*"
 # DMD supports amd64/x86 exclusively
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 
-inherit multilib-build versionator
+inherit multilib-build versionator toolchain-funcs
 
 # For reliable download statistics, we don't mirror.
 RESTRICT="mirror"
@@ -114,11 +114,7 @@ dmd_src_prepare() {
 	done
 
 	# Ebuild patches
-	if [ -n "${PATCHES}" ]; then
-		for p in "${PATCHES}"; do
-			eapply "${FILESDIR}/${p}"
-		done
-	fi
+	default
 
 	# Run other preparations
 	declare -f dmd_src_prepare_extra > /dev/null && dmd_src_prepare_extra
@@ -135,6 +131,8 @@ dmd_src_compile() {
 
 	# 2.068 used HOST_DC instead of HOST_DMD
 	[[ "${SLOT}" == "2.068" ]] && HOST_DMD="HOST_DC" || HOST_DMD="HOST_DMD"
+	# 2.070 and below used HOST_CC instead of HOST_CXX
+	[[ "${MAJOR}" -ge 2 ]] && [[ "${MINOR}" -ge 71 ]] && HOST_CXX="HOST_CXX" || HOST_CXX="HOST_CC"
 	# 2.072 and 2.073 have support for LTO, but would need a Makefile patch
 	[[ "${SLOT}" != "2.072" && "${SLOT}" != "2.073" ]] && LTO="ENABLE_LTO=1"
 
@@ -153,7 +151,7 @@ dmd_src_compile() {
 		esac
 		export DMD="../../${kernel}/bin${model}/dmd"
 	fi
-	emake -C dmd/src -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" RELEASE=1 ${LTO}
+	emake -C dmd/src -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" ${HOST_CXX}="$(tc-getCXX)" RELEASE=1 ${LTO}
 
 	# Don't pick up /etc/dmd.conf when calling dmd/src/dmd !
 	if [ ! -f dmd/src/dmd.conf ]; then

@@ -8,3 +8,5 @@ YEAR=2015
 ARCHIVE="linux.zip"
 
 inherit dmd
+
+PATCHES="${FILESDIR}/2.067-no-narrowing.patch"

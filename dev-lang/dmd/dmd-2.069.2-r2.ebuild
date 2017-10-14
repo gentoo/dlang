@@ -8,3 +8,5 @@ YEAR=2015
 DLANG_VERSION_RANGE="2.067-2.073"
 
 inherit dmd
+
+PATCHES="${FILESDIR}/2.069-no-narrowing.patch"

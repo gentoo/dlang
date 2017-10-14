@@ -1,6 +1,6 @@
 --- dmd2/dmd/src/posix.mak	2014-02-24 05:23:02.000000000 +0100
 +++ dmd2/dmd/src/posix.mak	2014-03-15 00:48:37.568627267 +0100
-@@ -649,7 +649,7 @@ install: all
+@@ -649,7 +652,7 @@ install: all
  	mkdir -p $(INSTALL_DIR)/bin
  	cp dmd $(INSTALL_DIR)/bin/dmd
  	$(eval bin_dir=$(if $(filter $(OS),osx), bin, bin$(MODEL)))

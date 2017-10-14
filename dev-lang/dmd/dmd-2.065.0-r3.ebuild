@@ -9,4 +9,4 @@ ARCHIVE="linux.zip"
 
 inherit dmd
 
-PATCHES="2.065-makefile-multilib.patch"
+PATCHES=( "${FILESDIR}/2.065-no-narrowing.patch" "${FILESDIR}/2.065-makefile-multilib.patch" )

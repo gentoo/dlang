@@ -10,6 +10,8 @@ SONAME="libphobos2.so.0.2.0"
 
 inherit dmd
 
+PATCHES="${FILESDIR}/2.063-no-narrowing.patch"
+
 dmd_src_prepare_extra() {
 	# Move dmd.conf man page into correct slot.
 	mkdir man/man5 || die "Failed to create man/man5."

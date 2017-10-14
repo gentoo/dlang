@@ -9,4 +9,4 @@ DLANG_VERSION_RANGE="2.067-2.073"
 
 inherit dmd
 
-PATCHES="2.070-disable-dwarf.patch"
+PATCHES=( "${FILESDIR}/2.069-no-narrowing.patch" "${FILESDIR}/2.070-disable-dwarf.patch" )

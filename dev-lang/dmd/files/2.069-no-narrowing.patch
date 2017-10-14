@@ -1,0 +1,17 @@
+--- dmd2/dmd/src/posix.mak
++++ dmd2/dmd/src/posix.mak
+@@ -111,8 +111,13 @@ endif
+ else
+ # Default Warnings
+ WARNINGS := -Wno-deprecated -Wstrict-aliasing
++# GCC Specific
++ifeq ($(findstring g++,$(HOST_CC)), g++)
++WARNINGS := $(WARNINGS) \
++        -Wno-narrowing
++endif
+ # Clang Specific
+-ifeq ($(HOST_CC), clang++)
++ifeq ($(findstring clang++,$(HOST_CC)), clang++)
+ WARNINGS := $(WARNINGS) \
+     -Wno-logical-op-parentheses \
+     -Wno-dynamic-class-memaccess \
