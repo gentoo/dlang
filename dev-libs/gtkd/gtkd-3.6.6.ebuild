@@ -19,8 +19,13 @@ inherit eutils dlang
 DEPEND="app-arch/unzip"
 RDEPEND="
 	>=x11-libs/gtk+-3.22:3[${MULTILIB_USEDEP}]
+	>=dev-libs/glib-2.52:2[${MULTILIB_USEDEP}]
+	>=x11-libs/pango-1.40[${MULTILIB_USEDEP}]
+	>=dev-libs/atk-2.24[${MULTILIB_USEDEP}]
+	>=x11-libs/gdk-pixbuf-2.36:2[${MULTILIB_USEDEP}]
+	>=x11-libs/cairo-1.12.2[${MULTILIB_USEDEP}]
 	sourceview? ( >=x11-libs/gtksourceview-3.24:3.0 )
-	gstreamer? ( >=media-libs/gstreamer-1.12:1.0 )
+	gstreamer? ( >=media-libs/gstreamer-1.12:1.0[${MULTILIB_USEDEP}] )
 	vte? ( >=x11-libs/vte-0.48:2.91 )
 	peas? ( >=dev-libs/libpeas-1.20 )
 "
