@@ -11,7 +11,7 @@ SLOT="0"
 KEYWORDS="amd64 x86 ~arm"
 IUSE="debug"
 
-GITHUB_URI="https://codeload.github.com/D-Programming-Language"
+GITHUB_URI="https://codeload.github.com/dlang"
 SRC_URI="${GITHUB_URI}/${PN}/tar.gz/v${PV} -> ${PN}-${PV}.tar.gz"
 PATCHES="${FILESDIR}/${P}-gdc-dmd-pathfix.patch"
 
