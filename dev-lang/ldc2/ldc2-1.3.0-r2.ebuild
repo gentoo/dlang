@@ -38,7 +38,7 @@ src_prepare() {
 	if use static-libs; then
 		sed -i 's/phobos2-ldc,druntime-ldc/phobos2-ldc-shared,druntime-ldc-shared/;s/phobos2-ldc-debug,druntime-ldc-debug/phobos2-ldc-debug-shared,druntime-ldc-debug-shared/' ldc2_install.conf.in || die "Cannot patch ldc2_install.conf.in"
 	fi
-	eapply_user
+	cmake-utils_src_prepare
 }
 
 d_src_configure() {
