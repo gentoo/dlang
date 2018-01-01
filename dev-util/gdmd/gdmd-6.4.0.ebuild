@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -8,7 +8,7 @@ HOMEPAGE="http://www.gdcproject.org/"
 LICENSE="GPL-3+"
 
 SLOT="${PV}"
-KEYWORDS="amd64 arm ia64 m68k ppc ppc64 s390 sh x86 ~amd64-fbsd ~x86-fbsd"
+KEYWORDS="amd64 ~arm ~arm64 ia64 ~m68k ppc ppc64 ~s390 ~sh sparc x86 ~amd64-fbsd ~x86-fbsd"
 DEPEND="=sys-devel/gcc-${PV}*[d]"
 RDEPEND="${DEPEND}"
 FRONTEND="2.068.2"
@@ -16,7 +16,7 @@ SRC_URI="https://codeload.github.com/D-Programming-GDC/GDMD/tar.gz/v${FRONTEND} 
 S="${WORKDIR}/GDMD-${FRONTEND}"
 
 DLANG_PACKAGE_TYPE="single"
-DLANG_USE_COMPILER="gdc-4.9.4"
+DLANG_USE_COMPILER="gdc-${PV}"
 
 inherit dlang
 

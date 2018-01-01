@@ -13,7 +13,7 @@ dmd-2_074 - Build for DMD 2.074
 dmd-2_075 - Build for DMD 2.075
 dmd-2_076 - Build for DMD 2.076
 dmd-2_077 - Build for DMD 2.077
-gdc-4_9_4 - Build for GCC 4.9.4
+gdc-6_4_0 - Build for GCC 6.4.0
 ldc2-0_14 - Build for ldc2 0.14
 ldc2-0_15 - Build for ldc2 0.15
 ldc2-0_16 - Build for ldc2 0.16
