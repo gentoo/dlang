@@ -21,6 +21,22 @@ MULTILIB_COMPAT=( abi_x86_{32,64} )
 
 inherit multilib-build versionator toolchain-funcs
 
+dmd_eq() {
+	[[ ${MAJOR} -eq ${1%.*} ]] && [[ ${MINOR} -eq $((10#${1#*.})) ]]
+}
+
+dmd_ge() {
+	[[ ${MAJOR} -ge ${1%.*} ]] && [[ ${MINOR} -ge $((10#${1#*.})) ]]
+}
+
+dmd_gen_exe_dir() {
+	if dmd_ge 2.074; then
+		echo dmd/generated/linux/release/$(dmd_arch_to_model)
+	else
+		echo dmd/src
+	fi
+}
+
 # For reliable download statistics, we don't mirror.
 RESTRICT="mirror"
 LICENSE="Boost-1.0"
@@ -40,19 +56,10 @@ fi
 SONAME="${SONAME-libphobos2.so.0.${MINOR}.${PATCH}}"
 SONAME_SYM="${SONAME%.*}"
 
-dmd_symlinkable() {
-	# Return whether dmd will find dmd.conf in the executable directory, if we
-	# call it through a symlink.
-	[[ "${MAJOR}" -ge 2 ]] && [[ "${MINOR}" -ge 66 ]]
-}
-
-dmd_selfhosting() {
-	# Return whether this dmd is self-hosting.
-	[[ "${MAJOR}" -ge 2 ]] && [[ "${MINOR}" -ge 68 ]]
-}
-
 IUSE="doc examples static-libs tools"
-if dmd_selfhosting; then
+
+# Self-hosting versions of DMD need a host compiler.
+if dmd_ge 2.068; then
 	DLANG_VERSION_RANGE="${DLANG_VERSION_RANGE-${SLOT}}"
 	DLANG_PACKAGE_TYPE=dmd
 	inherit dlang
@@ -84,18 +91,6 @@ PDEPEND="tools? ( >=dev-util/dlang-tools-${PV} )"
 S="${WORKDIR}/dmd2"
 PREFIX="opt/${PN}-${SLOT}"
 IMPORT_DIR="/${PREFIX}/import"
-
-dmd_abi_to_model() {
-	[[ "${ABI:0:5}" == "amd64" ]] && echo 64 || echo 32
-}
-
-dmd_foreach_abi() {
-	for ABI in $(multilib_get_enabled_abis); do
-		local MODEL=$(dmd_abi_to_model)
-		einfo "  Executing ${1} in ${MODEL}-bit ..."
-		"${@}"
-	done
-}
 
 dmd_src_prepare() {
 	# Reorganize directories
@@ -130,11 +125,11 @@ dmd_src_compile() {
 	einfo "Building dmd..."
 
 	# 2.068 used HOST_DC instead of HOST_DMD
-	[[ "${SLOT}" == "2.068" ]] && HOST_DMD="HOST_DC" || HOST_DMD="HOST_DMD"
+	dmd_eq 2.068 && HOST_DMD="HOST_DC" || HOST_DMD="HOST_DMD"
 	# 2.070 and below used HOST_CC instead of HOST_CXX
-	[[ "${MAJOR}" -ge 2 ]] && [[ "${MINOR}" -ge 71 ]] && HOST_CXX="HOST_CXX" || HOST_CXX="HOST_CC"
+	dmd_ge 2.071 && HOST_CXX="HOST_CXX" || HOST_CXX="HOST_CC"
 	# 2.072 and 2.073 have support for LTO, but would need a Makefile patch
-	[[ "${SLOT}" != "2.072" && "${SLOT}" != "2.073" ]] && LTO="ENABLE_LTO=1"
+	dmd_ge 2.074 && LTO="ENABLE_LTO=1"
 
 	# Special case for self-hosting (i.e. no compiler USE flag selected).
 	local kernel model
@@ -153,18 +148,18 @@ dmd_src_compile() {
 	fi
 	emake -C dmd/src -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" ${HOST_CXX}="$(tc-getCXX)" RELEASE=1 ${LTO}
 
-	# Don't pick up /etc/dmd.conf when calling dmd/src/dmd !
-	if [ ! -f dmd/src/dmd.conf ]; then
+	# Don't pick up /etc/dmd.conf when calling $(dmd_gen_exe_dir)/dmd !
+	if [ ! -f "$(dmd_gen_exe_dir)/dmd.conf" ]; then
 		einfo "Creating a dummy dmd.conf"
-		touch dmd/src/dmd.conf || die "Could not create dummy dmd.conf"
+		touch "$(dmd_gen_exe_dir)/dmd.conf" || die "Could not create dummy dmd.conf"
 	fi
 
 	compile_libraries() {
 		einfo 'Building druntime...'
-		emake -C druntime -f posix.mak DMD=../dmd/src/dmd MODEL=${MODEL} PIC=1 MANIFEST=
+		emake -C druntime -f posix.mak DMD="../$(dmd_gen_exe_dir)/dmd" MODEL=${MODEL} PIC=1 MANIFEST=
 
 		einfo 'Building Phobos 2...'
-		emake -C phobos -f posix.mak DMD=../dmd/src/dmd MODEL=${MODEL} PIC=1 CUSTOM_DRUNTIME=1
+		emake -C phobos -f posix.mak DMD="../$(dmd_gen_exe_dir)/dmd" MODEL=${MODEL} PIC=1 CUSTOM_DRUNTIME=1
 	}
 
 	dmd_foreach_abi compile_libraries
@@ -175,7 +170,7 @@ dmd_src_compile() {
 
 dmd_src_test() {
 	test_hello_world() {
-		dmd/src/dmd -m${MODEL} -fPIC -Iphobos -Idruntime/import -L-Lphobos/generated/linux/release/${MODEL} samples/d/hello.d || die "Failed to build hello.d (${MODEL}-bit)"
+		"$(dmd_gen_exe_dir)/dmd" -m${MODEL} -fPIC -Iphobos -Idruntime/import -L-Lphobos/generated/linux/release/${MODEL} samples/d/hello.d || die "Failed to build hello.d (${MODEL}-bit)"
 		./hello ${MODEL}-bit || die "Failed to run test sample (${MODEL}-bit)"
 		rm hello.o hello || die "Could not remove temporary files"
 	}
@@ -213,9 +208,11 @@ EOF
 
 	# DMD
 	einfo "Installing ${PN}..."
-	dmd_symlinkable && dosym "../../${PREFIX}/bin/dmd" "${ROOT}/usr/bin/dmd-${SLOT}"
+	# From version 2.066 on, dmd will find dmd.conf in the executable directory, if we
+	# call it through a symlink in /usr/bin
+	dmd_ge 2.066 && dosym "../../${PREFIX}/bin/dmd" "${ROOT}/usr/bin/dmd-${SLOT}"
 	into ${PREFIX}
-	dobin "dmd/src/dmd"
+	dobin "$(dmd_gen_exe_dir)/dmd"
 
 	# druntime
 	einfo 'Installing druntime...'
@@ -280,6 +277,22 @@ dmd_pkg_postinst() {
 
 dmd_pkg_postrm() {
 	"${ROOT}"/usr/bin/eselect dlang update dmd
+}
+
+dmd_foreach_abi() {
+	for ABI in $(multilib_get_enabled_abis); do
+		local MODEL=$(dmd_abi_to_model)
+		einfo "  Executing ${1} in ${MODEL}-bit ..."
+		"${@}"
+	done
+}
+
+dmd_arch_to_model() {
+	[[ "${ARCH}" == "amd64" ]] && echo 64 || echo 32
+}
+
+dmd_abi_to_model() {
+	[[ "${ABI:0:5}" == "amd64" ]] && echo 64 || echo 32
 }
 
 fi
