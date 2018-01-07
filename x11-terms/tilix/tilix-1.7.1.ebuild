@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -13,10 +13,8 @@ IUSE="+crypt"
 
 DLANG_VERSION_RANGE="2.070-"
 DLANG_PACKAGE_TYPE="single"
-PLOCALES="ak ar_MA bg cs de el en es fi fr he id it ja ko lt nl pl pt_BR pt_PT ru sr sv tr uk vi zh_CN zh_TW"
-PLOCALE_BACKUP="en"
 
-inherit gnome2 dlang l10n
+inherit gnome2 dlang
 
 GITHUB_URI="https://codeload.github.com/gnunn1"
 SRC_URI="${GITHUB_URI}/${PN}/tar.gz/${PV} -> ${PN}-${PV}.tar.gz"
@@ -33,13 +31,11 @@ DEPEND="
 
 src_prepare() {
 	eapply_user
-	l10n_find_plocales_changes "${S}/po" "" ".po"
 	./autogen.sh
 }
 
-d_src_configure()
-{
+d_src_configure() {
 	export GTKD_CFLAGS="-I/usr/include/dlang/gtkd-3"
 	export GTKD_LIBS="${DLANG_LINKER_FLAG}-ldl ${DLANG_LINKER_FLAG}-lvted-3 ${DLANG_LINKER_FLAG}-lgtkd-3"
-	LINGUAS=`l10n_get_locales` default_src_configure
+	default_src_configure
 }
