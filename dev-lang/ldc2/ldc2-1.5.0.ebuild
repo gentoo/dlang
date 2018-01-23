@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -12,7 +12,7 @@ S=${WORKDIR}/${MY_P}
 
 DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://ldc-developers.github.com/ldc"
-KEYWORDS="~x86 ~amd64 ~arm"
+KEYWORDS="x86 amd64 ~arm"
 LICENSE="BSD"
 SLOT="$(get_version_component_range 1-2)/$(get_version_component_range 3)"
 
