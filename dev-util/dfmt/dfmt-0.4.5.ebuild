@@ -10,11 +10,11 @@ LICENSE="Boost-1.0"
 SLOT="0"
 KEYWORDS="x86 amd64"
 LIBDPARSE="db1a9364b1815eec82ac853a9765d5532571db43"
-ALLOCATOR="13df2925b83b4df95140677323e25c9cf93097db"
+ALLOCATOR="2.70.0-b1"
 SRC_URI="
 	https://github.com/dlang-community/dfmt/archive/v${PV}.tar.gz -> ${PN}-${PV}.tar.gz
 	https://github.com/dlang-community/libdparse/archive/${LIBDPARSE}.tar.gz -> libdparse-${LIBDPARSE}.tar.gz
-	https://github.com/Hackerpilot/experimental_allocator/archive/${ALLOCATOR}.tar.gz -> experimental_allocator-${ALLOCATOR}.tar.gz
+	https://github.com/Hackerpilot/experimental_allocator/archive/v${ALLOCATOR}.tar.gz -> experimental_allocator-${ALLOCATOR}.tar.gz
 	"
 
 DLANG_VERSION_RANGE="2.067-"
@@ -26,6 +26,7 @@ src_prepare() {
 	# Default ebuild unpack function places archives side-by-side ...
 	mv -T "../libdparse-${LIBDPARSE}"              libdparse                        || die
 	mv -T "../experimental_allocator-${ALLOCATOR}" libdparse/experimental_allocator || die
+
 	# Phobos 2.069 comes with allocators and would result in conflicting modules when linked as shared library.
 	dlang_phobos_level 2.069 && rm -rf libdparse/experimental_allocator
 	# Apply patches
