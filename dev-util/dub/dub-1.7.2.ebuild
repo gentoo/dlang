@@ -8,14 +8,14 @@ HOMEPAGE="http://code.dlang.org/"
 LICENSE="MIT"
 
 SLOT="0"
-KEYWORDS="amd64 x86 ~arm"
+KEYWORDS="~amd64 ~x86 ~arm"
 IUSE="debug"
 
 GITHUB_URI="https://codeload.github.com/dlang"
 SRC_URI="${GITHUB_URI}/${PN}/tar.gz/v${PV} -> ${PN}-${PV}.tar.gz"
 PATCHES="${FILESDIR}/${P}-gdc-dmd-pathfix.patch"
 
-DLANG_VERSION_RANGE="2.066-"
+DLANG_VERSION_RANGE="2.067-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit dlang
