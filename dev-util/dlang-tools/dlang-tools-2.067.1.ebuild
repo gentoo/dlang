@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -26,8 +26,9 @@ SRC_URI="
 		${GITHUB_URI}/phobos/tar.gz/v${PV} -> phobos-${PV}.tar.gz
 		${GITHUB_URI}/dlang.org/tar.gz/v${PV} -> dlang.org-${PV}.tar.gz
 	)"
+PATCHES=( "${FILESDIR}/2.067-no-narrowing.patch" "${FILESDIR}/replace-bits-mathdef-h.patch" )
 
-DLANG_VERSION_RANGE="${DLANG_SLOT}"
+DLANG_VERSION_RANGE="${DLANG_SLOT}-2.070"
 DLANG_PACKAGE_TYPE="single"
 
 inherit eutils dlang
@@ -43,6 +44,8 @@ src_prepare() {
 		mv "druntime-${PV}" "druntime" || die "Could not rename druntime-${PV} to druntime"
 		mv "phobos-${PV}" "phobos" || die "Could not rename phobos-${PV} to phobos"
 	fi
+	# Apply patches
+	dlang_src_prepare
 }
 
 d_src_compile() {

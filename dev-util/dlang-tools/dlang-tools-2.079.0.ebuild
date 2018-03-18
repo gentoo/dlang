@@ -26,7 +26,7 @@ if [[ -n "${BETA}" ]]; then
 fi
 SRC_URI="https://codeload.github.com/dlang/tools/tar.gz/v${VERSION} -> dlang-tools-${VERSION}.tar.gz"
 
-DLANG_VERSION_RANGE="${DLANG_SLOT}"
+DLANG_VERSION_RANGE="${DLANG_SLOT}-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit eutils dlang

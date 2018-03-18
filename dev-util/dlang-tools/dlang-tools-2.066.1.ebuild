@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -39,6 +39,8 @@ src_prepare() {
 		mv "dlang.org-${PV}" "dlang.org" || die "Could not rename dlang.org-${PV} to dlang.org"
 		echo "${PV}" > VERSION || die "Could not write VERSION file"
 	fi
+	# Apply patches
+	dlang_src_prepare
 }
 
 d_src_compile() {

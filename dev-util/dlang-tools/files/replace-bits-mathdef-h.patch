@@ -1,0 +1,11 @@
+--- dmd2/dmd/src/root/port.c
++++ dmd2/dmd/src/root/port.c
+@@ -355,7 +355,7 @@ 
+ #include <math.h>
+ #if linux
+ #include <bits/nan.h>
+-#include <bits/mathdef.h>
++#include <complex.h>
+ #endif
+ #if __FreeBSD__ && __i386__
+ #include <ieeefp.h>

@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -20,7 +20,7 @@ RESTRICT="mirror"
 GITHUB_URI="https://codeload.github.com/dlang"
 SRC_URI="${GITHUB_URI}/tools/tar.gz/v${PV} -> dlang-tools-${PV}.tar.gz"
 
-DLANG_VERSION_RANGE="${DLANG_SLOT}"
+DLANG_VERSION_RANGE="${DLANG_SLOT}-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit eutils dlang

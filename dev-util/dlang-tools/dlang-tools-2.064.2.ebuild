@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -25,7 +25,7 @@ SRC_URI="
 	)"
 DEPEND="dman? ( =dev-lang/dmd-${PV}*:${DLANG_SLOT} )"
 
-DLANG_VERSION_RANGE="${DLANG_SLOT}-"
+DLANG_VERSION_RANGE="${DLANG_SLOT}"
 DLANG_PACKAGE_TYPE="single"
 
 inherit eutils dlang
@@ -38,6 +38,8 @@ src_prepare() {
 		mv "phobos-${PV}" "phobos" || die "Could not rename phobos-${PV} to phobos"
 		mv "dlang.org-${PV}" "dlang.org" || die "Could not rename dlang.org-${PV} to dlang.org"
 	fi
+	# Apply patches
+	dlang_src_prepare
 }
 
 d_src_compile() {

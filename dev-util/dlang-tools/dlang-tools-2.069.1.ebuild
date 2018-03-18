@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -26,7 +26,7 @@ if [[ -n "${BETA}" ]]; then
 fi
 SRC_URI="${GITHUB_URI}/v${VERSION}.tar.gz -> dlang-tools-${VERSION}.tar.gz"
 
-DLANG_VERSION_RANGE="${DLANG_SLOT}"
+DLANG_VERSION_RANGE="${DLANG_SLOT}-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit eutils dlang
