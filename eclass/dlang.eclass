@@ -175,6 +175,25 @@ dlang_compile_bin() {
 		${LDFLAGS} ${DLANG_OUTPUT_FLAG}${binname}
 }
 
+# @FUNCTION: dlang_compile_lib_a
+# @DESCRIPTION:
+# Compiles a D static library. The first argument is the output file name, the
+# other arguments are source files. Additional variables and the
+# "debug" use flag will be handled as described in dlang_compile_bin().
+dlang_compile_lib_a() {
+	local libname="${1}"
+	local sources="${@:2}"
+
+	if [[ "${DLANG_VENDOR}" == "GNU" ]]; then
+		die "Static libraries for GDC is not supported yet."
+	fi
+	if [[ "${DLANG_PACKAGE_TYPE}" == "multi" ]]; then
+		DCFLAGS="${DCFLAGS} -m${MODEL}"
+	fi
+	dlang_exec ${DC} ${DCFLAGS} ${sources} $(__dlang_additional_flags) \
+		${LDFLAGS} ${DLANG_A_FLAGS} ${DLANG_OUTPUT_FLAG}${libname}
+}
+
 # @FUNCTION: dlang_compile_lib_so
 # @DESCRIPTION:
 # Compiles a D shared library. The first argument is the output file name, the
@@ -555,6 +574,7 @@ __dlang_use_build_vars() {
 		fi
 		export DCFLAGS="${DMDFLAGS}"
 		export DLANG_LINKER_FLAG="-L"
+		export DLANG_A_FLAGS="-lib -fPIC"
 		export DLANG_SO_FLAGS="-shared -defaultlib=libphobos2.so -fPIC"
 		export DLANG_OUTPUT_FLAG="-of"
 		export DLANG_VERSION_FLAG="-version"
@@ -573,7 +593,7 @@ __dlang_use_build_vars() {
 			export DCFLAGS="${DCFLAGS} -shared-libphobos"
 		fi
 		export DLANG_LINKER_FLAG="-Xlinker "
-		export DLANG_SO_FLAGS="-shared -fPIC"
+		export DLANG_SO_FLAGS="-shared -fpic"
 		export DLANG_OUTPUT_FLAG="-o "
 		export DLANG_VERSION_FLAG="-fversion"
 		export DLANG_UNITTEST_FLAG="-funittest"
@@ -585,6 +605,7 @@ __dlang_use_build_vars() {
 		# we append -op (do not strip paths from source file).
 		export DCFLAGS="${LDCFLAGS} -op"
 		export DLANG_LINKER_FLAG="-L="
+		export DLANG_A_FLAGS="-lib -relocation-model=pic"
 		export DLANG_SO_FLAGS="-shared -relocation-model=pic"
 		export DLANG_OUTPUT_FLAG="-of="
 		export DLANG_VERSION_FLAG="-d-version"

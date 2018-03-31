@@ -21,6 +21,7 @@ DLANG_PACKAGE_TYPE="single"
 inherit dlang bash-completion-r1
 
 src_prepare() {
+	mkdir bin || die "Failed to create 'bin' directory."
 	mkdir views || die "Failed to create 'views' directory."
 	cat > views/VERSION << EOF
 v${PV}
@@ -29,8 +30,6 @@ EOF
 }
 
 d_src_compile() {
-	mkdir bin || die "Failed to create 'bin' directory."
-
 	local libdparse_src="../libdparse-${LIBDPARSE}/src"
 	local imports="src ${libdparse_src}"
 	local string_imports="views"
