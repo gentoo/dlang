@@ -1,9 +1,9 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 
-inherit cmake-utils versionator
+inherit cmake-utils versionator llvm
 
 MY_PV="$(replace_version_separator '_' '-')"
 MY_P="ldc-${MY_PV}-src"
@@ -18,11 +18,17 @@ SLOT="$(get_version_component_range 1-2)/$(get_version_component_range 3)"
 
 IUSE="static-libs"
 
-RDEPEND=">=sys-devel/llvm-3.7:=
-	<sys-devel/llvm-5.1:=
+# We support LLVM 3.7 through 5.
+RDEPEND="|| (
+		sys-devel/llvm:5
+		sys-devel/llvm:4
+		>=sys-devel/llvm-3.7:0
+	)
+	<sys-devel/llvm-6:=
 	>=app-eselect/eselect-dlang-20140709"
 DEPEND=">=dev-util/cmake-2.8
 	${RDEPEND}"
+LLVM_MAX_SLOT=5
 
 DLANG_VERSION_RANGE="2.068-"
 DLANG_PACKAGE_TYPE="single"
