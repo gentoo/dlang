@@ -8,7 +8,7 @@ HOMEPAGE="https://github.com/dlang-community/D-Scanner"
 LICENSE="Boost-1.0"
 
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 IUSE="debug"
 
 CONTAINERS="2892cfc1e7a205d4f81af3970cbb53e4f365a765"
