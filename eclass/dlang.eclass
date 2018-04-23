@@ -399,7 +399,7 @@ __dlang_filter_compilers() {
 	for dc_version in "${!__dlang_gdc_frontend[@]}"; do
 		mapping="${__dlang_gdc_frontend[${dc_version}]}"
 		iuse=gdc-$(replace_all_version_separators _ $dc_version)
-		depend="=sys-devel/gcc-${dc_version}*[d]"
+		depend="=sys-devel/gcc-$dc_version*[d]"
 		__dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
 	done
 
@@ -407,7 +407,12 @@ __dlang_filter_compilers() {
 	for dc_version in "${!__dlang_ldc2_frontend[@]}"; do
 		mapping="${__dlang_ldc2_frontend[${dc_version}]}"
 		iuse=ldc2-$(replace_all_version_separators _ $dc_version)
-		depend="dev-lang/ldc2:${dc_version}="
+		if [ "${DLANG_PACKAGE_TYPE}" == "multi" ]; then
+			depend="[${MULTILIB_USEDEP}]"
+		else
+			depend=""
+		fi
+		depend="dev-lang/ldc2:$dc_version=$depend"
 		__dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
 	done
 }

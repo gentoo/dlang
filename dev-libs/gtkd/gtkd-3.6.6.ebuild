@@ -72,7 +72,7 @@ d_src_compile() {
 }
 
 d_src_test() {
-	emake LINKERFLAG="${DLANG_LINKER_FLAG}" output="${DLANG_OUTPUT_FLAG}\$@" test
+	dlang_exec ${DC} ${DCFLAGS} -m${MODEL} -Igenerated/gtkd demos/gtkD/TestWindow/*.d ${DLANG_LINKER_FLAG}./libgtkd-3.so ${DLANG_LINKER_FLAG}-ldl ${DLANG_LINKER_FLAG}-rpath=./ ${LDFLAGS} ${DLANG_OUTPUT_FLAG}TestWindow
 }
 
 d_src_install() {
