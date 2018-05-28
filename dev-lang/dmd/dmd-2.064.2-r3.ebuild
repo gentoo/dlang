@@ -8,7 +8,7 @@ YEAR=2013
 ARCHIVE="zip"
 SONAME="libphobos2.so.0.64.0"
 
-inherit dmd
+inherit dmd eutils
 
 PATCHES=( "${FILESDIR}/2.064-no-narrowing.patch" "${FILESDIR}/replace-bits-mathdef-h.patch" "${FILESDIR}/2.064-makefile-multilib.patch" )
 

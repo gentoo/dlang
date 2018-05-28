@@ -7,6 +7,6 @@ KEYWORDS="-* amd64 x86"
 YEAR=2014
 ARCHIVE="linux.zip"
 
-inherit dmd
+inherit dmd eutils
 
 PATCHES=( "${FILESDIR}/2.065-no-narrowing.patch" "${FILESDIR}/replace-bits-mathdef-h.patch" "${FILESDIR}/2.065-makefile-multilib.patch" )
