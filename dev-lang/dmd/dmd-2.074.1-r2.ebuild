@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -8,6 +8,8 @@ YEAR=2017
 DLANG_VERSION_RANGE="2.067-"
 
 inherit dmd
+
+PATCHES=( "${FILESDIR}/2.074-fix-segv-in-evalu8.patch" "${FILESDIR}/2.074-fix-out-of-bounds-in-evalu8.patch" )
 
 dmd_src_prepare_extra() {
 	# Copy default DDOC theme file into resource directory

@@ -9,6 +9,8 @@ DLANG_VERSION_RANGE="2.067-"
 
 inherit dmd
 
+PATCHES=( "${FILESDIR}/2.078-allow-deprecations.patch" )
+
 dmd_src_prepare_extra() {
 	# Copy default DDOC theme file into resource directory
 	mkdir "dmd/res" || die "Failed to create 'dmd/res' directory"
