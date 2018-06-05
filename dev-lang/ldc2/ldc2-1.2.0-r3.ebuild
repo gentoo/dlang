@@ -33,7 +33,7 @@ LLVM_MAX_SLOT=4
 # For now, we support amd64 multilib. Anyone is free to add more support here.
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 
-DLANG_VERSION_RANGE="2.068-"
+DLANG_VERSION_RANGE="2.068-2.078"
 DLANG_PACKAGE_TYPE="single"
 
 inherit dlang
