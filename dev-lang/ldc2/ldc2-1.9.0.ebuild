@@ -3,9 +3,9 @@
 
 EAPI=6
 
-inherit multilib-build cmake-utils versionator llvm
+inherit multilib-build cmake-utils eapi7-ver llvm
 
-MY_PV="$(replace_version_separator '_' '-')"
+MY_PV="${PV//_/-}"
 MY_P="ldc-${MY_PV}-src"
 SRC_URI="https://github.com/ldc-developers/ldc/releases/download/v${MY_PV}/${MY_P}.tar.gz"
 S=${WORKDIR}/${MY_P}
@@ -14,7 +14,7 @@ DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://ldc-developers.github.com/ldc"
 KEYWORDS="x86 amd64 ~arm"
 LICENSE="BSD"
-SLOT="$(get_version_component_range 1-2)/$(get_version_component_range 3)"
+SLOT="$(ver_cut 1-2)/$(ver_cut 3)"
 
 IUSE="static-libs"
 
@@ -53,7 +53,7 @@ d_src_configure() {
 	export LIBDIR_${ABI}="${LIBDIR_HOST}"
 	local mycmakeargs=(
 		-DD_VERSION=2
-		-DCMAKE_INSTALL_PREFIX=/opt/ldc2-$(get_version_component_range 1-2)
+		-DCMAKE_INSTALL_PREFIX=/opt/ldc2-$(ver_cut 1-2)
 		-DD_COMPILER="${DMD}"
 		-DD_COMPILER_DMD_COMPAT=1
 	)

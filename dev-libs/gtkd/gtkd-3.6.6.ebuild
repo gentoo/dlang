@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -35,8 +35,8 @@ GTKD_LIB_NAMES=(gtkd gtkdgl gtkdsv     gstreamerd vted peasd)
 GTKD_SRC_DIRS=( gtkd gtkdgl sourceview gstreamer  vte  peas)
 IUSE="${GTKD_USE_FLAGS[@]:1} static-libs"
 
-MAJOR=$(get_major_version)
-MINOR=$(get_after_major_version)
+MAJOR=$(ver_cut 1)
+MINOR=$(ver_cut 2-)
 
 src_unpack() {
 	unzip -q "${DISTDIR}/${A}" -d "${S}"

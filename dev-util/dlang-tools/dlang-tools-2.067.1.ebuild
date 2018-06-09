@@ -13,9 +13,9 @@ TOOLS="rdmd ddemangle detab dustmite"
 IUSE="+rdmd +ddemangle detab +dman dustmite"
 REQUIRED_USE="|| ( ${TOOLS} dman )"
 
-inherit versionator
+inherit eapi7-ver
 
-DLANG_SLOT="$(get_version_component_range 1-2)"
+DLANG_SLOT="$(ver_cut 1-2)"
 RESTRICT="mirror"
 GITHUB_URI="https://codeload.github.com/dlang"
 SRC_URI="

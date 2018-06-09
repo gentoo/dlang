@@ -26,7 +26,7 @@ if has ${EAPI:-0} 0 1 2 3 4 5; then
 	die "EAPI must be >= 6 for dlang packages."
 fi
 
-inherit flag-o-matic versionator dlang-compilers
+inherit flag-o-matic eapi7-ver dlang-compilers
 if [[ "${DLANG_PACKAGE_TYPE}" == "multi" ]]; then
 	# We handle a multi instance package.
 	inherit multilib-minimal
@@ -103,11 +103,11 @@ dlang_single_config() {
 
 dlang_has_shared_lib_support() {
 	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
-		[[ $(get_major_version ${DLANG_VERSION}) -eq 2 ]] && [[ $((10#$(get_after_major_version ${DLANG_VERSION}))) -ge 63 ]]
+		[[ $(ver_cut 1 ${DLANG_VERSION}) -eq 2 ]] && [[ $((10#$(ver_cut 2 ${DLANG_VERSION}))) -ge 63 ]]
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
 		true
 	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
-		[[ $(get_major_version ${DLANG_VERSION}) -eq 2 ]] && [[ $((10#$(get_after_major_version ${DLANG_VERSION}))) -ge 73 ]]
+		[[ $(ver_cut 1 ${DLANG_VERSION}) -eq 2 ]] && [[ $((10#$(ver_cut 2 ${DLANG_VERSION}))) -ge 73 ]]
 	else
 		die "Could not detect D compiler vendor!"
 	fi
@@ -219,7 +219,7 @@ dlang_convert_ldflags() {
 		# gc-sections breaks executables for some versions of D
 		# It works with the gold linker on the other hand
 		# See: https://issues.dlang.org/show_bug.cgi?id=879
-		if ! version_is_at_least 2.072 $DLANG_VERSION; then
+		if ver_test $DLANG_VERSION -lt 2.072; then
 			if ! ld -v | grep -q "^GNU gold"; then
 				filter-ldflags {-L,-Xlinker,-Wl,}--gc-sections
 			fi
@@ -290,7 +290,7 @@ dlang_phobos_level() {
 		local dc_version="$(echo ${config} | cut -d- -f3)"
 		local DLANG_VERSION="$(__dlang_compiler_to_dlang_version ${dc} ${dc_version})"
 	fi
-	version_is_at_least "$1" "$DLANG_VERSION"
+	ver_test "$DLANG_VERSION" -ge "$1"
 }
 
 ### Non-public helper functions ###
@@ -385,7 +385,7 @@ __dlang_filter_compilers() {
 	# filter for DMD (hardcoding support for x86 and amd64 only)
 	for dc_version in "${!__dlang_dmd_frontend[@]}"; do
 		mapping="${__dlang_dmd_frontend[${dc_version}]}"
-		iuse="dmd-$(replace_all_version_separators _ $dc_version)"
+		iuse="dmd-$(ver_rs 1- _ $dc_version)"
 		if [ "${DLANG_PACKAGE_TYPE}" == "multi" ]; then
 			depend="[${MULTILIB_USEDEP}]"
 		else
@@ -398,7 +398,7 @@ __dlang_filter_compilers() {
 	# GDC (doesn't support sub-slots, to stay compatible with upstream GCC)
 	for dc_version in "${!__dlang_gdc_frontend[@]}"; do
 		mapping="${__dlang_gdc_frontend[${dc_version}]}"
-		iuse=gdc-$(replace_all_version_separators _ $dc_version)
+		iuse=gdc-$(ver_rs 1- _ $dc_version)
 		depend="=sys-devel/gcc-$dc_version*[d]"
 		__dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
 	done
@@ -406,7 +406,7 @@ __dlang_filter_compilers() {
 	# filter for LDC2
 	for dc_version in "${!__dlang_ldc2_frontend[@]}"; do
 		mapping="${__dlang_ldc2_frontend[${dc_version}]}"
-		iuse=ldc2-$(replace_all_version_separators _ $dc_version)
+		iuse=ldc2-$(ver_rs 1- _ $dc_version)
 		if [ "${DLANG_PACKAGE_TYPE}" == "multi" ]; then
 			depend="[${MULTILIB_USEDEP}]"
 		else

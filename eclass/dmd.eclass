@@ -19,7 +19,7 @@ HTML_DOCS="html/*"
 # DMD supports amd64/x86 exclusively
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 
-inherit multilib-build versionator toolchain-funcs
+inherit multilib-build eapi7-ver toolchain-funcs
 
 dmd_eq() {
 	[[ ${MAJOR} -eq ${1%.*} ]] && [[ ${MINOR} -eq $((10#${1#*.})) ]]
@@ -40,12 +40,12 @@ dmd_gen_exe_dir() {
 # For reliable download statistics, we don't mirror.
 RESTRICT="mirror"
 LICENSE="Boost-1.0"
-SLOT="$(get_version_component_range 1-2)"
-MAJOR="$(get_major_version)"
-MINOR="$((10#$(get_version_component_range 2)))"
-PATCH="$(get_version_component_range 3)"
-VERSION="$(get_version_component_range 1-3)"
-BETA="$(get_version_component_range 4)"
+SLOT="$(ver_cut 1-2)"
+MAJOR="$(ver_cut 1)"
+MINOR="$((10#$(ver_cut 2)))"
+PATCH="$(ver_cut 3)"
+VERSION="$(ver_cut 1-3)"
+BETA="$(ver_cut 4)"
 if [ "${KERNEL}" != "FreeBSD" ]; then
 	ARCHIVE="${ARCHIVE-linux.tar.xz}"
 elif [ "${ARCH}" == "x86" ]; then

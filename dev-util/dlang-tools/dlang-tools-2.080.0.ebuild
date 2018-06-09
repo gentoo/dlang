@@ -13,13 +13,13 @@ TOOLS="ddemangle detab dustmite rdmd"
 IUSE="+ddemangle detab dustmite +rdmd"
 REQUIRED_USE="|| ( ${TOOLS} )"
 
-inherit versionator
+inherit eapi7-ver
 
-DLANG_SLOT="$(get_version_component_range 1-2)"
+DLANG_SLOT="$(ver_cut 1-2)"
 RESTRICT="mirror"
 
-BETA="$(get_version_component_range 4)"
-VERSION="$(get_version_component_range 1-3)"
+BETA="$(ver_cut 4)"
+VERSION="$(ver_cut 1-3)"
 
 if [[ -n "${BETA}" ]]; then
 	VERSION="${VERSION}-b${BETA:4}"
