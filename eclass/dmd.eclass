@@ -130,6 +130,8 @@ dmd_src_compile() {
 	dmd_ge 2.071 && HOST_CXX="HOST_CXX" || HOST_CXX="HOST_CC"
 	# 2.072 and 2.073 have support for LTO, but would need a Makefile patch
 	dmd_ge 2.074 && LTO="ENABLE_LTO=1"
+	# 2.080 and below used RELEASE instead of ENABLE_RELEASE
+	dmd_ge 2.081 && ENABLE_RELEASE="ENABLE_RELEASE" || ENABLE_RELEASE="RELEASE"
 
 	# Special case for self-hosting (i.e. no compiler USE flag selected).
 	local kernel model
@@ -146,7 +148,7 @@ dmd_src_compile() {
 		esac
 		export DMD="../../${kernel}/bin${model}/dmd"
 	fi
-	emake -C dmd/src -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" ${HOST_CXX}="$(tc-getCXX)" RELEASE=1 ${LTO}
+	emake -C dmd/src -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" ${HOST_CXX}="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO}
 
 	# Don't pick up /etc/dmd.conf when calling $(dmd_gen_exe_dir)/dmd !
 	if [ ! -f "$(dmd_gen_exe_dir)/dmd.conf" ]; then
