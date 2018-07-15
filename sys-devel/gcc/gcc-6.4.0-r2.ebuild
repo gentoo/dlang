@@ -25,8 +25,8 @@ PDEPEND="${PDEPEND} d? ( ~dev-util/gdmd-${PV} )"
 SRC_URI="${SRC_URI}
 	https://codeload.github.com/D-Programming-GDC/GDC/tar.gz/v2.068.2_gcc6 -> gdc-2.068.2_gcc-6.tar.gz"
 
-src_prepare() {
-	toolchain_src_prepare
+src_unpack() {
+	toolchain_src_unpack
 
 	use d && unpack gdc-2.068.2_gcc-6.tar.gz
 }
