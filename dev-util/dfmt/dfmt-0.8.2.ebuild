@@ -8,7 +8,7 @@ HOMEPAGE="https://github.com/dlang-community/dfmt"
 LICENSE="Boost-1.0"
 
 SLOT="0"
-KEYWORDS="~x86 ~amd64"
+KEYWORDS="~amd64 ~x86"
 LIBDPARSE="086cf06051bb1f33c94891ba6c39a57f164ee296"
 ALLOCATOR="b7778fd6bf5f9aaaa87dd27f989cefbf9b3b365f"
 SRC_URI="

@@ -12,7 +12,7 @@ S=${WORKDIR}/${MY_P}
 
 DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://ldc-developers.github.com/ldc"
-KEYWORDS="x86 amd64 ~arm"
+KEYWORDS="amd64 ~arm x86"
 LICENSE="BSD"
 SLOT="$(ver_cut 1-2)/$(ver_cut 3)"
 
