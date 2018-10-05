@@ -400,7 +400,7 @@ __dlang_filter_compilers() {
 	for dc_version in "${!__dlang_gdc_frontend[@]}"; do
 		mapping="${__dlang_gdc_frontend[${dc_version}]}"
 		iuse=gdc-$(ver_rs 1- _ $dc_version)
-		depend="=sys-devel/gcc-$dc_version*[d]"
+		depend="=sys-devel/gcc-$dc_version*[d,-d-bootstrap(-)]"
 		__dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
 	done
 

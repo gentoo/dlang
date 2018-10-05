@@ -8,7 +8,7 @@ HOMEPAGE="http://www.gdcproject.org/"
 LICENSE="GPL-3+"
 
 SLOT="${PV}"
-KEYWORDS="amd64 arm arm64 hppa ia64 ~m68k ~mips ppc ppc64 ~s390 ~sh sparc x86 ~amd64-fbsd ~x86-fbsd"
+KEYWORDS="amd64 arm arm64 hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86 ~amd64-fbsd ~x86-fbsd ~ppc-macos"
 DEPEND="=sys-devel/gcc-${PV}*[d]"
 RDEPEND="${DEPEND}"
 FRONTEND="2.068.2"
