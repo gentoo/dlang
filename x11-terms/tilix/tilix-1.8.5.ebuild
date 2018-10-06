@@ -8,10 +8,10 @@ HOMEPAGE="https://gnunn1.github.io/tilix-web/"
 LICENSE="MPL-2.0"
 
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="~amd64 ~x86"
 IUSE="+crypt"
 
-DLANG_VERSION_RANGE="2.070-"
+DLANG_VERSION_RANGE="2.074-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit gnome2 dlang
@@ -21,8 +21,7 @@ SRC_URI="${GITHUB_URI}/${PN}/tar.gz/${PV} -> ${PN}-${PV}.tar.gz"
 
 RDEPEND="
 	>=sys-devel/gettext-0.19.8.1
-	>=dev-libs/gtkd-3.3.0:3[vte,${DLANG_COMPILER_USE}]
-	<dev-libs/gtkd-3.8.3:3
+	>=dev-libs/gtkd-3.8.3:3[vte,${DLANG_COMPILER_USE}]
 	x11-libs/vte:2.91[crypt?]"
 DEPEND="
 	sys-devel/automake:1.15
@@ -37,6 +36,6 @@ src_prepare() {
 
 d_src_configure() {
 	export GTKD_CFLAGS="-I/usr/include/dlang/gtkd-3"
-	export GTKD_LIBS="${DLANG_LINKER_FLAG}-ldl ${DLANG_LINKER_FLAG}-lvted-3 ${DLANG_LINKER_FLAG}-lgtkd-3"
-	default_src_configure
+	export GTKD_LIBS="-L-ldl -L-lvted-3 -L-lgtkd-3"
+	DC="${DMD}" default_src_configure
 }
