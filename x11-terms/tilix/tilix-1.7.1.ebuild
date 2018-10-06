@@ -11,7 +11,7 @@ SLOT="0"
 KEYWORDS="amd64 x86"
 IUSE="+crypt"
 
-DLANG_VERSION_RANGE="2.070-"
+DLANG_VERSION_RANGE="2.070-2.079"
 DLANG_PACKAGE_TYPE="single"
 
 inherit gnome2 dlang
