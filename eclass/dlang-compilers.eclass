@@ -52,6 +52,7 @@ dlang-compilers_declare_versions() {
 		["1.7"]="2.077 x86 amd64 ~arm"
 		["1.8"]="2.078 x86 amd64 ~arm"
 		["1.9"]="2.079 x86 amd64 ~arm"
+		["1.10"]="2.080 x86 amd64 ~arm"
 	)
 }
 
