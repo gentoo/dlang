@@ -8,12 +8,12 @@ HOMEPAGE="https://github.com/dlang-community/DCD"
 LICENSE="GPL-3"
 
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="~amd64 ~x86"
 IUSE="systemd"
 
 CONTAINERS="c261fa119072ce788ef81b8d8fee9a2adddca5d1"
-DSYMBOL="3f7eaa1b1e6dd0c5e14d500d0b3d4ba1e1e41138"
-LIBDPARSE="086cf06051bb1f33c94891ba6c39a57f164ee296"
+DSYMBOL="47f471114ad272dc0cd41996c7977413d7a68d63"
+LIBDPARSE="1556a80bccbe4bf40ed78ec7144011d3496ee334"
 MSGPACK="500940918243cf0468028e552605204c6aa46807"
 ALLOCATOR="b7778fd6bf5f9aaaa87dd27f989cefbf9b3b365f"
 SRC_URI="
@@ -46,7 +46,7 @@ src_prepare() {
 
 d_src_compile() {
 	# Build client & server with the requested Dlang compiler
-	local flags="$DCFLAGS $LDFLAGS $DLANG_VERSION_FLAG=built_with_dub -Icontainers/src -Idsymbol/src -Ilibdparse/src -Imsgpack-d/src -Isrc"
+	local flags="$DCFLAGS $LDFLAGS -Icontainers/src -Idsymbol/src -Ilibdparse/src -Imsgpack-d/src -Isrc -J."
 	case "$DLANG_VENDOR" in
 	DigitalMars)
 		emake \
