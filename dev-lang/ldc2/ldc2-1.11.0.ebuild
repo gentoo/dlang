@@ -18,19 +18,18 @@ SLOT="$(ver_cut 1-2)/$(ver_cut 3)"
 
 IUSE="static-libs"
 
-# We support LLVM 3.7 through 7.
+# We support LLVM 3.7 through 6.
 RDEPEND="|| (
-		sys-devel/llvm:7
 		sys-devel/llvm:6
 		sys-devel/llvm:5
 		sys-devel/llvm:4
 		>=sys-devel/llvm-3.7:0
 	)
-	<sys-devel/llvm-8:=
+	<sys-devel/llvm-7:=
 	>=app-eselect/eselect-dlang-20140709"
 DEPEND=">=dev-util/cmake-2.8
 	${RDEPEND}"
-LLVM_MAX_SLOT=7
+LLVM_MAX_SLOT=6
 PATCHES="${FILESDIR}/ldc2-1.9.0-link-defaultlib-shared.patch"
 
 # For now, we support amd64 multilib. Anyone is free to add more support here.
