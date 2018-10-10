@@ -56,6 +56,7 @@ d_src_configure() {
 		-DCMAKE_INSTALL_PREFIX=/opt/ldc2-$(ver_cut 1-2)
 		-DD_COMPILER="${DMD}"
 		-DD_COMPILER_DMD_COMPAT=1
+		-DLDC_WITH_LLD=OFF
 	)
 	use static-libs && mycmakeargs+=( -DBUILD_SHARED_LIBS=BOTH ) || mycmakeargs+=( -DBUILD_SHARED_LIBS=ON )
 	use abi_x86_32 && use abi_x86_64 && mycmakeargs+=( -DMULTILIB=ON )
