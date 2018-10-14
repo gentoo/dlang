@@ -14,18 +14,16 @@ RDEPEND="
 	net-misc/curl
 "
 DEPEND="${RDEPEND}"
-VERSION="$(ver_cut 1-3)"
-SRC_URI="https://codeload.github.com/abraunegg/onedrive/tar.gz/v${VERSION} -> onedrive-${VERSION}.tar.gz"
+SRC_URI="https://codeload.github.com/abraunegg/onedrive/tar.gz/v${PV} -> ${P}.tar.gz"
 DLANG_VERSION_RANGE="2.072-"
 DLANG_PACKAGE_TYPE="single"
-S="${WORKDIR}/onedrive-${VERSION}"
 
 inherit dlang systemd
 
 src_prepare() {
 	mkdir .git
 	touch .git/HEAD .git/index
-	echo "v${VERSION}" > version
+	echo "v${PV}" > version
 	default_src_prepare
 }
 
