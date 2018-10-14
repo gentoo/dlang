@@ -26,7 +26,8 @@ if has ${EAPI:-0} 0 1 2 3 4 5; then
 	die "EAPI must be >= 6 for dlang packages."
 fi
 
-inherit flag-o-matic eapi7-ver dlang-compilers
+inherit flag-o-matic dlang-compilers
+test ${EAPI:-0} -lt 7 && inherit eapi7-ver
 if [[ "${DLANG_PACKAGE_TYPE}" == "multi" ]]; then
 	# We handle a multi instance package.
 	inherit multilib-minimal
