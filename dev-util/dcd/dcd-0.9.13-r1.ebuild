@@ -39,7 +39,8 @@ src_prepare() {
 	mv -T ../libdparse-${LIBDPARSE}      libdparse             || die
 	mv -T ../msgpack-d-${MSGPACK}        msgpack-d             || die
 	# Stop makefile from executing git to write an unused githash.txt
-	touch githash githash.txt || die "Could not generate githash"
+	echo "v${PV}" > githash.txt || die "Could not generate githash"
+	touch githash || die "Could not generate githash"
 	# Apply patches
 	dlang_src_prepare
 }
