@@ -1,9 +1,9 @@
 --- dmd2/dmd/src/root/port.c
 +++ dmd2/dmd/src/root/port.c
-@@ -583,8 +583,7 @@
+@@ -354,8 +354,7 @@
  
  #include <math.h>
- #if __linux__
+ #if linux
 -#include <bits/nan.h>
 -#include <bits/mathdef.h>
 +#include <complex.h>
