@@ -31,7 +31,7 @@ src_unpack() {
 		EGIT_BRANCH="gdc-`ver_cut 1`-stable"
 	else
 		EGIT_BRANCH="gdc-`ver_cut 1`"
-		EGIT_COMMIT="03b0391e5bae08aff438606dcd585983b80b19b7"
+		EGIT_COMMIT="95a735b5441d7d72578c0ceeb95aa753bfcd928b"
 	fi
 	git-r3_src_unpack
 }
