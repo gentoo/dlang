@@ -1,0 +1,14 @@
+--- dmd2/dmd/src/link.c
++++ dmd2/dmd/src/link.c
+@@ -451,7 +451,10 @@     if (global.params.dll)
+         argv.push((char *) "-dynamiclib");
+ #elif linux || __FreeBSD__ || __OpenBSD__ || __sun
+-    if (global.params.dll)
++    if (global.params.dll) {
+         argv.push((char *) "-shared");
++        if (!global.params.is64bit)
++            argv.push((char *) "-fuse-ld=bfd");
++    }
+ #endif
+ 
+     // None of that a.out stuff. Use explicit exe file name, or

@@ -1,13 +1,18 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 
 KEYWORDS="-* amd64 x86"
 YEAR=2018
-DLANG_VERSION_RANGE="2.067-"
+DLANG_VERSION_RANGE="2.068-"
 
 inherit dmd
+
+PATCHES=(
+	"${FILESDIR}/2.081-allow-deprecations.patch"
+	"${FILESDIR}/2.083-link-32-bit-shared-lib-with-ld.bfd.patch"
+)
 
 dmd_src_prepare_extra() {
 	# Copy default DDOC theme file into resource directory
