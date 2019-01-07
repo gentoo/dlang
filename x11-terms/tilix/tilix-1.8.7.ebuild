@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -11,7 +11,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="+crypt"
 
-DLANG_VERSION_RANGE="2.074-"
+DLANG_VERSION_RANGE="2.075-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit gnome2 dlang
@@ -21,7 +21,7 @@ SRC_URI="${GITHUB_URI}/${PN}/tar.gz/${PV} -> ${PN}-${PV}.tar.gz"
 
 RDEPEND="
 	>=sys-devel/gettext-0.19.8.1
-	>=dev-libs/gtkd-3.8.3:3[vte,${DLANG_COMPILER_USE}]
+	>=dev-libs/gtkd-3.8.4:3[vte,${DLANG_COMPILER_USE}]
 	x11-libs/vte:2.91[crypt?]"
 DEPEND="
 	sys-devel/automake:1.15
@@ -38,4 +38,10 @@ d_src_configure() {
 	export GTKD_CFLAGS="-I/usr/include/dlang/gtkd-3"
 	export GTKD_LIBS="-L-ldl -L-lvted-3 -L-lgtkd-3"
 	DC="${DMD}" default_src_configure
+}
+
+d_src_install() {
+	default_src_install
+	# Silence "Please fix the ebuild not to install compressed files" QA warnings
+	gzip -d "${D}"/usr/share/man/man1/tilix.1.gz "${D}"/usr/share/man/*/man1/tilix.1.gz
 }
