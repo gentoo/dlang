@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -9,7 +9,7 @@ LICENSE="LGPL-3"
 
 SLOT="3"
 KEYWORDS="amd64 x86"
-SRC_URI="http://gtkd.org/Downloads/sources/GtkD-${PV}.zip"
+SRC_URI="https://gtkd.org/Downloads/sources/GtkD-${PV}.zip"
 
 DLANG_VERSION_RANGE="2.068-"
 DLANG_PACKAGE_TYPE="multi"

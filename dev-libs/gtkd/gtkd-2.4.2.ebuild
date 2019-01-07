@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -9,10 +9,10 @@ LICENSE="LGPL-3"
 
 SLOT="2"
 KEYWORDS="amd64 x86"
-SRC_URI="http://gtkd.org/Downloads/sources/GtkD-${PV}.zip"
+SRC_URI="https://gtkd.org/Downloads/sources/GtkD-${PV}.zip"
 
 # 2.068 through 2.070 suffer from https://forum.gtkd.org/groups/GtkD/thread/302/
-DLANG_VERSION_RANGE="2.063-2.067 2.071-"
+DLANG_VERSION_RANGE="2.063-2.067 2.071-2.080"
 DLANG_PACKAGE_TYPE="multi"
 
 inherit eutils dlang
