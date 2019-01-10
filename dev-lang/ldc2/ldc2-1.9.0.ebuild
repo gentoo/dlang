@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -35,7 +35,7 @@ PATCHES="${FILESDIR}/ldc2-1.9.0-link-defaultlib-shared.patch"
 # For now, we support amd64 multilib. Anyone is free to add more support here.
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 
-DLANG_VERSION_RANGE="2.068-"
+DLANG_VERSION_RANGE="2.068-2.080"
 DLANG_PACKAGE_TYPE="single"
 
 inherit dlang
