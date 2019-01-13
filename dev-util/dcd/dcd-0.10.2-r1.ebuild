@@ -29,7 +29,7 @@ S="${WORKDIR}/DCD-${PV}"
 DLANG_VERSION_RANGE="2.075-"
 DLANG_PACKAGE_TYPE="single"
 
-inherit dlang systemd
+inherit dlang systemd bash-completion-r1
 
 src_prepare() {
 	# Default ebuild unpack function places archives side-by-side ...
@@ -89,6 +89,8 @@ d_src_install() {
 	dobin bin/dcd-server
 	dobin bin/dcd-client
 	use systemd && systemd_douserunit "${FILESDIR}"/dcd-server.service
+	dobashcomp bash-completion/completions/dcd-server
+	dobashcomp bash-completion/completions/dcd-client
 	insinto /etc
 	doins dcd.conf
 	dodoc README.md
