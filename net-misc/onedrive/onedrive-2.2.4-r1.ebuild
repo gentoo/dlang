@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -12,7 +12,7 @@ KEYWORDS="~amd64 ~x86"
 RDEPEND="
 	>=dev-db/sqlite-3.7.15:3
 	net-misc/curl
-	x11-libs/libnotify
+	libnotify? ( x11-libs/libnotify )
 "
 DEPEND="${RDEPEND}"
 SRC_URI="https://codeload.github.com/abraunegg/onedrive/tar.gz/v${PV} -> ${P}.tar.gz"
@@ -30,9 +30,11 @@ src_prepare() {
 }
 
 d_src_compile() {
-	export DFLAGSNOTIFICATIONS="-version=NoPragma -version=NoGdk -version=Notifications -L-lgmodule-2.0 -L-lglib-2.0 -L-lnotify"
-	use libnotify
-	emake NOTIFICATIONS=$? PREFIX="${ESYSROOT}/usr" DC="${DMD}" DFLAGS="${DCFLAGS} -J. -L-lcurl -L-lsqlite3 ${DFLAGSNOTIFICATIONS} -ofonedrive"
+	if use libnotify; then
+		local notifications="NOTIFICATIONS=1"
+		local dflags_notifications="-version=NoPragma -version=NoGdk -version=Notifications -L-lgmodule-2.0 -L-lglib-2.0 -L-lnotify"
+	fi
+	emake ${notifications} PREFIX="${ESYSROOT}/usr" DC="${DMD}" DFLAGS="${DCFLAGS} -J. -L-lcurl -L-lsqlite3 ${dflags_notifications} -ofonedrive"
 }
 
 src_test() {
