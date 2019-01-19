@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="5"
@@ -22,7 +22,7 @@ fi
 IUSE="d d-bootstrap"
 REQUIRED_USE="${REQUIRED_USE} d-bootstrap? ( d )"
 PDEPEND="${PDEPEND} d? ( ~dev-util/gdmd-${PV} )"
-EGIT_REPO_URI="https://github.com/D-Programming-GDC/GDC.git"
+EGIT_REPO_URI="https://github.com/D-Programming-GDC/gdc-archived.git"
 EGIT_CHECKOUT_DIR="${WORKDIR}/gdc-`ver_cut 1`"
 
 src_unpack() {

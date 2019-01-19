@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="5"
@@ -22,7 +22,7 @@ fi
 IUSE="d"
 PDEPEND="${PDEPEND} d? ( ~dev-util/gdmd-${PV} )"
 SRC_URI="${SRC_URI}
-	https://codeload.github.com/D-Programming-GDC/GDC/tar.gz/v2.068.2_gcc6 -> gdc-2.068.2_gcc-6.tar.gz"
+	https://codeload.github.com/D-Programming-GDC/gdc-archived/tar.gz/v2.068.2_gcc6 -> gdc-2.068.2_gcc-6.tar.gz"
 
 src_unpack() {
 	toolchain_src_unpack
@@ -35,7 +35,7 @@ src_prepare() {
 
 	if use d ; then
 		# Get GDC sources into the tree.
-		cd ../GDC-2.068.2_gcc6 || die "Changing into GDC directory failed."
+		cd ../gdc-archived-2.068.2_gcc6 || die "Changing into GDC directory failed."
 		use pgo && epatch "${FILESDIR}"/gdc-pgo.patch
 		./setup-gcc.sh ../gcc-${GCC_PV} || die "Could not setup GDC."
 	fi

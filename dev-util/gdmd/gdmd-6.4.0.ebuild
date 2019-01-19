@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -12,7 +12,7 @@ KEYWORDS="amd64 arm arm64 hppa ia64 ~m68k ~mips ppc ppc64 ~s390 ~sh sparc x86 ~a
 DEPEND="=sys-devel/gcc-${PV}*[d]"
 RDEPEND="${DEPEND}"
 FRONTEND="2.068.2"
-SRC_URI="https://codeload.github.com/D-Programming-GDC/GDMD/tar.gz/v${FRONTEND} -> gdmd-${FRONTEND}.tar.gz"
+SRC_URI="https://codeload.github.com/D-Programming-GDC/gdmd/tar.gz/v${FRONTEND} -> gdmd-${FRONTEND}.tar.gz"
 S="${WORKDIR}/GDMD-${FRONTEND}"
 
 DLANG_PACKAGE_TYPE="single"
