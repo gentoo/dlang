@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -8,7 +8,7 @@ HOMEPAGE="https://github.com/dlang-community/dfmt"
 LICENSE="Boost-1.0"
 
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 LIBDPARSE="ea63487efde96b6f169065d801bbcb8d7ed5dbb4"
 ALLOCATOR="b7778fd6bf5f9aaaa87dd27f989cefbf9b3b365f"
 SRC_URI="
