@@ -20,7 +20,7 @@ IUSE="static-libs"
 
 # We support LLVM 3.9 through 7.
 RDEPEND="|| (
-		sys-devel/llvm:7
+		sys-devel/llvm:7/7.0
 		sys-devel/llvm:6
 		sys-devel/llvm:5
 		sys-devel/llvm:4
