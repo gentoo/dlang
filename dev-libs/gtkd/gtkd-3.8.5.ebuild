@@ -8,7 +8,7 @@ HOMEPAGE="http://gtkd.org/"
 LICENSE="LGPL-3"
 
 SLOT="3"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 SRC_URI="https://gtkd.org/Downloads/sources/GtkD-${PV}.zip"
 
 DLANG_VERSION_RANGE="2.074-"
