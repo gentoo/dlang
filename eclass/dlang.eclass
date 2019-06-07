@@ -320,7 +320,11 @@ __dlang_compiler_masked_archs_for_version_range() {
 	# RDEPEND.
 
 	local iuse=$1
-	local depend="$iuse? ( $2 )"
+	if [[ "${DLANG_PACKAGE_TYPE}" == "dmd" ]] && [[ "$iuse" == gdc* ]]; then
+		local depend="$iuse? ( $2 "=dev-util/gdmd-$(ver_rs 1-2 . ${iuse#gdc-})*" )"
+	else
+		local depend="$iuse? ( $2 )"
+	fi
 	local dlang_version=${3%% *}
 	local compiler_keywords=${3:${#dlang_version}}
 	local compiler_keyword package_keyword arch
