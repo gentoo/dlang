@@ -20,5 +20,5 @@ dmd_src_prepare_extra() {
 	cp "${FILESDIR}/2.086-default_ddoc_theme.ddoc" "dmd/res/default_ddoc_theme.ddoc" || die "Failed to copy 'default_ddoc_theme.ddoc' file into 'src/res' directory."
 
 	# Copy missing config.d
-	cp "${FILESDIR}/2.086-config.d" "dmd/config.d" || die "Failed to copy 'config.sh' file into 'dmd' directory."
+	cp "${FILESDIR}/2.086-config.d" "dmd/config.d" || die "Failed to copy 'config.d' file into 'dmd' directory."
 }
