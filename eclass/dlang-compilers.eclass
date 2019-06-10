@@ -48,9 +48,6 @@ dlang-compilers_declare_versions() {
 	# LDC
 	__dlang_ldc2_frontend=(
 		["0.17"]="2.068 amd64 ~arm x86"
-		["1.1"]="2.071 amd64 ~arm x86"
-		["1.2"]="2.072 amd64 ~arm x86"
-		["1.3"]="2.073 amd64 ~arm x86"
 		["1.4"]="2.074 amd64 ~arm x86"
 		["1.5"]="2.075 amd64 ~arm x86"
 		["1.6"]="2.076 amd64 ~arm x86"
