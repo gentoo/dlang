@@ -48,7 +48,7 @@ src_configure() {
 	fi
 	local mycmakeargs=(
 		-DD_VERSION=2
-		-DCMAKE_INSTALL_PREFIX=/opt/ldc2-$(ver_cut 1-2)
+		-DCMAKE_INSTALL_PREFIX=/usr/lib/ldc2/$(ver_cut 1-2)
 	)
 	use abi_x86_32 && use abi_x86_64 && mycmakeargs+=( -DMULTILIB=ON )
 	detect_hardened && mycmakeargs+=( -DADDITIONAL_DEFAULT_LDC_SWITCHES=', "-relocation-model=pic"' )

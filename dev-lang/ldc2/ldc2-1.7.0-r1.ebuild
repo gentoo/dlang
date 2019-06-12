@@ -59,7 +59,7 @@ d_src_configure() {
 	export LIBDIR_${ABI}="${LIBDIR_HOST}"
 	local mycmakeargs=(
 		-DD_VERSION=2
-		-DCMAKE_INSTALL_PREFIX=/opt/ldc2-$(ver_cut 1-2)
+		-DCMAKE_INSTALL_PREFIX=/usr/lib/ldc2/$(ver_cut 1-2)
 		-DD_COMPILER="${DMD}"
 		-DD_COMPILER_DMD_COMPAT=1
 	)

@@ -89,7 +89,7 @@ RDEPEND="
 PDEPEND="tools? ( >=dev-util/dlang-tools-${PV} )"
 
 S="${WORKDIR}/dmd2"
-PREFIX="opt/${PN}-${SLOT}"
+PREFIX="usr/lib/${PN}/${SLOT}"
 IMPORT_DIR="/${PREFIX}/import"
 
 dmd_src_prepare() {
@@ -206,7 +206,7 @@ EOF
 	fi
 	insinto "etc/dmd"
 	newins "linux/bin${MODEL}/dmd.conf" "${SLOT}.conf"
-	dosym "../../../etc/dmd/${SLOT}.conf" "${PREFIX}/bin/dmd.conf"
+	dosym "../../../../../etc/dmd/${SLOT}.conf" "${PREFIX}/bin/dmd.conf"
 
 	# DMD
 	einfo "Installing ${PN}..."
@@ -227,22 +227,22 @@ EOF
 	install_phobos_2() {
 		# Copied get_libdir logic from dlang.eclass, so we can install Phobos correctly.
 		if has_multilib_profile || [[ "${MODEL}" == "64" ]]; then
-			local libdir="../opt/dmd-${SLOT}/lib${MODEL}"
+			local libdir="../${PREFIX}/lib${MODEL}"
 		else
-			local libdir="../opt/dmd-${SLOT}/lib"
+			local libdir="../${PREFIX}/lib"
 		fi
 
 		# Install shared lib.
 		dolib.so phobos/generated/linux/release/${MODEL}/"${SONAME}"
 		dosym "${SONAME}" /usr/"$(get_libdir)"/"${SONAME_SYM}"
-		dosym ../../../usr/"$(get_libdir)"/"${SONAME}" /usr/"${libdir}"/libphobos2.so
+		dosym ../../../../../usr/"$(get_libdir)"/"${SONAME}" /usr/"${libdir}"/libphobos2.so
 
 		# Install static lib if requested.
 		if use static-libs; then
 			if has_multilib_profile || [[ "${MODEL}" == "64" ]]; then
-				export LIBDIR_${ABI}="../opt/dmd-${SLOT}/lib${MODEL}"
+				export LIBDIR_${ABI}="../${PREFIX}/lib${MODEL}"
 			else
-				export LIBDIR_${ABI}="../opt/dmd-${SLOT}/lib"
+				export LIBDIR_${ABI}="../${PREFIX}/lib"
 			fi
 			dolib.a phobos/generated/linux/release/${MODEL}/libphobos2.a
 		fi

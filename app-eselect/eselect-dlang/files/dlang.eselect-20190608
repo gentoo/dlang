@@ -1,12 +1,12 @@
 # -*-eselect-*-  vim: ft=eselect
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 inherit config
 
 DESCRIPTION="Manage D symlinks"
 MAINTAINER="marco.leise@gmx.de"
-VERSION="20181021"
+VERSION="20190608"
 
 ETC_PATH="${EROOT}/etc"
 COMPILER_PATH="${EROOT}/usr/bin"
@@ -103,16 +103,16 @@ do_set() {
 
 	case $1 in
 		dmd)
-			symlink_helper "${EROOT}/opt/dmd-${target}/bin/dmd"      "${COMPILER_PATH}/dmd"
-			symlink_helper "${EROOT}/opt/dmd-${target}/bin/dmd.conf" "${ETC_PATH}/dmd.conf"
-			symlink_helper "${EROOT}/opt/dmd-${target}/import"       "${INC_PATH}/dmd"
-			[[ -d ${MAN1_PATH} ]] && symlink_helper "/opt/dmd-${target}/man/man1/dmd.1"      "${MAN1_PATH}/dmd.1"
-			[[ -d ${MAN5_PATH} ]] && symlink_helper "/opt/dmd-${target}/man/man5/dmd.conf.5" "${MAN5_PATH}/dmd.conf.5"
+			symlink_helper "${EROOT}/usr/lib/dmd/${target}/bin/dmd"      "${COMPILER_PATH}/dmd"
+			symlink_helper "${EROOT}/usr/lib/dmd/${target}/bin/dmd.conf" "${ETC_PATH}/dmd.conf"
+			symlink_helper "${EROOT}/usr/lib/dmd/${target}/import"       "${INC_PATH}/dmd"
+			[[ -d ${MAN1_PATH} ]] && symlink_helper "/usr/lib/dmd/${target}/man/man1/dmd.1"      "${MAN1_PATH}/dmd.1"
+			[[ -d ${MAN5_PATH} ]] && symlink_helper "/usr/lib/dmd/${target}/man/man5/dmd.conf.5" "${MAN5_PATH}/dmd.conf.5"
 			;;
 		ldc2)
-			symlink_helper "${EROOT}/opt/ldc2-${target}/bin/ldc2"  "${COMPILER_PATH}/ldc2"
-			symlink_helper "${EROOT}/opt/ldc2-${target}/bin/ldmd2" "${COMPILER_PATH}/ldmd2"
-			symlink_helper "${EROOT}/opt/ldc2-${target}/include/d" "${INC_PATH}/ldc"
+			symlink_helper "${EROOT}/usr/lib/ldc2/${target}/bin/ldc2"  "${COMPILER_PATH}/ldc2"
+			symlink_helper "${EROOT}/usr/lib/ldc2/${target}/bin/ldmd2" "${COMPILER_PATH}/ldmd2"
+			symlink_helper "${EROOT}/usr/lib/ldc2/${target}/include/d" "${INC_PATH}/ldc"
 			;;
 	esac
 	store_config "$CONFIG_FILE" $1 "$2"
@@ -141,7 +141,7 @@ do_show() {
 	[[ $# -eq 1 ]] && has "$1" ${!COMPILER_NAMES[@]} \
 		|| die -q "1 argument required: eselect dlang show $(compiler_options)"
 
-	local interpreter="$(readlink "${COMPILER_PATH}/$1" | sed "s#^/opt/$1-##;s#/bin/$1\$##")"
+	local interpreter="$(readlink "${COMPILER_PATH}/$1" | sed -r "s#^/usr/lib(32|64)?/$1/##;s#/bin/$1\$##")"
 	[[ -n "$interpreter" ]] && echo "$interpreter"
 }
 
@@ -210,10 +210,10 @@ do_update() {
 find_targets() {
 	case "$1" in
 		dmd)
-			ls /opt/dmd-?.???/bin/dmd 2> /dev/null | sed "s#^/opt/dmd-##;s#/.*##"
+			ls /usr/lib/dmd/?.???/bin/dmd 2> /dev/null | sed "s#^/usr/lib/dmd/##;s#/.*##"
 			;;
 		ldc2)
-			ls -v /opt/ldc2-?.*/bin/ldc2 2> /dev/null | sed "s#^/opt/ldc2-##;s#/.*##"
+			ls -v /usr/lib/ldc2/?.*/bin/ldc2 2> /dev/null | sed "s#^/usr/lib/ldc2/##;s#/.*##"
 			;;
 		*)
 			die "Unknown compiler '$1'"
