@@ -220,7 +220,7 @@ dlang_convert_ldflags() {
 		# gc-sections breaks executables for some versions of D
 		# It works with the gold linker on the other hand
 		# See: https://issues.dlang.org/show_bug.cgi?id=879
-		[[ "${DLANG_PACKAGE_TYPE}" = "dmd" ]] && local dlang_version=$SLOT || local dlang_version=$DLANG_VERSION
+		[[ "${DLANG_PACKAGE_TYPE}" == "dmd" ]] && local dlang_version=$SLOT || local dlang_version=$DLANG_VERSION
 		if ver_test $dlang_version -lt 2.072; then
 			if ! ld -v | grep -q "^GNU gold"; then
 				filter-ldflags {-L,-Xlinker,-Wl,}--gc-sections
@@ -320,7 +320,11 @@ __dlang_compiler_masked_archs_for_version_range() {
 	# RDEPEND.
 
 	local iuse=$1
-	local depend="$iuse? ( $2 )"
+	if [[ "${DLANG_PACKAGE_TYPE}" == "dmd" ]] && [[ "$iuse" == gdc* ]]; then
+		local depend="$iuse? ( $2 "=dev-util/gdmd-$(ver_rs 1-2 . ${iuse#gdc-})*" )"
+	else
+		local depend="$iuse? ( $2 )"
+	fi
 	local dlang_version=${3%% *}
 	local compiler_keywords=${3:${#dlang_version}}
 	local compiler_keyword package_keyword arch

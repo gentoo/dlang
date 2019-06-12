@@ -196,7 +196,7 @@ EOF
 	elif [ "${ABI:0:5}" = "amd64" ]; then
 		cat > linux/bin${MODEL}/dmd.conf << EOF
 [Environment]
-DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -L-L/${PREFIX}/lib64 -L-rpath -L/${PREFIX}/lib64
+DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -fPIC -L-L/${PREFIX}/lib64 -L-rpath -L/${PREFIX}/lib64
 EOF
 	else
 		cat > linux/bin${MODEL}/dmd.conf << EOF
