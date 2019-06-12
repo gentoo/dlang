@@ -1,0 +1,11 @@
+Title: D compilers now installed to /usr/lib
+Author: Moritz Maxeiner <moritz.maxeiner@gmail.com>
+Content-Type: text/plain
+Posted: 2019-06-12
+Revision: 1
+News-Item-Format: 2.0
+Display-If-Installed: dev-lang/dmd
+Display-If-Installed: dev-lang/ldc2
+
+As of now the D compilers dmd and ldc2 will be installed into
+'/usr/lib/{dmd,ldc2}/$version' instead of '/opt/{dmd,ldc2}-$version'.
