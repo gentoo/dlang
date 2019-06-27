@@ -46,11 +46,14 @@ dlang-compilers_declare_versions
 # ABI: See 'multilib_get_enabled_abis' from multilib-build.eclass.
 # MODEL: This is either 32 or 64.
 # DLANG_VENDOR: Either DigitalMars, GNU or LDC.
-# DC: D compiler command. E.g. /opt/dmd-2.067/bin/dmd, /opt/ldc2-0.12.0/bin/ldc2
-#   or /usr/x86_64-pc-linux-gnu/gcc-bin/4.8.1/x86_64-pc-linux-gnu-gdc
-# DMD: DMD compiler command. E.g. /opt/dmd-2.069/bin/dmd,
-#   /opt/ldc2-0.16/bin/ldmd2 or
-#   /usr/x86_64-pc-linux-gnu/gcc-bin/4.8.4/x86_64-pc-linux-gnu-gdmd
+# DC: D compiler command. E.g.
+#   /usr/x86_64-pc-linux-gnu/gcc-bin/9.1.1/x86_64-pc-linux-gnu-gdc,
+#   /usr/lib/dmd/2.067/bin/dmd, or
+#   /usr/lib/ldc2/0.17/bin/ldc2
+# DMD: DMD compiler command. E.g.
+#   /usr/x86_64-pc-linux-gnu/gcc-bin/9.1.1/x86_64-pc-linux-gnu-gdmd,
+#   /usr/lib/dmd/2.086/bin/dmd, or
+#   /usr/lib/ldc2/0.17/bin/ldmd2
 # DC_VERSION: Release version of the compiler. This is the version excluding any
 #   Patch releases. So dmd 2.064.2 would still be 2.064. This version is used
 #   to separate potentially incompatible ABIs and to create the library path.
@@ -269,12 +272,12 @@ dlang_convert_ldflags() {
 # paths.
 dlang_system_imports() {
 	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
-		echo "/opt/dmd-${DC_VERSION}/import"
+		echo "/usr/lib/dmd/${DC_VERSION}/import"
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
 		echo "/usr/lib/gcc/${CHOST_default}/${DC_VERSION}/include/d"
 	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
-		echo "/opt/ldc2-${DC_VERSION}/include/d"
-		echo "/opt/ldc2-${DC_VERSION}/include/d/ldc"
+		echo "/usr/lib/ldc2/${DC_VERSION}/include/d"
+		echo "/usr/lib/ldc2/${DC_VERSION}/include/d/ldc"
 	else
 		die "Could not detect D compiler vendor!"
 	fi
@@ -574,14 +577,14 @@ __dlang_use_build_vars() {
 	esac
 	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
 		if [ "${DC_VERSION}" != "selfhost" ]; then
-			export DC="/opt/${DC}-${DC_VERSION}/bin/dmd"
+			export DC="/usr/lib/dmd/${DC_VERSION}/bin/dmd"
 			export DMD="${DC}"
 		fi
 		# "lib" on pure x86, "lib{32,64}" on amd64 (and multilib)
 		if has_multilib_profile || [[ "${MODEL}" == "64" ]]; then
-			export LIBDIR_${ABI}="../opt/dmd-${DC_VERSION}/lib${MODEL}"
+			export LIBDIR_${ABI}="../usr/lib/dmd/${DC_VERSION}/lib${MODEL}"
 		else
-			export LIBDIR_${ABI}="../opt/dmd-${DC_VERSION}/lib"
+			export LIBDIR_${ABI}="../usr/lib/dmd/${DC_VERSION}/lib"
 		fi
 		export DCFLAGS="${DMDFLAGS}"
 		export DLANG_LINKER_FLAG="-L"
@@ -609,9 +612,9 @@ __dlang_use_build_vars() {
 		export DLANG_VERSION_FLAG="-fversion"
 		export DLANG_UNITTEST_FLAG="-funittest"
 	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
-		export LIBDIR_${ABI}="../opt/${DC}-${DC_VERSION}/lib${MODEL}"
-		export DMD="/opt/${DC}-${DC_VERSION}/bin/ldmd2"
-		export DC="/opt/${DC}-${DC_VERSION}/bin/ldc2"
+		export LIBDIR_${ABI}="../usr/lib/ldc2/${DC_VERSION}/lib${MODEL}"
+		export DMD="/usr/lib/ldc2/${DC_VERSION}/bin/ldmd2"
+		export DC="/usr/lib/ldc2/${DC_VERSION}/bin/ldc2"
 		# To allow separate compilation and avoid object file name collisions,
 		# we append -op (do not strip paths from source file).
 		export DCFLAGS="${LDCFLAGS} -op"
