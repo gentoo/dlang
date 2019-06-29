@@ -42,8 +42,9 @@ d_src_compile() {
 		${libdparse_src}/dparse/lexer.d ${libdparse_src}/dparse/parser.d ${libdparse_src}/dparse/ast.d \
 		${libdparse_src}/dparse/rollback_allocator.d ${libdparse_src}/dparse/stack_buffer.d \
 		${libdparse_src}/std/experimental/lexer.d \
-		${allocator_src}/stdx/allocator/common.d ${allocator_src}/stdx/allocator/mallocator.d \
-		${allocator_src}/stdx/allocator/package.d ${allocator_src}/stdx/allocator/gc_allocator.d
+		${allocator_src}/stdx/allocator/common.d ${allocator_src}/stdx/allocator/internal.d \
+		${allocator_src}/stdx/allocator/mallocator.d ${allocator_src}/stdx/allocator/package.d \
+		${allocator_src}/stdx/allocator/gc_allocator.d ${allocator_src}/stdx/allocator/typed.d
 }
 
 d_src_test() {
