@@ -1,5 +1,6 @@
 Title: D compilers now installed to /usr/lib
 Author: Moritz Maxeiner <moritz.maxeiner@gmail.com>
+Author: Marco Leise <marco.leise@gmx.de>
 Content-Type: text/plain
 Posted: 2019-06-12
 Revision: 1
@@ -9,3 +10,9 @@ Display-If-Installed: dev-lang/ldc2
 
 As of now the D compilers dmd and ldc2 will be installed into
 '/usr/lib/{dmd,ldc2}/$version' instead of '/opt/{dmd,ldc2}-$version'.
+
+Your currently installed versions of dmd and ldc2 wont work as host
+compilers until they have been reinstalled. This almost certainly
+means that you have to bootstrap your recent dmd or ldc2 host
+compiler again with an older version written in C++, like ldc2-0.17
+or dmd-2.067.
