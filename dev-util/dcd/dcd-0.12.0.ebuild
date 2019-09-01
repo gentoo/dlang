@@ -8,7 +8,7 @@ HOMEPAGE="https://github.com/dlang-community/DCD"
 LICENSE="GPL-3"
 
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 IUSE="systemd"
 
 CONTAINERS="a978c3cda3f6ec3ba7449ec5c08dd5cd4dd79c6e"
