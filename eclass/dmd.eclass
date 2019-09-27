@@ -128,8 +128,9 @@ dmd_src_compile() {
 	dmd_eq 2.068 && HOST_DMD="HOST_DC" || HOST_DMD="HOST_DMD"
 	# 2.070 and below used HOST_CC instead of HOST_CXX
 	dmd_ge 2.071 && HOST_CXX="HOST_CXX" || HOST_CXX="HOST_CC"
-	# 2.072 and 2.073 have support for LTO, but would need a Makefile patch
-	dmd_ge 2.074 && LTO="ENABLE_LTO=1"
+	# 2.072 and 2.073 have support for LTO, but would need a Makefile patch.
+	# From 2.088 on, the build fails with it active.
+	dmd_ge 2.074 && ! dmd_eq 2.088 && LTO="ENABLE_LTO=1"
 	# 2.080 and below used RELEASE instead of ENABLE_RELEASE
 	dmd_ge 2.081 && ENABLE_RELEASE="ENABLE_RELEASE" || ENABLE_RELEASE="RELEASE"
 
