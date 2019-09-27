@@ -22,9 +22,6 @@ IUSE=""
 RDEPEND="|| (
 		sys-devel/llvm:7
 		sys-devel/llvm:6
-		sys-devel/llvm:5
-		sys-devel/llvm:4
-		>=sys-devel/llvm-3.7:0
 	)
 	<sys-devel/llvm-8:=
 	>=dev-libs/libconfig-1.4.7

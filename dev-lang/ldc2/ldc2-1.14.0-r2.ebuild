@@ -22,9 +22,6 @@ IUSE="static-libs"
 RDEPEND="|| (
 		sys-devel/llvm:7
 		sys-devel/llvm:6
-		sys-devel/llvm:5
-		sys-devel/llvm:4
-		>=sys-devel/llvm-3.9:0
 	)
 	<sys-devel/llvm-8:=
 	>=app-eselect/eselect-dlang-20140709"
