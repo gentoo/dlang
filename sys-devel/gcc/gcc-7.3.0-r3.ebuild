@@ -8,7 +8,7 @@ PATCH_VER="1.4"
 
 inherit toolchain git-r3 eapi7-ver
 
-KEYWORDS="amd64 arm arm64 hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86 ~amd64-fbsd ~x86-fbsd ~ppc-macos"
+KEYWORDS="amd64 arm arm64 hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86 ~ppc-macos"
 
 RDEPEND=""
 DEPEND="${RDEPEND}
