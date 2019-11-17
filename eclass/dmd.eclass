@@ -190,19 +190,19 @@ dmd_src_install() {
 [Environment]
 DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -fPIC
 [Environment32]
-DFLAGS=%DFLAGS% -L-L/${PREFIX}/lib32 -L-rpath -L/${PREFIX}/lib32
+DFLAGS=%DFLAGS% -L-L/${PREFIX}/lib32 -L-rpath=/${PREFIX}/lib32
 [Environment64]
-DFLAGS=%DFLAGS% -L-L/${PREFIX}/lib64 -L-rpath -L/${PREFIX}/lib64
+DFLAGS=%DFLAGS% -L-L/${PREFIX}/lib64 -L-rpath=/${PREFIX}/lib64
 EOF
 	elif [ "${ABI:0:5}" = "amd64" ]; then
 		cat > linux/bin${MODEL}/dmd.conf << EOF
 [Environment]
-DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -fPIC -L-L/${PREFIX}/lib64 -L-rpath -L/${PREFIX}/lib64
+DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -fPIC -L-L/${PREFIX}/lib64 -L-rpath=/${PREFIX}/lib64
 EOF
 	else
 		cat > linux/bin${MODEL}/dmd.conf << EOF
 [Environment]
-DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -fPIC -L-L/${PREFIX}/lib -L-rpath -L/${PREFIX}/lib
+DFLAGS=-I${IMPORT_DIR} -L--export-dynamic -defaultlib=phobos2 -fPIC -L-L/${PREFIX}/lib -L-rpath=/${PREFIX}/lib
 EOF
 	fi
 	insinto "etc/dmd"
