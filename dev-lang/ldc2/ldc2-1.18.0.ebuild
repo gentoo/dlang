@@ -1,9 +1,9 @@
 # Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
-inherit multilib-build cmake-utils ninja-utils eapi7-ver llvm
+inherit multilib-build cmake-utils llvm
 
 MY_PV="${PV//_/-}"
 MY_P="ldc-${MY_PV}-src"
@@ -54,7 +54,6 @@ d_src_configure() {
 	# Make sure libphobos2 is installed into ldc2's directory.
 	export LIBDIR_${ABI}="${LIBDIR_HOST}"
 	local mycmakeargs=(
-		-G Ninja
 		-DD_VERSION=2
 		-DCMAKE_INSTALL_PREFIX=/usr/lib/ldc2/$(ver_cut 1-2)
 		-DD_COMPILER="${DMD}"
@@ -67,11 +66,11 @@ d_src_configure() {
 }
 
 d_src_compile() {
-	eninja -C "${BUILD_DIR}"
+	cmake-utils_src_make
 }
 
 d_src_install() {
-	eninja -C "${BUILD_DIR}" install
+	cmake-utils_src_install
 
 	rm -rf "${ED}"/usr/share/bash-completion
 }
