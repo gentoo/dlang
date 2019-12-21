@@ -21,7 +21,6 @@ IUSE="static-libs"
 # We support LLVM 3.7 through 7.
 RDEPEND="|| (
 		sys-devel/llvm:7
-		sys-devel/llvm:6
 	)
 	<sys-devel/llvm-8:=
 	>=app-eselect/eselect-dlang-20140709"

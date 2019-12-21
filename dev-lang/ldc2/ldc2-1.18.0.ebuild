@@ -23,7 +23,6 @@ RDEPEND="|| (
 		sys-devel/llvm:9
 		sys-devel/llvm:8
 		sys-devel/llvm:7
-		sys-devel/llvm:6
 	)
 	<sys-devel/llvm-10:=
 	>=app-eselect/eselect-dlang-20140709"
