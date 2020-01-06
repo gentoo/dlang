@@ -4,13 +4,12 @@
 EAPI=6
 
 KEYWORDS="-* ~amd64 ~x86"
-YEAR=2019
-DLANG_VERSION_RANGE="2.075-"
+YEAR=2020
+DLANG_VERSION_RANGE="2.076-"
 
 inherit dmd
 
 PATCHES=(
-	"${FILESDIR}/2.081-allow-deprecations.patch"
 	"${FILESDIR}/2.083-link-32-bit-shared-lib-with-ld.bfd.patch"
 )
 
