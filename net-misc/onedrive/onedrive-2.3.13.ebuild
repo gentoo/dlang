@@ -1,4 +1,4 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,7 +8,7 @@ HOMEPAGE="https://github.com/abraunegg/onedrive"
 LICENSE="GPL-3"
 
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="~amd64 ~x86"
 RDEPEND="
 	>=dev-db/sqlite-3.7.15:3
 	net-misc/curl
@@ -24,13 +24,6 @@ DLANG_PACKAGE_TYPE="single"
 IUSE="debug libnotify"
 
 inherit dlang systemd bash-completion-r1
-
-src_prepare() {
-	mkdir .git
-	touch .git/HEAD .git/index
-	echo "v${PV}" > version
-	default_src_prepare
-}
 
 d_src_configure() {
 	# LDC is supported without wrapper
