@@ -1,4 +1,4 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -31,7 +31,8 @@ DEPEND=">=dev-util/cmake-3.8
 	${RDEPEND}"
 LLVM_MAX_SLOT=9
 PATCHES="${FILESDIR}/ldc2-1.12.0-link-defaultlib-shared.patch
-	${FILESDIR}/ldc2-1.13.0-llvm-7.1.0-compatibility.patch"
+	${FILESDIR}/ldc2-1.13.0-llvm-7.1.0-compatibility.patch
+	${FILESDIR}/ldc2-1.18.0-FileCheck-not.patch"
 
 # For now, we support amd64 multilib. Anyone is free to add more support here.
 MULTILIB_COMPAT=( abi_x86_{32,64} )
