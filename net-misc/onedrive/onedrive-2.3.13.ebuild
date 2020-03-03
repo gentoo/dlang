@@ -8,7 +8,7 @@ HOMEPAGE="https://github.com/abraunegg/onedrive"
 LICENSE="GPL-3"
 
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 RDEPEND="
 	>=dev-db/sqlite-3.7.15:3
 	net-misc/curl
