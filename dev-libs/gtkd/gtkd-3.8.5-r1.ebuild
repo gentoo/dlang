@@ -1,4 +1,4 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -81,12 +81,10 @@ d_src_test() {
 d_src_install() {
 	install_libs() {
 		# Install the shared library version of the component
-		if dlang_has_shared_lib_support; then
-			local libfile="lib${LIB_NAME}-${MAJOR}.so"
-			ln -sf "${libfile}" "${libfile}.0"
-			ln -sf "${libfile}" "${libfile}.0.${MINOR}"
-			dolib.so "${libfile}.0.${MINOR}" "${libfile}.0" "${libfile}"
-		fi
+		local libfile="lib${LIB_NAME}-${MAJOR}.so"
+		ln -sf "${libfile}" "${libfile}.0"
+		ln -sf "${libfile}" "${libfile}.0.${MINOR}"
+		dolib.so "${libfile}.0.${MINOR}" "${libfile}.0" "${libfile}"
 
 		# Install the static library version
 		if use static-libs; then

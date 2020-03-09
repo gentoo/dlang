@@ -105,18 +105,6 @@ dlang_single_config() {
 	__dlang_use_build_vars "${@}"
 }
 
-dlang_has_shared_lib_support() {
-	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
-		[[ $(ver_cut 1 ${DLANG_VERSION}) -eq 2 ]] && [[ $((10#$(ver_cut 2 ${DLANG_VERSION}))) -ge 63 ]]
-	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
-		true
-	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
-		[[ $(ver_cut 1 ${DLANG_VERSION}) -eq 2 ]] && [[ $((10#$(ver_cut 2 ${DLANG_VERSION}))) -ge 73 ]]
-	else
-		die "Could not detect D compiler vendor!"
-	fi
-}
-
 
 # @FUNCTION: dlang_src_prepare
 # @DESCRIPTION:
@@ -602,10 +590,7 @@ __dlang_use_build_vars() {
 		else
 			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/${DC_VERSION}/${MODEL}"
 		fi
-		export DCFLAGS="${GDCFLAGS}"
-		if dlang_has_shared_lib_support; then
-			export DCFLAGS="${DCFLAGS} -shared-libphobos"
-		fi
+		export DCFLAGS="${GDCFLAGS} -shared-libphobos"
 		export DLANG_LINKER_FLAG="-Xlinker "
 		export DLANG_SO_FLAGS="-shared -fpic"
 		export DLANG_OUTPUT_FLAG="-o "
