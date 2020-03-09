@@ -323,8 +323,8 @@ __dlang_compiler_masked_archs_for_version_range() {
 	# RDEPEND.
 
 	local iuse=$1
-	if [[ "${DLANG_PACKAGE_TYPE}" == "dmd" ]] && [[ "$iuse" == gdc* ]]; then
-		local depend="$iuse? ( $2 "=dev-util/gdmd-$(ver_rs 1-2 . ${iuse#gdc-})*" )"
+	if [[ "$iuse" == gdc* ]]; then
+		local depend="$iuse? ( "=dev-util/gdmd-$(ver_rs 1-2 . ${iuse#gdc-})*" )"
 	else
 		local depend="$iuse? ( $2 )"
 	fi

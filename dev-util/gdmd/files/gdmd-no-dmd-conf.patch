@@ -1,0 +1,12 @@
+--- a/dmd-script	2020-03-09 19:10:12.000000000 +0100
++++ b/dmd-script	2020-03-09 19:03:57.320213593 +0100
+@@ -307,9 +307,6 @@
+     exit 0;
+ }
+
+-# Load dmd.conf before before parsing arguments.
+-readINI();
+-
+ if ($ENV{DFLAGS}) {
+     push @ARGV, split /\s+/, $ENV{DFLAGS};
+ }

@@ -45,8 +45,7 @@ dlang-compilers_declare_versions() {
 
 	# GDC (alpha, hppa, sparc: masked "d" USE-flag)
 	__dlang_gdc_frontend=(
-		["6.4.0"]="2.068 alpha amd64 arm arm64 hppa ia64 ~m68k ~mips ppc ppc64 ~s390 ~sh sparc x86 ~amd64-fbsd ~x86-fbsd"
-		["7.3.0"]="2.081 alpha amd64 arm arm64 hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86 ~amd64-fbsd ~x86-fbsd ~ppc-macos"
+		["9.2.0"]="2.076 ~alpha amd64 arm arm64 hppa ia64 ~m68k ~mips ppc ppc64 ~riscv s390 ~sh sparc x86"
 	)
 
 	# LDC
