@@ -12,32 +12,32 @@ S=${WORKDIR}/${MY_P}
 
 DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://ldc-developers.github.com/ldc"
-KEYWORDS="amd64 ~arm ~arm64 ~ppc64 x86"
+KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~x86"
 LICENSE="BSD"
 SLOT="$(ver_cut 1-2)/$(ver_cut 3)"
 
 IUSE="static-libs"
 
-# We support LLVM 3.9 through 9.
+# We support LLVM 3.9 through 10.
 RDEPEND="|| (
+		sys-devel/llvm:10
 		sys-devel/llvm:9
 		sys-devel/llvm:8
 		sys-devel/llvm:7
 	)
-	<sys-devel/llvm-10:=
+	<sys-devel/llvm-11:=
 	>=app-eselect/eselect-dlang-20140709"
 DEPEND=">=dev-util/cmake-3.8
 	dev-util/ninja
 	${RDEPEND}"
-LLVM_MAX_SLOT=9
+LLVM_MAX_SLOT=10
 PATCHES="${FILESDIR}/ldc2-1.12.0-link-defaultlib-shared.patch
-	${FILESDIR}/ldc2-1.13.0-llvm-7.1.0-compatibility.patch
-	${FILESDIR}/ldc2-1.18.0-FileCheck-not.patch"
+	${FILESDIR}/ldc2-1.13.0-llvm-7.1.0-compatibility.patch"
 
 # For now, we support amd64 multilib. Anyone is free to add more support here.
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 
-DLANG_VERSION_RANGE="2.068 2.071-"
+DLANG_VERSION_RANGE="2.075-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit dlang
