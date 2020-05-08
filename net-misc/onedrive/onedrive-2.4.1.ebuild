@@ -8,7 +8,7 @@ HOMEPAGE="https://github.com/abraunegg/onedrive"
 LICENSE="GPL-3"
 
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="~amd64 ~x86"
 RDEPEND="
 	>=dev-db/sqlite-3.7.15:3
 	net-misc/curl
@@ -56,8 +56,7 @@ pkg_postinst() {
 	elog "first use. To do so, run onedrive in a terminal for the user in question and"
 	elog "follow the steps on screen."
 	elog
-	ewarn "The 'skilion' version contains a significant number of defect's in how the"
-	ewarn "local sync state is managed. When upgrading from the 'skilion' version to this"
-	ewarn "version, it is advisable to stop any service / onedrive process from running"
-	ewarn "and then remove your configuration directory (~/.config/onedrive/)."
+	ewarn "When upgrading from 2.3 you are required you to reauthorise your client."
+	ewarn "This is due to changing the client identifier to assist with resolving"
+	ewarn "the correct handling of 429 error responses (activityLimitReached)"
 }
