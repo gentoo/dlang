@@ -1,4 +1,4 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -21,15 +21,13 @@ IUSE="static-libs"
 # We support LLVM 3.9 through 8.
 RDEPEND="|| (
 		sys-devel/llvm:8
-		sys-devel/llvm:7
 	)
 	<sys-devel/llvm-9:=
 	>=app-eselect/eselect-dlang-20140709"
 DEPEND=">=dev-util/cmake-2.8
 	${RDEPEND}"
 LLVM_MAX_SLOT=8
-PATCHES="${FILESDIR}/ldc2-1.12.0-link-defaultlib-shared.patch
-	${FILESDIR}/ldc2-1.13.0-llvm-7.1.0-compatibility.patch"
+PATCHES="${FILESDIR}/ldc2-1.15.0-link-defaultlib-shared.patch"
 
 # For now, we support amd64 multilib. Anyone is free to add more support here.
 MULTILIB_COMPAT=( abi_x86_{32,64} )

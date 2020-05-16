@@ -44,17 +44,14 @@ dlang-compilers_declare_versions() {
 		["2.090"]="2.089 x86 amd64"
 	)
 
-	# GDC (alpha, hppa, sparc: masked "d" USE-flag)
+	# GDC (hppa, sparc: masked "d" USE-flag)
 	__dlang_gdc_frontend=(
-		["9.2.0"]="2.076 amd64 arm arm64 hppa ~ia64 m68k ~mips ppc ppc64 ~riscv s390 sparc x86"
-		["9.3.0"]="2.076 amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+		["9.2.0"]="2.076 amd64 arm arm64 ~ia64 m68k ~mips ppc ppc64 ~riscv s390 x86"
+		["9.3.0"]="2.076 amd64 arm arm64 ~ia64 ~m68k ~mips ppc ppc64 ~riscv s390 x86"
 	)
 
 	# LDC
 	__dlang_ldc2_frontend=(
-		["1.12"]="2.082 amd64 ~arm ~arm64 ~ppc64 x86"
-		["1.13"]="2.083 amd64 ~arm ~arm64 ~ppc64 x86"
-		["1.14"]="2.084 amd64 ~arm ~arm64 ~ppc64 x86"
 		["1.15"]="2.085 amd64 ~arm ~arm64 ~ppc64 x86"
 		["1.16"]="2.086 amd64 ~arm ~arm64 ~ppc64 x86"
 		["1.17"]="2.087 amd64 ~arm ~arm64 ~ppc64 x86"
