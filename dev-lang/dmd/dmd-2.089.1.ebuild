@@ -10,8 +10,8 @@ DLANG_VERSION_RANGE="2.075-"
 inherit dmd
 
 PATCHES=(
-	"${FILESDIR}/2.081-allow-deprecations.patch"
-	"${FILESDIR}/2.083-link-32-bit-shared-lib-with-ld.bfd.patch"
+	"${FILESDIR}/2.082-allow-deprecations.patch"
+	"${FILESDIR}/2.078-link-32-bit-shared-lib-with-ld.bfd.patch"
 )
 
 dmd_src_prepare_extra() {

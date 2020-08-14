@@ -1,7 +1,6 @@
 --- dmd2/dmd/src/dmd/link.d
 +++ dmd2/dmd/src/dmd/link.d
-@@ -434,7 +434,9 @@         }
-         else version (Posix)
+@@ -446,6 +446,8 @@         else version (Posix)
          {
              if (global.params.dll)
                  argv.push("-shared");

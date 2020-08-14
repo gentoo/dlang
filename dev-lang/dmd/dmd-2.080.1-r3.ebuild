@@ -1,4 +1,4 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -9,7 +9,7 @@ DLANG_VERSION_RANGE="2.067-2.080"
 
 inherit dmd
 
-PATCHES=( "${FILESDIR}/2.083-link-32-bit-shared-lib-with-ld.bfd.patch" )
+PATCHES=( "${FILESDIR}/2.078-link-32-bit-shared-lib-with-ld.bfd.patch" )
 
 dmd_src_prepare_extra() {
 	# Copy default DDOC theme file into resource directory

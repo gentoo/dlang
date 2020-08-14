@@ -1,12 +1,12 @@
 --- dmd2/dmd/src/posix.mak
 +++ dmd2/dmd/src/posix.mak
-@@ -54,6 +54,9 @@ 
+@@ -54,6 +54,9 @@
  OS_UPCASE:=$(shell echo $(OS) | tr '[a-z]' '[A-Z]')
  CFLAGS = $(GFLAGS) -I$(ROOT) -DMARS=1 -DTARGET_$(OS_UPCASE)=1 -DDM_TARGET_CPU_$(TARGET_CPU)=1
  MFLAGS = $(GFLAGS) -I$C -I$(TK) -I$(ROOT) -DMARS=1 -DTARGET_$(OS_UPCASE)=1 -DDM_TARGET_CPU_$(TARGET_CPU)=1 -DDMDV2=1
 +ifeq ($(findstring g++,$(HOST_CC)), g++)
 +MFLAGS := $(MFLAGS) -std=gnu++98
 +endif
- 
+
  DMD_OBJS = \
-         access.o attrib.o bcomplex.o blockopt.o \
+ 	access.o attrib.o bcomplex.o blockopt.o \
