@@ -207,25 +207,6 @@ dlang_compile_lib_so() {
 # Makes linker flags meant for GCC understandable for the current D compiler.
 # Basically it replaces -L with what the D compiler uses as linker prefix.
 dlang_convert_ldflags() {
-	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
-		# gc-sections breaks executables for some versions of D
-		# It works with the gold linker on the other hand
-		# See: https://issues.dlang.org/show_bug.cgi?id=879
-		[[ "${DLANG_PACKAGE_TYPE}" == "dmd" ]] && local dlang_version=$SLOT || local dlang_version=$DLANG_VERSION
-		if ver_test $dlang_version -lt 2.072; then
-			if ! ld -v | grep -q "^GNU gold"; then
-				filter-ldflags {-L,-Xlinker,-Wl,}--gc-sections
-			fi
-		fi
-		# Filter ld.gold ICF flag. (https://issues.dlang.org/show_bug.cgi?id=17515)
-		filter-ldflags {-L,-Xlinker,-Wl,}--icf={none,all,safe}
-	fi
-
-	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]] || [[ "${DLANG_VENDOR}" == "GNU" ]]; then
-		# DMD and GDC don't undestand/work with LTO flags
-		filter-ldflags -f{no-,}use-linker-plugin -f{no-,}lto -flto=*
-	fi
-
 	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]] || [[ "${DLANG_VENDOR}" == "LDC" ]]; then
 		local set prefix flags=()
 		if [[ is_dmd ]]; then
@@ -613,6 +594,24 @@ __dlang_use_build_vars() {
 		die "Could not detect D compiler vendor!"
 	fi
 	# We need to convert the LDFLAGS, so they are understood by DMD and LDC.
+	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
+		# gc-sections breaks executables for some versions of D
+		# It works with the gold linker on the other hand
+		# See: https://issues.dlang.org/show_bug.cgi?id=879
+		[[ "${DLANG_PACKAGE_TYPE}" == "dmd" ]] && local dlang_version=$SLOT || local dlang_version=$DLANG_VERSION
+		if ver_test $dlang_version -lt 2.072; then
+			if ! ld -v | grep -q "^GNU gold"; then
+				filter-flags {-L,-Xlinker,-Wl\,}--gc-sections
+			fi
+		fi
+		# Filter ld.gold ICF flag. (https://issues.dlang.org/show_bug.cgi?id=17515)
+		filter-flags {-L,-Xlinker,-Wl\,}--icf={none,all,safe}
+	fi
+
+	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]] || [[ "${DLANG_VENDOR}" == "GNU" ]]; then
+		# DMD and GDC don't undestand/work with LTO flags
+		filter-ldflags -f{no-,}use-linker-plugin -f{no-,}lto -flto=*
+	fi
 	export LDFLAGS=`dlang_convert_ldflags`
 	"${@}"
 }
