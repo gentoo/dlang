@@ -4,7 +4,7 @@
 EAPI=7
 
 DESCRIPTION="Free Client for OneDrive on Linux"
-HOMEPAGE="https://github.com/abraunegg/onedrive"
+HOMEPAGE="https://abraunegg.github.io/"
 LICENSE="GPL-3"
 
 SLOT="0"

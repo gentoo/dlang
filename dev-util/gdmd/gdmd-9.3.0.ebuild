@@ -4,7 +4,7 @@
 EAPI=7
 
 DESCRIPTION="Wrapper script for gdc that emulates the dmd command"
-HOMEPAGE="http://www.gdcproject.org/"
+HOMEPAGE="https://www.gdcproject.org/"
 LICENSE="GPL-3+"
 
 SLOT="${PV}"

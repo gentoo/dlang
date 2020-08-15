@@ -4,7 +4,7 @@
 EAPI=7
 
 DESCRIPTION="Package and build management system for D"
-HOMEPAGE="http://code.dlang.org/"
+HOMEPAGE="https://code.dlang.org/"
 LICENSE="MIT"
 
 SLOT="0"

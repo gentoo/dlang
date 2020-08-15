@@ -11,7 +11,7 @@ SRC_URI="https://github.com/ldc-developers/ldc/releases/download/v${MY_PV}/${MY_
 S=${WORKDIR}/${MY_P}
 
 DESCRIPTION="LLVM D Compiler"
-HOMEPAGE="https://ldc-developers.github.com/ldc"
+HOMEPAGE="https://github.com/ldc-developers/ldc"
 KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~x86"
 LICENSE="BSD"
 SLOT="$(ver_cut 1-2)/$(ver_cut 3)"
