@@ -1,7 +1,7 @@
 # Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
 DESCRIPTION="A tiling terminal emulator for Linux using GTK+ 3"
 HOMEPAGE="https://gnunn1.github.io/tilix-web/"
@@ -14,7 +14,7 @@ IUSE="+crypt"
 DLANG_VERSION_RANGE="2.075-2.086"
 DLANG_PACKAGE_TYPE="single"
 
-inherit gnome2 dlang
+inherit dlang
 
 GITHUB_URI="https://codeload.github.com/gnunn1"
 SRC_URI="${GITHUB_URI}/${PN}/tar.gz/${PV} -> ${PN}-${PV}.tar.gz"
@@ -37,7 +37,7 @@ src_prepare() {
 d_src_configure() {
 	export GTKD_CFLAGS="-I/usr/include/dlang/gtkd-3"
 	export GTKD_LIBS="-L-ldl -L-lvted-3 -L-lgtkd-3"
-	DC="${DMD}" default_src_configure
+	default_src_configure
 }
 
 d_src_install() {
