@@ -122,7 +122,6 @@ dmd_src_compile() {
 	# A native build of dmd is used to compile the runtimes for both x86 and amd64
 	# We cannot use multilib-minimal yet, as we have to be sure dmd for amd64
 	# always gets build first.
-	einfo "Building dmd..."
 
 	# 2.068 used HOST_DC instead of HOST_DMD
 	dmd_eq 2.068 && HOST_DMD="HOST_DC" || HOST_DMD="HOST_DMD"
@@ -149,7 +148,15 @@ dmd_src_compile() {
 		esac
 		export DMD="../../${kernel}/bin${model}/dmd"
 	fi
-	emake -C dmd/src -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" ${HOST_CXX}="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO}
+	if dmd_ge 2.094; then
+		einfo "Building dmd build script..."
+		dlang_compile_bin dmd/generated/build dmd/src/build.d
+		einfo "Building dmd..."
+		env ${ENABLE_RELEASE}=1 ${LTO} dmd/generated/build dmd
+	else
+		einfo "Building dmd..."
+		emake -C dmd/src -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" ${HOST_CXX}="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO}
+	fi
 
 	# Don't pick up /etc/dmd.conf when calling $(dmd_gen_exe_dir)/dmd !
 	if [ ! -f "$(dmd_gen_exe_dir)/dmd.conf" ]; then
