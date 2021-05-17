@@ -146,13 +146,16 @@ dmd_src_compile() {
 			"amd64") model=64;;
 			*) die "Self-hosting dmd on ${ARCH} is not currently supported."
 		esac
-		export DMD="../../${kernel}/bin${model}/dmd"
+		export DMD="${kernel}/bin${model}/dmd"
+		if ! dmd_ge 2.094; then
+			export DMD="../../${DMD}"
+		fi
 	fi
 	if dmd_ge 2.094; then
 		einfo "Building dmd build script..."
-		dlang_compile_bin dmd/generated/build dmd/src/build.d
+		DC="${DMD}" dlang_compile_bin dmd/generated/build dmd/src/build.d
 		einfo "Building dmd..."
-		env ${ENABLE_RELEASE}=1 ${LTO} dmd/generated/build dmd
+		env VERBOSE=1 ${HOST_DMD}="${DMD}" CXX="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO} dmd/generated/build dmd
 	else
 		einfo "Building dmd..."
 		emake -C dmd/src -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" ${HOST_CXX}="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO}
