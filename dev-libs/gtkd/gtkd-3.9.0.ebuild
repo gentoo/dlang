@@ -11,7 +11,7 @@ SLOT="3"
 KEYWORDS="amd64 x86"
 SRC_URI="https://gtkd.org/Downloads/sources/GtkD-${PV}.zip"
 
-DLANG_VERSION_RANGE="2.074-"
+DLANG_VERSION_RANGE="2.074-2.095"
 DLANG_PACKAGE_TYPE="multi"
 
 inherit dlang
