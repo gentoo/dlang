@@ -24,7 +24,7 @@ RDEPEND="
 	>=dev-libs/gtkd-3.8.5:3[vte,${DLANG_COMPILER_USE}]
 	x11-libs/vte:2.91[crypt?]"
 DEPEND="
-	sys-devel/automake:1.15
+	sys-devel/automake:1.16
 	>=sys-devel/autoconf-2.69
 	app-text/po4a
 	${RDEPEND}"
