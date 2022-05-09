@@ -12,7 +12,7 @@ S=${WORKDIR}/${MY_P}
 
 DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://github.com/ldc-developers/ldc"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 ~arm ~arm64 ~ppc64 x86"
 LICENSE="BSD"
 SLOT="$(ver_cut 1-2)/$(ver_cut 3)"
 
@@ -21,7 +21,6 @@ IUSE="static-libs"
 # We support LLVM 6.0 through 10.
 RDEPEND="dev-util/ninja
 	|| (
-		sys-devel/llvm:11
 		sys-devel/llvm:12
 	)
 	<sys-devel/llvm-13:=

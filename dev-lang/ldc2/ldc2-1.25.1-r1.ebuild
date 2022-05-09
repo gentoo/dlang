@@ -21,7 +21,6 @@ IUSE="static-libs"
 # We support LLVM 6.0 through 12.
 RDEPEND="dev-util/ninja
 	|| (
-		sys-devel/llvm:11
 		sys-devel/llvm:12
 	)
 	<sys-devel/llvm-13:=
