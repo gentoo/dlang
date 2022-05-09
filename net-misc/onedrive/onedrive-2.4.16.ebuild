@@ -58,7 +58,7 @@ pkg_postinst() {
 	elog "first use. To do so, run onedrive in a terminal for the user in question and"
 	elog "follow the steps on screen."
 	elog
-	ewarn "When upgrading from 2.3 you are required you to reauthorise your client."
+	ewarn "When upgrading from 2.3 you are required to reauthorise your client."
 	ewarn "This is due to changing the client identifier to assist with resolving"
 	ewarn "the correct handling of 429 error responses (activityLimitReached)"
 }
