@@ -77,6 +77,9 @@ Import files from libraries are placed in `/usr/include/dlang/<library>/` matchi
 
 ## Contributing
 If you want to maintain a package or generally help update the repository or have a suggestion, just drop me a [note](mailto:marco.leise@gmx.de). If things move too slowly, I can add you to the team with commit rights. That's better than maintaining your own fork and having people search for updates in multiple places. Should this repository appear abandoned at some point and no one can be reached, please contact the [Gentoo GitHub org](https://github.com/gentoo) that has ownership of it.
+
+For pull requests please add `--signoff` to your commits. Otherwise they cannot be pushed to Gentoo's Git repository.
+
 ### When adding new compiler versions
 At first there is not much to be done, but once the first arch is stable, it should be added as a compiler option for Dlang packages, by providing a description for its USE-flag in `profile/use.desc` and tying it into `eclass/dlang-compilers.eclass`. This way it knows which compiler release is based on which version of the D language specification, which is crucial for dependency management.
 ### When changing paths in compiler ebuilds
