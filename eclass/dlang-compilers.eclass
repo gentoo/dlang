@@ -49,7 +49,7 @@ dlang-compilers_declare_versions() {
 		["2.096"]="2.096 x86 amd64"
 		["2.097"]="2.097 ~x86 ~amd64"
 		["2.098"]="2.098 ~x86 ~amd64"
-		["2.099"]="2.099 ~x86 ~amd64"
+		["2.099"]="2.099 x86 amd64"
 	)
 
 	# GDC (hppa, sparc: masked "d" USE-flag)
@@ -63,7 +63,7 @@ dlang-compilers_declare_versions() {
 		["1.26"]="2.096 amd64 ~arm ~arm64 ~ppc64 x86"
 		["1.27"]="2.097 amd64 ~arm ~arm64 ~ppc64 x86"
 		["1.28"]="2.098 amd64 ~arm ~arm64 ~ppc64 x86"
-		["1.29"]="2.099 ~amd64 ~arm ~arm64 ~ppc64 ~x86"
+		["1.29"]="2.099 amd64 ~arm ~arm64 ~ppc64 x86"
 	)
 }
 
