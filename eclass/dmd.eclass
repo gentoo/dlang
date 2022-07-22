@@ -103,6 +103,8 @@ dmd_src_prepare() {
 	ln -s ../druntime src/druntime || die "Failed to symlink 'druntime' to 'src/druntime'"
 	ln -s ../phobos   src/phobos   || die "Failed to symlink 'phobos' to 'src/phobos'"
 
+	mkdir dmd/generated || die "Could not create output directory"
+
 	# Convert line-endings of file-types that start as cr-lf and are installed later on
 	for file in $( find . -name "*.txt" -o -name "*.html" -o -name "*.d" -o -name "*.di" -o -name "*.ddoc" -type f ); do
 		edos2unix $file || die "Failed to convert DOS line-endings to Unix."
@@ -153,9 +155,9 @@ dmd_src_compile() {
 	fi
 	if dmd_ge 2.094; then
 		einfo "Building dmd build script..."
-		DC="${DMD}" dlang_compile_bin dmd/generated/build dmd/src/build.d
+		dlang_compile_bin dmd/generated/build dmd/src/build.d
 		einfo "Building dmd..."
-		env VERBOSE=1 ${HOST_DMD}="${DMD}" CXX="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO} dmd/generated/build dmd
+		env VERBOSE=1 ${HOST_DMD}="${DMD}" CXX="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO} dmd/generated/build DFLAGS="$(dlang_dmdw_dcflags)" dmd
 	else
 		einfo "Building dmd..."
 		emake -C dmd/src -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" ${HOST_CXX}="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO}

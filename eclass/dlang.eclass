@@ -234,6 +234,37 @@ dlang_convert_ldflags() {
 	fi
 }
 
+# @FUNCTION: dlang_dmdw_dcflags
+# @DESCRIPTION:
+# Convertes compiler specific $DCFLAGS to something that can be passed to the
+# dmd wrapper of said compiler. Calls `die` if the flags could not be
+# converted.
+dlang_dmdw_dcflags() {
+	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
+		# There's no translation that needs to be done.
+		echo "${DCFLAGS}"
+	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
+		# ldmd2 passes all the arguments that it doesn't understand to ldc2.
+		echo "${DCFLAGS}"
+	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
+		# From `gdmd --help`:   -q,arg1,...    pass arg1, arg2, etc. to gdc
+		if [[ "${DCFLAGS}" =~ .*,.* ]]; then
+			eerror "DCFLAGS (${DCFLAGS}) contain a comma and can not be passed to gdmd."
+			eerror "Please remove the comma, use a different compiler, or call gdc directly."
+			die "DCFLAGS contain an unconvertable comma."
+		fi
+
+		local set flags=()
+		for set in ${DCFLAGS}; do
+			flags+=("-q,${set}")
+		done
+		echo "${flags[@]}"
+	else
+		die "Set DLANG_VENDOR to DigitalMars, LDC or GNU prior to calling ${FUNCNAME}()."
+	fi
+}
+
+
 # @FUNCTION: dlang_system_imports
 # @DESCRIPTION:
 # Returns a list of standard system import paths (one per line) for the current
