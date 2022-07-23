@@ -12,21 +12,22 @@ S=${WORKDIR}/${MY_P}
 
 DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://github.com/ldc-developers/ldc"
-KEYWORDS="amd64 ~arm ~arm64 ~ppc64 x86"
+KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~x86"
 LICENSE="BSD"
 SLOT="$(ver_cut 1-2)/$(ver_cut 3)"
 
 IUSE="static-libs"
 
-# We support LLVM 6.0 through 10.
+# We support LLVM 6.0 through 14.
 RDEPEND="dev-util/ninja
 	|| (
-		sys-devel/llvm:12
+		sys-devel/llvm:13
+		sys-devel/llvm:14
 	)
-	<sys-devel/llvm-13:=
+	<sys-devel/llvm-15:=
 	>=app-eselect/eselect-dlang-20140709"
 DEPEND="${RDEPEND}"
-LLVM_MAX_SLOT=12
+LLVM_MAX_SLOT=14
 PATCHES="${FILESDIR}/ldc2-1.15.0-link-defaultlib-shared.patch"
 
 # For now, we support amd64 multilib. Anyone is free to add more support here.
