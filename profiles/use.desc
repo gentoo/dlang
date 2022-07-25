@@ -38,3 +38,4 @@ dmd-2_099 - Build for DMD 2.099
 gdc-11_2_1 - Build for GCC 11.2.1
 gdc-11_3_0 - Build for GCC 11.3.0
 ldc2-1_29 - Build for ldc2 1.29
+ldc2-1_30 - Build for ldc2 1.30
