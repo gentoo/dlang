@@ -181,7 +181,7 @@ dmd_src_compile() {
 		einfo "Building dmd build script..."
 		DC="${DMD}" dlang_compile_bin dmd/generated/build dmd/src/build.d
 		einfo "Building dmd..."
-		env VERBOSE=1 ${HOST_DMD}="${DMD}" CXX="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO} dmd/generated/build DFLAGS="$(dlang_dmdw_dcflags)" dmd
+		env VERBOSE=1 ${HOST_DMD}="${DMD}" CXX="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO} dmd/generated/build DFLAGS="$(dlang_dmdw_dcflags)" dmd || die
 	else
 		einfo "Building dmd..."
 		emake -C dmd/src -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" ${HOST_CXX}="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO}
