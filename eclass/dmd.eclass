@@ -92,7 +92,8 @@ fi
 EXPORT_FUNCTIONS src_prepare src_compile src_test src_install pkg_postinst pkg_postrm
 
 if [[ -n "${BETA}" ]]; then
-	SRC_URI="http://downloads.dlang.org/pre-releases/${MAJOR}.x/${VERSION}/${PN}.${VERSION}-b${BETA:4}.${ARCHIVE}"
+	# We want to convert a Gentoo version string to an upstream one: 2.097.0_rc1 -> 2.097.0-rc.1
+	SRC_URI="http://downloads.dlang.org/pre-releases/${MAJOR}.x/${VERSION}/${PN}.$(ver_rs 3 "-" 4 ".").${ARCHIVE}"
 else
 	SRC_URI="mirror://aws/${YEAR}/${PN}.${PV}.${ARCHIVE}"
 fi
