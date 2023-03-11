@@ -274,7 +274,8 @@ dlang_system_imports() {
 	if [[ "${DLANG_VENDOR}" == "DigitalMars" ]]; then
 		echo "/usr/lib/dmd/${DC_VERSION}/import"
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
-		echo "/usr/lib/gcc/${CHOST_default}/${DC_VERSION}/include/d"
+		# gcc's SLOT is its major version component.
+		echo "/usr/lib/gcc/${CHOST_default}/$(ver_cut 1 ${DC_VERSION})/include/d"
 	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
 		echo "/usr/lib/ldc2/${DC_VERSION}/include/d"
 		echo "/usr/lib/ldc2/${DC_VERSION}/include/d/ldc"
@@ -324,7 +325,7 @@ __dlang_compiler_masked_archs_for_version_range() {
 
 	local iuse=$1
 	if [[ "$iuse" == gdc* ]]; then
-		local depend="$iuse? ( "=dev-util/gdmd-$(ver_rs 1-2 . ${iuse#gdc-})*" )"
+		local depend="$iuse? ( $2 dev-util/gdmd:$(ver_cut 1 ${iuse#gdc-}) )"
 	else
 		local depend="$iuse? ( $2 )"
 	fi
@@ -407,8 +408,8 @@ __dlang_filter_compilers() {
 	# GDC (doesn't support sub-slots, to stay compatible with upstream GCC)
 	for dc_version in "${!__dlang_gdc_frontend[@]}"; do
 		mapping="${__dlang_gdc_frontend[${dc_version}]}"
-		iuse=gdc-$(ver_rs 1- _ $dc_version)
-		depend="=sys-devel/gcc-$dc_version*[d,-d-bootstrap(-)]"
+		iuse=gdc-$(ver_rs 1-2 _ $dc_version)
+		depend="~sys-devel/gcc-$dc_version[d,-d-bootstrap(-)]"
 		__dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
 	done
 
@@ -524,7 +525,7 @@ __dlang_compiler_to_dlang_version() {
 }
 
 __dlang_build_configurations() {
-	local variants use_flag use_flags
+	local variants version_component use_flag use_flags
 
 	if [ -z ${DLANG_USE_COMPILER+x} ]; then
 		use_flags="${USE}"
@@ -534,12 +535,29 @@ __dlang_build_configurations() {
 	for use_flag in $use_flags; do
 		case ${use_flag} in
 			dmd-* | gdc-* | ldc-* | ldc2-*)
+				# On the left are possible $use_flag,
+				# on the right, the correct $version_component:
+				#
+				# dmd-2_088              dmd-2.088
+				# gdc-12_2_0             gdc-12.2.0
+				# gdc-11_3_1_p20230303   gdc-11.3.1_p20230303
+				# ldc-1_29               ldc-1.29
+				# ldc2-1_30              ldc2-1.30
+				#
+				# Note: for ldc2 there is an empty separater betwen the 'c' and the '2'.
+				# Same thing for gdc, between the 'p' and the '2'.
+				if [[ "${use_flag}" =~ ldc2-* ]]; then
+					version_component=$(ver_rs 3 . ${use_flag})
+				else
+					version_component=$(ver_rs 2-3 . ${use_flag})
+				fi
+
 				if [ "${DLANG_PACKAGE_TYPE}" == "multi" ]; then
 					for abi in $(multilib_get_enabled_abis); do
-						variants="${variants} ${abi}-${use_flag//_/.}"
+						variants="${variants} ${abi}-${version_component}"
 					done
 				else
-					variants="default-${use_flag//_/.}"
+					variants="default-${version_component}"
 				fi
 				;;
 			selfhost)
@@ -595,12 +613,13 @@ __dlang_use_build_vars() {
 		export DLANG_UNITTEST_FLAG="-unittest"
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
 		# Note that ldc2 expects the compiler name to be 'gdmd', not 'x86_64-pc-linux-gnu-gdmd'.
-		export DC="/usr/${CHOST_default}/gcc-bin/${DC_VERSION}/${CHOST_default}-gdc"
-		export DMD="/usr/${CHOST_default}/gcc-bin/${DC_VERSION}/gdmd"
+		# gcc's SLOT is its major version component.
+		export DC="/usr/${CHOST_default}/gcc-bin/$(ver_cut 1 ${DC_VERSION})/${CHOST_default}-gdc"
+		export DMD="/usr/${CHOST_default}/gcc-bin/$(ver_cut 1 ${DC_VERSION})/gdmd"
 		if [[ "${DLANG_PACKAGE_TYPE}" == "multi" ]] && multilib_is_native_abi; then
-			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/${DC_VERSION}"
+			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/$(ver_cut 1 ${DC_VERSION})"
 		else
-			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/${DC_VERSION}/${MODEL}"
+			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/$(ver_cut 1 ${DC_VERSION})/${MODEL}"
 		fi
 		export DCFLAGS="${GDCFLAGS} -shared-libphobos"
 		export DLANG_LINKER_FLAG="-Xlinker "
