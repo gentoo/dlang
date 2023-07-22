@@ -20,6 +20,15 @@
 # and RDEPEND for Dlang compilers based on above variables. The ebuild is responsible
 # for providing them as required by the function it uses from this eclass.
 
+# @ECLASS_VARIABLE: DLANG_COMPILER_USE
+# @DESCRIPTION:
+# Holds the active Dlang compiler for an application as a USE flag to be passed on to depencencies (libraries).
+# Using this variable one can ensure that all required libraries must be compiled with the same compiler.
+
+# @ECLASS_VARIABLE: DLANG_IMPORT_DIR
+# @DESCRIPTION:
+# The path that is used to install include files. A sub-directory specific to the package should be used.
+
 if [[ ${_ECLASS_ONCE_DLANG} != "recur -_+^+_- spank" ]] ; then
 _ECLASS_ONCE_DLANG="recur -_+^+_- spank"
 
@@ -66,8 +75,6 @@ dlang-compilers_declare_versions
 #   as a prefix for a single argument that should be passed to the linker.
 #   dmd: -L, gdc: -Xlinker, ldc: -L=
 # DLANG_LIB_DIR: The compiler and compiler version specific library directory.
-# DLANG_IMPORT_DIR: This is actually set globally. Place includes in a
-#   sub-directory.
 dlang_foreach_config() {
 	debug-print-function ${FUNCNAME} "${@}"
 
@@ -96,8 +103,9 @@ dlang_foreach_config() {
 	multibuild_foreach_variant multibuild_wrapper "${@}"
 }
 
-export DLANG_IMPORT_DIR="usr/include/dlang"
-
+# @FUNCTION: dlang_single_config
+# @DESCRIPTION:
+# Wrapper for build phases when only a single build configuraion is used. See `dlang_foreach_config()` for more details.
 dlang_single_config() {
 	debug-print-function ${FUNCNAME} "${@}"
 
@@ -106,6 +114,7 @@ dlang_single_config() {
 	_dlang_use_build_vars "${@}"
 }
 
+export DLANG_IMPORT_DIR="usr/include/dlang"
 
 # @FUNCTION: dlang_src_prepare
 # @DESCRIPTION:
@@ -306,24 +315,25 @@ declare -a _dlang_compiler_iuse
 declare -a _dlang_compiler_iuse_mask
 declare -a _dlang_depends
 
+# @FUNCTION: _dlang_compiler_masked_archs_for_version_range
+# @DESCRIPTION:
+# Given a Dlang compiler represented through an IUSE flag (e.g. "ldc2-1_1")
+# and DEPEND atom (e.g. "dev-lang/ldc2:1.1="), this function tests if the
+# current ebuild can depend and thus be compiled with that compiler on
+# one or more architectures.
+# A compiler that is less stable than the current ebuild for all
+# architectures, is dropped completely. A compiler that disqualifies
+# for only some, but not all architectures, on the other hand, is disabled
+# though REQUIRED_USE (e.g. "!amd64? ( ldc2-1_1? ( dev-lang/ldc2:1.1= ) )").
+# Available compilers are accumulated in the _dlang_compiler_iuse array,
+# which is later turned into the IUSE variable.
+# Partially available compilers are additionally masked out for particular
+# architectures by adding them to the _dlang_compiler_iuse_mask array,
+# which is later appended to REQUIRED_USE.
+# Finally, the _dlang_depends array receives the USE-flag enabled
+# dependencies on Dlang compilers, which is later turned into DEPEND and
+# RDEPEND.
 _dlang_compiler_masked_archs_for_version_range() {
-	# Given a Dlang compiler represented through an IUSE flag (e.g. "ldc2-1_1")
-	# and DEPEND atom (e.g. "dev-lang/ldc2:1.1="), this function tests if the
-	# current ebuild can depend and thus be compiled with that compiler on
-	# one or more architectures.
-	# A compiler that is less stable than the current ebuild for all
-	# architectures, is dropped completely. A compiler that disqualifies
-	# for only some, but not all architectures, on the other hand, is disabled
-	# though REQUIRED_USE (e.g. "!amd64? ( ldc2-1_1? ( dev-lang/ldc2:1.1= ) )").
-	# Available compilers are accumulated in the _dlang_compiler_iuse array,
-	# which is later turned into the IUSE variable.
-	# Partially available compilers are additionally masked out for particular
-	# architectures by adding them to the _dlang_compiler_iuse_mask array,
-	# which is later appended to REQUIRED_USE.
-	# Finally, the _dlang_depends array receives the USE-flag enabled
-	# dependencies on Dlang compilers, which is later turned into DEPEND and
-	# RDEPEND.
-
 	local iuse=$1
 	if [[ "$iuse" == gdc* ]]; then
 		local depend="$iuse? ( $2 dev-util/gdmd:$(ver_cut 1 ${iuse#gdc-}) )"
@@ -384,13 +394,13 @@ _dlang_compiler_masked_archs_for_version_range() {
 	_dlang_depends+=( "$depend" )
 }
 
+# @FUNCTION: _dlang_filter_compilers
+# @DESCRIPTION:
+# Given a range of Dlang front-end version that the current ebuild can be built with, this function goes through each
+# compatible Dlang compilers as provided by the file dlang-compilers.eclass and then calls
+# _dlang_compiler_masked_archs_for_version_range where they will be further scrutinized for architecture stability
+# requirements and then either dropped as option or partially masked.
 _dlang_filter_compilers() {
-	# Given a range of Dlang front-end version that the current ebuild can be built with,
-	# this function goes through each compatible Dlang compilers as provided by the file
-	# dlang-compilers.eclass and then calls _dlang_compiler_masked_archs_for_version_range
-	# where they will be further scrutinized for architecture stability requirements and
-	# then either dropped as option or partially masked.
-
 	local dc_version mapping iuse depend
 
 	# filter for DMD (hardcoding support for x86 and amd64 only)
@@ -428,15 +438,16 @@ _dlang_filter_compilers() {
 	done
 }
 
+# @FUNCTION: _dlang_filter_versions
+# @DESCRIPTION:
+# This function sets up the preliminary REQUIRED_USE, DEPEND and RDEPEND ebuild
+# variables with compiler requirements for the current ebuild.
+# If DLANG_VERSION_RANGE is set in the ebuild, this variable will be parsed to
+# limit the search on the known compatible Dlang front-end versions.
+# DLANG_PACKAGE_TYPE determines whether the current ebuild can be compiled for
+# multiple Dlang compilers (i.e. is a library to be installed for different
+# versions of dmd, gdc or ldc2) or a single compiler (i.e. is an application).
 _dlang_filter_versions() {
-	# This function sets up the preliminary REQUIRED_USE, DEPEND and RDEPEND ebuild
-	# variables with compiler requirements for the current ebuild.
-	# If DLANG_VERSION_RANGE is set in the ebuild, this variable will be parsed to
-	# limit the search on the known compatible Dlang front-end versions.
-	# DLANG_PACKAGE_TYPE determines whether the current ebuild can be compiled for
-	# multiple Dlang compilers (i.e. is a library to be installed for different
-	# versions of dmd, gdc or ldc2) or a single compiler (i.e. is an application).
-
 	local range start stop matches d_version versions do_start
 	local -A valid
 
@@ -488,6 +499,12 @@ _dlang_filter_versions() {
 	DLANG_COMPILER_USE="${DLANG_COMPILER_USE:0:-1}"
 }
 
+# @FUNCTION: _dlang_phase_wrapper
+# @DESCRIPTION:
+# A more or less typical ebuild phase wrapper that invokes `d_src_*` phases if defined in an ebuild or calls Portage's
+# default implementation otherwise. when multiple build configurations are provided it also takes care of invoking
+# phases once for each configuration as well as calling `d_src_*_all` if defined after the phase has been run for each
+# individual build configuration.
 _dlang_phase_wrapper() {
 	dlang_phase() {
 		if declare -f d_src_${1} >/dev/null ; then
@@ -508,6 +525,11 @@ _dlang_phase_wrapper() {
 	fi
 }
 
+# @FUNCTION: _dlang_compiler_to_dlang_version
+# @DESCRIPTION:
+# Given two arguments, a compiler vendor and a compiler version, this function retrieves the corresponding supported
+# Dlang front-end (language) version. This is used in filtering compilers offering incompatible language versions for
+# some packages. The resulting language version is echo'd.
 _dlang_compiler_to_dlang_version() {
 	local mapping
 	case "$1" in
@@ -525,6 +547,12 @@ _dlang_compiler_to_dlang_version() {
 	echo "${mapping}"
 }
 
+# @FUNCTION: _dlang_build_configurations
+# @DESCRIPTION:
+# Creates a list of all the build configurations we are going to compile. As all Dlang compilers have different ABIs,
+# potentially changing from one release to the next, I decided to distinguish the compiler vendor, compiler version and
+# architecture. An application typically only uses on build configuration, but libraries like GtkD may be installed for
+# many compiler versions as well as in 32-bit and 64-bit at the same time on multilib. The result is echo'd.
 _dlang_build_configurations() {
 	local variants version_component use_flag use_flags
 
@@ -574,6 +602,10 @@ _dlang_build_configurations() {
 	echo ${variants}
 }
 
+# @FUNCTION: _dlang_use_build_vars
+# @DESCRIPTION:
+# Sets and exports important environment variables pertaining to the current build configuration.
+# LDFLAGS are also converted into their compiler specific equivalents here.
 _dlang_use_build_vars() {
 	# Now we define some variables and then call the function.
 	# LIBDIR_${ABI} is used by the dolib.* functions, that's why we override it per compiler.
@@ -667,12 +699,21 @@ _dlang_use_build_vars() {
 	"${@}"
 }
 
+# @FUNCTION: _dlang_prefix_words
+# @DESCRIPTION:
+# A simple helper function that prefixes the first argument to all other arguments and echo's the resulting line.
 _dlang_prefix_words() {
 	for arg in ${*:2}; do
 		echo -n " $1$arg"
 	done
 }
 
+# @FUNCTION: _dlang_additional_flags
+# @DESCRIPTION:
+# This function is internally used by the dlang_compile_bin/lib/so functions. When `debug` is among the enabled IUSE
+# flags, this function ensures that a debug build of the Dlang package is produced. It also provides the additional
+# flags for any imports and libraries mentioned in an ebuild in the compiler specific syntax. The resulting flags are
+# echo'd.
 _dlang_additional_flags() {
 	# For info on debug use flags see:
 	# https://wiki.gentoo.org/wiki/Project:Quality_Assurance/Backtraces#debug_USE_flag

@@ -6,6 +6,18 @@
 # Helps with the maintenance of the various DMD versions by capturing common
 # logic.
 
+# @ECLASS_VARIABLE: MAJOR
+# @DESCRIPTION:
+# Major DMD version (usually 2)
+
+# @ECLASS_VARIABLE: MINOR
+# @DESCRIPTION:
+# Minor DMD version without leading zeroes (e.g. 78)
+
+# @ECLASS_VARIABLE: MULTILIB_COMPAT
+# @DESCRIPTION:
+# See Gentoo's multilib-build.eclass
+
 if [[ ${_ECLASS_ONCE_DMD} != "recur -_+^+_- spank" ]] ; then
 _ECLASS_ONCE_DMD="recur -_+^+_- spank"
 
@@ -22,14 +34,24 @@ MULTILIB_COMPAT=( abi_x86_{32,64} )
 
 inherit multilib-build eapi7-ver toolchain-funcs
 
+# @FUNCTION: dmd_eq
+# @DESCRIPTION:
+# Returns `true` if the DMD version we are installing is equal to the one given as the argument.
 dmd_eq() {
 	[[ ${MAJOR} -eq ${1%.*} ]] && [[ ${MINOR} -eq $((10#${1#*.})) ]]
 }
 
+# @FUNCTION: dmd_ge
+# @DESCRIPTION:
+# Returns `true` if the DMD version we are installing is greater or equal to the one given as the argument.
 dmd_ge() {
 	[[ ${MAJOR} -ge ${1%.*} ]] && [[ ${MINOR} -ge $((10#${1#*.})) ]]
 }
 
+# @FUNCTION: dmd_gen_exe_dir
+# @DESCRIPTION:
+# Returns the relative directory that the compiler executable will be found in. This directory is used both for
+# installing the binary as well as setting the compiler during compilation of druntime and Phobos.
 dmd_gen_exe_dir() {
 	if dmd_ge 2.074; then
 		echo dmd/generated/linux/release/$(dmd_arch_to_model)
