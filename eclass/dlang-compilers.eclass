@@ -5,16 +5,16 @@
 # @DESCRIPTION:
 # Contains the available D compiler versions with their stable archs.
 
-if [[ ${___ECLASS_ONCE_DLANG_COMPILERS} != "recur -_+^+_- spank" ]] ; then
-___ECLASS_ONCE_DLANG_COMPILERS="recur -_+^+_- spank"
+if [[ ${_ECLASS_ONCE_DLANG_COMPILERS} != "recur -_+^+_- spank" ]] ; then
+_ECLASS_ONCE_DLANG_COMPILERS="recur -_+^+_- spank"
 
 dlang-compilers_declare_versions() {
-	declare -gA __dlang_dmd_frontend
-	declare -gA __dlang_gdc_frontend
-	declare -gA __dlang_ldc2_frontend
+	declare -gA _dlang_dmd_frontend
+	declare -gA _dlang_gdc_frontend
+	declare -gA _dlang_ldc2_frontend
 
 	# DMD
-	__dlang_dmd_frontend=(
+	_dlang_dmd_frontend=(
 		["2.064"]="2.064 x86 amd64"
 		["2.065"]="2.065 x86 amd64"
 		["2.066"]="2.066 x86 amd64"
@@ -54,7 +54,7 @@ dlang-compilers_declare_versions() {
 	)
 
 	# GDC (hppa, sparc: masked "d" USE-flag)
-	__dlang_gdc_frontend=(
+	_dlang_gdc_frontend=(
 		["11.3.1_p20221209"]="2.076 ~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 		["11.3.1_p20230120"]="2.076 ~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 		["11.3.1_p20230303"]="2.076 ~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
@@ -63,7 +63,7 @@ dlang-compilers_declare_versions() {
 	)
 
 	# LDC
-	__dlang_ldc2_frontend=(
+	_dlang_ldc2_frontend=(
 		["1.29"]="2.099 amd64 ~arm ~arm64 ~ppc64 x86"
 		["1.30"]="2.100 ~amd64 ~arm ~arm64 ~ppc64 ~x86"
 	)
