@@ -36,8 +36,8 @@ dmd-2_098 - Build for DMD 2.098
 dmd-2_099 - Build for DMD 2.099
 gdc-11_3_1_p20221209 - Build for GCC 11.3.1_p20221209
 gdc-11_3_1_p20230120 - Build for GCC 11.3.1_p20230120
-gdc-11_3_1_p20230303 - Build for GGG 11.3.1_p20230303
-gdc-12_2_1_p20230121 - Build for GGG 12.2.1_p20230121
-gdc-12_2_1_p20230304 - Build for GGG 12.2.1_p20230304
+gdc-11_3_1_p20230303 - Build for GCC 11.3.1_p20230303
+gdc-12_2_1_p20230121 - Build for GCC 12.2.1_p20230121
+gdc-12_2_1_p20230304 - Build for GCC 12.2.1_p20230304
 ldc2-1_29 - Build for ldc2 1.29
 ldc2-1_30 - Build for ldc2 1.30
