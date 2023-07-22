@@ -64,11 +64,14 @@ dlang-compilers_declare_versions() {
 
 	# GDC (hppa, sparc: masked "d" USE-flag)
 	_dlang_gdc_frontend=(
-		["11.3.1_p20221209"]="2.076 ~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
-		["11.3.1_p20230120"]="2.076 ~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
-		["11.3.1_p20230303"]="2.076 ~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
-		["12.2.1_p20230121"]="2.100 ~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 sparc ~x86"
-		["12.2.1_p20230304"]="2.100 ~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+		["11.3.1_p20230427"]="2.076 ~alpha amd64 arm arm64 ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 x86"
+		["11.4.0"]="2.076 ~alpha ~amd64 ~arm ~arm64 ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~x86"
+		["11.4.1_p20230622"]="2.076 ~alpha ~amd64 ~arm ~arm64 ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 x86"
+		["12.2.1_p20230428"]="2.100 ~alpha amd64 arm arm64 ~ia64 ~m68k ~mips ~ppc ppc64 ~riscv ~s390 x86"
+		["12.3.1_p20230526"]="2.100 ~alpha amd64 arm arm64 ~ia64 ~m68k ~mips ~ppc ppc64 ~riscv ~s390 x86"
+		["12.3.1_p20230623"]="2.100 ~alpha ~amd64 ~arm ~arm64 ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~x86"
+		["13.1.1_p20230527"]="2.103 ~alpha ~amd64 ~arm ~arm64 ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~x86"
+		["13.2.0"]="2.103 ~alpha ~amd64 ~arm ~arm64 ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~x86"
 	)
 
 	# LDC

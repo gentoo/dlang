@@ -8,7 +8,7 @@ HOMEPAGE="https://www.gdcproject.org/"
 LICENSE="GPL-3+"
 
 SLOT="${PV}"
-KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~m68k ~mips ~ppc ppc64 ~riscv ~s390 x86"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~x86"
 RDEPEND="sys-devel/gcc:${PV}[d]"
 RELEASE="0.1.0"
 SRC_URI="https://codeload.github.com/D-Programming-GDC/gdmd/tar.gz/script-${RELEASE} -> gdmd-${RELEASE}.tar.gz"
