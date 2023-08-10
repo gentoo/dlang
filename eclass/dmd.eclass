@@ -178,7 +178,7 @@ dmd_src_compile() {
 	fi
 	if dmd_ge 2.094; then
 		einfo "Building dmd build script..."
-		dlang_compile_bin dmd/generated/build dmd/src/build.d
+		DC="${DMD}" dlang_compile_bin dmd/generated/build dmd/src/build.d
 		einfo "Building dmd..."
 		env VERBOSE=1 ${HOST_DMD}="${DMD}" CXX="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO} dmd/generated/build DFLAGS="$(dlang_dmdw_dcflags)" dmd
 	else
