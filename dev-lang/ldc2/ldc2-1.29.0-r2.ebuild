@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -12,13 +12,13 @@ S=${WORKDIR}/${MY_P}
 
 DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://github.com/ldc-developers/ldc"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 ~arm ~arm64 ~ppc64 x86"
 LICENSE="BSD"
 SLOT="$(ver_cut 1-2)/$(ver_cut 3)"
 
 IUSE="static-libs"
 
-# We support LLVM 9.0 through 14.
+# We support LLVM 6.0 through 14.
 RDEPEND="dev-util/ninja
 	|| (
 		sys-devel/llvm:13
@@ -33,15 +33,10 @@ PATCHES="${FILESDIR}/ldc2-1.15.0-link-defaultlib-shared.patch"
 # For now, we support amd64 multilib. Anyone is free to add more support here.
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 
-# Upstream supports "2.079-"
-DLANG_VERSION_RANGE="2.075-2.080 2.082-"
+DLANG_VERSION_RANGE="2.075-"
 DLANG_PACKAGE_TYPE="single"
 
 inherit dlang
-
-detect_hardened() {
-	gcc --version | grep -o Hardened
-}
 
 src_prepare() {
 	cmake_src_prepare
@@ -58,7 +53,6 @@ d_src_configure() {
 	)
 	use static-libs && mycmakeargs+=( -DBUILD_SHARED_LIBS=BOTH ) || mycmakeargs+=( -DBUILD_SHARED_LIBS=ON )
 	use abi_x86_32 && use abi_x86_64 && mycmakeargs+=( -DMULTILIB=ON )
-	detect_hardened && mycmakeargs+=( -DADDITIONAL_DEFAULT_LDC_SWITCHES=' "-relocation-model=pic",' )
 	cmake_src_configure
 }
 
