@@ -159,7 +159,7 @@ dmd_src_compile() {
 	dmd_ge 2.081 && ENABLE_RELEASE="ENABLE_RELEASE" || ENABLE_RELEASE="RELEASE"
 
 	# Special case for self-hosting (i.e. no compiler USE flag selected).
-	local kernel model
+	local kernel model actual_compiler
 	if [ "${DC_VERSION}" == "selfhost" ]; then
 		case "${KERNEL}" in
 			"linux")   kernel="linux";;
@@ -175,10 +175,14 @@ dmd_src_compile() {
 		if ! dmd_ge 2.094; then
 			export DMD="../../${DMD}"
 		fi
+		actual_compiler="${S}/${DMD}"
+	else
+		# Not selfhosting, leave the compiler variable unchanged
+		actual_compiler="${DC}"
 	fi
 	if dmd_ge 2.094; then
 		einfo "Building dmd build script..."
-		DC="${DMD}" dlang_compile_bin dmd/generated/build dmd/src/build.d
+		DC="${actual_compiler}" dlang_compile_bin dmd/generated/build dmd/src/build.d
 		einfo "Building dmd..."
 		env VERBOSE=1 ${HOST_DMD}="${DMD}" CXX="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO} dmd/generated/build DFLAGS="$(dlang_dmdw_dcflags)" dmd
 	else
