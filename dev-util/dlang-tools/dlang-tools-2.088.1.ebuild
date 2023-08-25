@@ -22,7 +22,8 @@ BETA="$(ver_cut 4)"
 VERSION="$(ver_cut 1-3)"
 
 if [[ -n "${BETA}" ]]; then
-	VERSION="${VERSION}-b${BETA:4}"
+	# We want to convert a Gentoo version string into an upstream one: 2.097.0_rc1 -> 2.097.0-rc.1
+	VERSION="$(ver_rs 3 "-" 4 ".")"
 fi
 SRC_URI="https://codeload.github.com/dlang/tools/tar.gz/v${VERSION} -> dlang-tools-${VERSION}.tar.gz"
 
