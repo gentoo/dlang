@@ -30,7 +30,7 @@ SRC_URI="https://codeload.github.com/dlang/tools/tar.gz/v${VERSION} -> dlang-too
 DLANG_VERSION_RANGE="${DLANG_SLOT}-"
 DLANG_PACKAGE_TYPE="single"
 
-inherit eutils dlang
+inherit eutils dlang xdg-utils
 
 S="${WORKDIR}/tools-${VERSION}"
 
@@ -53,4 +53,12 @@ d_src_install() {
 	for size in 16 22 24 32 48 256; do
 		newicon --size "${size}" --context mimetypes "${FILESDIR}/icons/${size}/dmd-source.png" text-x-dsrc.png
 	done
+}
+
+pkg_postinst() {
+	xdg_icon_cache_update
+}
+
+pkg_postrm() {
+	xdg_icon_cache_update
 }
