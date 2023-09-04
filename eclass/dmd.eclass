@@ -194,11 +194,18 @@ dmd_src_compile() {
 	fi
 
 	compile_libraries() {
+		local mymakeargs=(
+			DMD="../$(dmd_gen_exe_dir)/dmd"
+			MODEL="${MODEL}"
+			PIC=1
+			CC="$(tc-getCC)"
+		)
+
 		einfo 'Building druntime...'
-		emake -C druntime -f posix.mak DMD="../$(dmd_gen_exe_dir)/dmd" MODEL=${MODEL} PIC=1 MANIFEST=
+		emake -C druntime -f posix.mak "${mymakeargs[@]}" MANIFEST=
 
 		einfo 'Building Phobos 2...'
-		emake -C phobos -f posix.mak DMD="../$(dmd_gen_exe_dir)/dmd" MODEL=${MODEL} PIC=1 CUSTOM_DRUNTIME=1
+		emake -C phobos -f posix.mak "${mymakeargs[@]}" CUSTOM_DRUNTIME=1
 	}
 
 	dmd_foreach_abi compile_libraries
