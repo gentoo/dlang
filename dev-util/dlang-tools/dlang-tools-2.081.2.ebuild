@@ -22,14 +22,15 @@ BETA="$(ver_cut 4)"
 VERSION="$(ver_cut 1-3)"
 
 if [[ -n "${BETA}" ]]; then
-	VERSION="${VERSION}-b${BETA:4}"
+	# We want to convert a Gentoo version string into an upstream one: 2.097.0_rc1 -> 2.097.0-rc.1
+	VERSION="$(ver_rs 3 "-" 4 ".")"
 fi
 SRC_URI="https://codeload.github.com/dlang/tools/tar.gz/v${VERSION} -> dlang-tools-${VERSION}.tar.gz"
 
 DLANG_VERSION_RANGE="2.075-"
 DLANG_PACKAGE_TYPE="single"
 
-inherit eutils dlang
+inherit eutils dlang xdg-utils
 
 S="${WORKDIR}/tools-${VERSION}"
 
@@ -51,4 +52,12 @@ d_src_install() {
 	for size in 16 22 24 32 48 256; do
 		newicon --size "${size}" --context mimetypes "${FILESDIR}/icons/${size}/dmd-source.png" text-x-dsrc.png
 	done
+}
+
+pkg_postinst() {
+	xdg_icon_cache_update
+}
+
+pkg_postrm() {
+	xdg_icon_cache_update
 }

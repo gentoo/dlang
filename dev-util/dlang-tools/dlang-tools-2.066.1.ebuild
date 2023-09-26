@@ -28,7 +28,7 @@ DEPEND="dman? ( =dev-lang/dmd-${PV}*:${DLANG_SLOT} )"
 DLANG_VERSION_RANGE="${DLANG_SLOT}"
 DLANG_PACKAGE_TYPE="single"
 
-inherit eutils dlang
+inherit eutils dlang xdg-utils
 
 S="${WORKDIR}"
 
@@ -65,4 +65,12 @@ d_src_install() {
 			dobin "tools/generated/${CHOST}/${tool}"
 		fi
 	done
+}
+
+pkg_postinst() {
+	xdg_icon_cache_update
+}
+
+pkg_postrm() {
+	xdg_icon_cache_update
 }

@@ -92,7 +92,8 @@ fi
 EXPORT_FUNCTIONS src_prepare src_compile src_test src_install pkg_postinst pkg_postrm
 
 if [[ -n "${BETA}" ]]; then
-	SRC_URI="http://downloads.dlang.org/pre-releases/${MAJOR}.x/${VERSION}/${PN}.${VERSION}-b${BETA:4}.${ARCHIVE}"
+	# We want to convert a Gentoo version string to an upstream one: 2.097.0_rc1 -> 2.097.0-rc.1
+	SRC_URI="http://downloads.dlang.org/pre-releases/${MAJOR}.x/${VERSION}/${PN}.$(ver_rs 3 "-" 4 ".").${ARCHIVE}"
 else
 	SRC_URI="mirror://aws/${YEAR}/${PN}.${PV}.${ARCHIVE}"
 fi
@@ -184,7 +185,7 @@ dmd_src_compile() {
 		einfo "Building dmd build script..."
 		DC="${actual_compiler}" dlang_compile_bin dmd/generated/build dmd/src/build.d
 		einfo "Building dmd..."
-		env VERBOSE=1 ${HOST_DMD}="${DMD}" CXX="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO} dmd/generated/build DFLAGS="$(dlang_dmdw_dcflags)" dmd
+		env VERBOSE=1 ${HOST_DMD}="${DMD}" CXX="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO} dmd/generated/build DFLAGS="$(dlang_dmdw_dcflags)" dmd || die
 	else
 		einfo "Building dmd..."
 		emake -C dmd/src -f posix.mak TARGET_CPU=X86 ${HOST_DMD}="${DMD}" ${HOST_CXX}="$(tc-getCXX)" ${ENABLE_RELEASE}=1 ${LTO}
@@ -197,11 +198,18 @@ dmd_src_compile() {
 	fi
 
 	compile_libraries() {
+		local mymakeargs=(
+			DMD="../$(dmd_gen_exe_dir)/dmd"
+			MODEL="${MODEL}"
+			PIC=1
+			CC="$(tc-getCC)"
+		)
+
 		einfo 'Building druntime...'
-		emake -C druntime -f posix.mak DMD="../$(dmd_gen_exe_dir)/dmd" MODEL=${MODEL} PIC=1 MANIFEST=
+		emake -C druntime -f posix.mak "${mymakeargs[@]}" MANIFEST=
 
 		einfo 'Building Phobos 2...'
-		emake -C phobos -f posix.mak DMD="../$(dmd_gen_exe_dir)/dmd" MODEL=${MODEL} PIC=1 CUSTOM_DRUNTIME=1
+		emake -C phobos -f posix.mak "${mymakeargs[@]}" CUSTOM_DRUNTIME=1
 	}
 
 	dmd_foreach_abi compile_libraries

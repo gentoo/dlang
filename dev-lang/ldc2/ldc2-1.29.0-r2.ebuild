@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -38,10 +38,6 @@ DLANG_PACKAGE_TYPE="single"
 
 inherit dlang
 
-detect_hardened() {
-	gcc --version | grep -o Hardened
-}
-
 src_prepare() {
 	cmake_src_prepare
 }
@@ -52,12 +48,11 @@ d_src_configure() {
 	local mycmakeargs=(
 		-DD_VERSION=2
 		-DCMAKE_INSTALL_PREFIX=/usr/lib/ldc2/$(ver_cut 1-2)
-		-DD_COMPILER="${DMD}"
+		-DD_COMPILER="${DMD} $(dlang_dmdw_dcflags)"
 		-DLDC_WITH_LLD=OFF
 	)
 	use static-libs && mycmakeargs+=( -DBUILD_SHARED_LIBS=BOTH ) || mycmakeargs+=( -DBUILD_SHARED_LIBS=ON )
 	use abi_x86_32 && use abi_x86_64 && mycmakeargs+=( -DMULTILIB=ON )
-	detect_hardened && mycmakeargs+=( -DADDITIONAL_DEFAULT_LDC_SWITCHES=' "-relocation-model=pic",' )
 	cmake_src_configure
 }
 

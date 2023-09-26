@@ -31,7 +31,7 @@ PATCHES=( "${FILESDIR}/2.067-no-narrowing.patch" "${FILESDIR}/replace-bits-mathd
 DLANG_VERSION_RANGE="${DLANG_SLOT}-2.070"
 DLANG_PACKAGE_TYPE="single"
 
-inherit eutils dlang
+inherit eutils dlang xdg-utils
 
 S="${WORKDIR}"
 
@@ -76,4 +76,12 @@ d_src_install() {
 			dobin tools/generated/linux/*/"${tool}"
 		fi
 	done
+}
+
+pkg_postinst() {
+	xdg_icon_cache_update
+}
+
+pkg_postrm() {
+	xdg_icon_cache_update
 }
