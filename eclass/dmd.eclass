@@ -53,7 +53,9 @@ dmd_ge() {
 # Returns the relative directory that the compiler executable will be found in. This directory is used both for
 # installing the binary as well as setting the compiler during compilation of druntime and Phobos.
 dmd_gen_exe_dir() {
-	if dmd_ge 2.074; then
+	if dmd_ge 2.101; then
+		echo generated/linux/release/$(dmd_arch_to_model)
+	elif dmd_ge 2.074; then
 		echo dmd/generated/linux/release/$(dmd_arch_to_model)
 	else
 		echo dmd/src
@@ -95,7 +97,12 @@ if [[ -n "${BETA}" ]]; then
 	# We want to convert a Gentoo version string to an upstream one: 2.097.0_rc1 -> 2.097.0-rc.1
 	SRC_URI="http://downloads.dlang.org/pre-releases/${MAJOR}.x/${VERSION}/${PN}.$(ver_rs 3 "-" 4 ".").${ARCHIVE}"
 else
-	SRC_URI="mirror://aws/${YEAR}/${PN}.${PV}.${ARCHIVE}"
+	# the aws mirrors work for <=dmd-2.100.2
+	if dmd_ge 2.101; then
+		SRC_URI="https://downloads.dlang.org/releases/${YEAR}/${PN}.${PV}.${ARCHIVE}"
+	else
+		SRC_URI="mirror://aws/${YEAR}/${PN}.${PV}.${ARCHIVE}"
+	fi
 fi
 
 COMMON_DEPEND="
@@ -121,6 +128,9 @@ dmd_src_prepare() {
 	mkdir dmd || die "Failed to create directories 'dmd', 'druntime' and 'phobos'"
 	mv src/dmd      dmd/src     || die "Failed to move 'src/dmd' to 'dmd/src'"
 	mv src/VERSION  dmd/VERSION || die "Failed to move 'src/VERSION' to 'dmd/VERSION'"
+	# >=dmd-2.101 expects the version file to be in the same directory as the dmd
+	# folder. i.e. VERSION should be in ${S} not in ${S}/dmd
+	ln -s dmd/VERSION VERSION   || die "Failed to symlink 'src/VERSION' to 'VERSION'"
 	mv src/druntime druntime    || die "Failed to move 'src/druntime' to 'druntime'"
 	mv src/phobos   phobos      || die "Failed to move 'src/phobos' to 'phobos'"
 	# Symlinks used by dmd in the selfhosting case
@@ -203,13 +213,14 @@ dmd_src_compile() {
 			MODEL="${MODEL}"
 			PIC=1
 			CC="$(tc-getCC)"
+			DMD_DIR=../dmd
 		)
 
 		einfo 'Building druntime...'
 		emake -C druntime -f posix.mak "${mymakeargs[@]}" MANIFEST=
 
 		einfo 'Building Phobos 2...'
-		emake -C phobos -f posix.mak "${mymakeargs[@]}" CUSTOM_DRUNTIME=1
+		emake -C phobos -f posix.mak "${mymakeargs[@]}" CUSTOM_DRUNTIME=1 DRUNTIME_PATH=../druntime
 	}
 
 	dmd_foreach_abi compile_libraries
