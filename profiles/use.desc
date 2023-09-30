@@ -35,6 +35,7 @@ dmd-2_097 - Build for DMD 2.097
 dmd-2_098 - Build for DMD 2.098
 dmd-2_099 - Build for DMD 2.099
 dmd-2_100 - Build for DMD 2.100
+dmd-2_101 - Build for DMD 2.101
 gdc-11_3_1_p20230427 - Build for GCC 11.3.1_p20230427
 gdc-11_4_0 - Build for GCC 11.4.0
 gdc-11_4_1_p20230622 - Build for GCC 11.4.1_p20230622
