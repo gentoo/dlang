@@ -1,0 +1,13 @@
+diff --git a/dmd/src/dmd/link.d b/dmd/src/dmd/link.d
+index c1a4f3f..b83c253 100644
+--- a/dmd/src/dmd/link.d
++++ b/dmd/src/dmd/link.d
+@@ -514,6 +514,8 @@ public int runLINK()
+         {
+             if (driverParams.dll)
+                 argv.push("-shared");
++            if (!target.isX86_64)
++                argv.push("-fuse-ld=bfd");
+         }
+         // None of that a.out stuff. Use explicit exe file name, or
+         // generate one from name of first source file.
