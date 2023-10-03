@@ -50,3 +50,4 @@ gdc-13_1_1_p20230527 - Build for GCC 13.1.1_p20230527
 gdc-13_2_0 - Build for GCC 13.2.0
 ldc2-1_29 - Build for ldc2 1.29
 ldc2-1_30 - Build for ldc2 1.30
+ldc2-1_34 - Build for ldc2 1.34
