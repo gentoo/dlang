@@ -1,14 +1,14 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=8
 
 KEYWORDS="-* amd64 x86"
 YEAR=2013
 ARCHIVE="zip"
 SONAME="libphobos2.so.0.64.0"
 
-inherit dmd eutils
+inherit dmd
 
 PATCHES=(
 	"${FILESDIR}/2.064-no-narrowing.patch"
