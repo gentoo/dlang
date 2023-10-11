@@ -1,7 +1,7 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=8
 
 DESCRIPTION="Ancilliary tools for the D programming language compiler"
 HOMEPAGE="http://dlang.org/"
@@ -9,28 +9,33 @@ LICENSE="Boost-1.0"
 
 SLOT="0"
 KEYWORDS="amd64 x86"
-TOOLS="rdmd ddemangle detab dustmite"
-IUSE="+rdmd +ddemangle detab dustmite"
+TOOLS="ddemangle detab dustmite rdmd"
+IUSE="+ddemangle detab dustmite +rdmd"
 REQUIRED_USE="|| ( ${TOOLS} )"
-
-inherit eapi7-ver
 
 DLANG_SLOT="$(ver_cut 1-2)"
 RESTRICT="mirror"
-GITHUB_URI="https://codeload.github.com/dlang"
-SRC_URI="${GITHUB_URI}/tools/tar.gz/v${PV} -> dlang-tools-${PV}.tar.gz"
+
+BETA="$(ver_cut 4)"
+VERSION="$(ver_cut 1-3)"
+
+if [[ -n "${BETA}" ]]; then
+	# We want to convert a Gentoo version string into an upstream one: 2.097.0_rc1 -> 2.097.0-rc.1
+	VERSION="$(ver_rs 3 "-" 4 ".")"
+fi
+SRC_URI="https://codeload.github.com/dlang/tools/tar.gz/v${VERSION} -> dlang-tools-${VERSION}.tar.gz"
 
 DLANG_VERSION_RANGE="${DLANG_SLOT}-"
 DLANG_PACKAGE_TYPE="single"
 
-inherit eutils dlang xdg-utils
+inherit desktop dlang xdg-utils
 
-S="${WORKDIR}"
+S="${WORKDIR}/tools-${VERSION}"
 
 d_src_compile() {
 	for tool in ${TOOLS}; do
 		if use "${tool}"; then
-			emake -C "tools-${PV}" -f posix.mak DMD="${DMD}" DFLAGS="${DMDFLAGS}" "${tool}"
+			emake -f posix.mak DMD="${DMD}" DFLAGS="${DMDFLAGS}" "${tool}"
 		fi
 	done
 }
@@ -38,8 +43,13 @@ d_src_compile() {
 d_src_install() {
 	for tool in ${TOOLS}; do
 		if use "${tool}"; then
-			dobin tools-"${PV}"/generated/linux/*/"${tool}"
+			dobin generated/linux/*/"${tool}"
 		fi
+	done
+
+	# file icons
+	for size in 16 22 24 32 48 256; do
+		newicon --size "${size}" --context mimetypes "${FILESDIR}/icons/${size}/dmd-source.png" text-x-dsrc.png
 	done
 }
 

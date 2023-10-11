@@ -4,7 +4,6 @@
   <use>
     <flag name="ddemangle">An improved D symbol demangler. Replaces all occurrences of mangled D symbols in the input with their unmangled form, and writes the result to standard output.</flag>
     <flag name="detab">Replace tabs with spaces, and remove trailing whitespace from lines.</flag>
-    <flag name="dman">Look up D topics in the online manual. (Requires dmd as a build dependency to create the index.)</flag>
     <flag name="dustmite">DustMite is a tool which minimizes D source code. It was inspired by Tigris Delta and a thread on digitalmars.D.learn. DustMite will parse the source code into a simple hierarchy, and attempt to shrink it by deleting fragments iteratively, as long as the result satisfies a user-specified condition.</flag>
     <flag name="rdmd">rdmd is a companion to the dmd compiler that simplifies the typical edit-compile-link-run or edit-make-run cycle to a rapid edit-run cycle. Like make and other tools, rdmd uses the relative dates of the files involved to minimize the amount of work necessary. Unlike make, rdmd tracks dependencies and freshness without requiring additional information from the user.</flag>
   </use>
