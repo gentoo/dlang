@@ -1,6 +1,7 @@
 # @ECLASS: dmd.eclass
 # @MAINTAINER:
 # Marco Leise <marco.leise@gmx.de>
+# @SUPPORTED_EAPIS: 6 7 8
 # @BLURB: Captures most of the logic for installing DMD
 # @DESCRIPTION:
 # Helps with the maintenance of the various DMD versions by capturing common
@@ -21,9 +22,11 @@
 if [[ ${_ECLASS_ONCE_DMD} != "recur -_+^+_- spank" ]] ; then
 _ECLASS_ONCE_DMD="recur -_+^+_- spank"
 
-if has ${EAPI:-0} 0 1 2 3 4 5; then
-	die "EAPI must be >= 6 for dmd packages."
-fi
+case ${EAPI:-0} in
+	6) inherit eapi7-ver ;;
+	7|8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
+esac
 
 DESCRIPTION="Reference compiler for the D programming language"
 HOMEPAGE="http://dlang.org/"
@@ -32,7 +35,7 @@ HTML_DOCS="html/*"
 # DMD supports amd64/x86 exclusively
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 
-inherit multilib-build eapi7-ver toolchain-funcs
+inherit desktop edos2unix multilib-build toolchain-funcs
 
 # @FUNCTION: dmd_eq
 # @DESCRIPTION:
@@ -271,7 +274,7 @@ EOF
 	einfo "Installing ${PN}..."
 	# From version 2.066 on, dmd will find dmd.conf in the executable directory, if we
 	# call it through a symlink in /usr/bin
-	dmd_ge 2.066 && dosym "../../${PREFIX}/bin/dmd" "${ROOT}/usr/bin/dmd-${SLOT}"
+	dmd_ge 2.066 && dosym "../../${PREFIX}/bin/dmd" "/usr/bin/dmd-${SLOT}"
 	into ${PREFIX}
 	dobin "$(dmd_gen_exe_dir)/dmd"
 
@@ -319,7 +322,7 @@ EOF
 		einstalldocs
 		insinto "/usr/share/doc/${PF}/html"
 		doins "${FILESDIR}/dmd-doc.png"
-		make_desktop_entry "xdg-open ${ROOT}usr/share/doc/${PF}/html/d/index.html" "DMD ${PV}" "${ROOT}usr/share/doc/${PF}/html/dmd-doc.png" "Development"
+		make_desktop_entry "xdg-open ${EPREFIX}/usr/share/doc/${PF}/html/d/index.html" "DMD ${PV}" "${EPREFIX}/usr/share/doc/${PF}/html/dmd-doc.png" "Development"
 	fi
 	if use examples; then
 		insinto ${PREFIX}/samples
@@ -330,14 +333,14 @@ EOF
 
 dmd_pkg_postinst() {
 	# Update active dmd
-	"${ROOT}"/usr/bin/eselect dlang update dmd
+	"${ROOT%/}"/usr/bin/eselect dlang update dmd
 
 	use examples && elog "Examples can be found in: /${PREFIX}/samples"
 	use doc && elog "HTML documentation is in: /usr/share/doc/${PF}/html"
 }
 
 dmd_pkg_postrm() {
-	"${ROOT}"/usr/bin/eselect dlang update dmd
+	"${ROOT%/}"/usr/bin/eselect dlang update dmd
 }
 
 dmd_foreach_abi() {
