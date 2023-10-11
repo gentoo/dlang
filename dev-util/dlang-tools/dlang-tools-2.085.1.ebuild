@@ -1,7 +1,7 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=8
 
 DESCRIPTION="Ancilliary tools for the D programming language compiler"
 HOMEPAGE="http://dlang.org/"
@@ -12,8 +12,6 @@ KEYWORDS="amd64 x86"
 TOOLS="ddemangle detab dustmite rdmd"
 IUSE="+ddemangle detab dustmite +rdmd"
 REQUIRED_USE="|| ( ${TOOLS} )"
-
-inherit eapi7-ver
 
 DLANG_SLOT="$(ver_cut 1-2)"
 RESTRICT="mirror"
@@ -30,7 +28,7 @@ SRC_URI="https://codeload.github.com/dlang/tools/tar.gz/v${VERSION} -> dlang-too
 DLANG_VERSION_RANGE="2.075-"
 DLANG_PACKAGE_TYPE="single"
 
-inherit eutils dlang xdg-utils
+inherit desktop dlang xdg-utils
 
 S="${WORKDIR}/tools-${VERSION}"
 

@@ -1,7 +1,7 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=8
 
 DESCRIPTION="Ancilliary tools for the D programming language compiler"
 HOMEPAGE="http://dlang.org/"
@@ -9,72 +9,47 @@ LICENSE="Boost-1.0"
 
 SLOT="0"
 KEYWORDS="amd64 x86"
-TOOLS="rdmd ddemangle detab dustmite"
-IUSE="+rdmd +ddemangle detab +dman dustmite"
-REQUIRED_USE="|| ( ${TOOLS} dman )"
-
-inherit eapi7-ver
+TOOLS="ddemangle detab dustmite rdmd"
+IUSE="+ddemangle detab dustmite +rdmd"
+REQUIRED_USE="|| ( ${TOOLS} )"
 
 DLANG_SLOT="$(ver_cut 1-2)"
 RESTRICT="mirror"
-GITHUB_URI="https://codeload.github.com/dlang"
-SRC_URI="
-	${GITHUB_URI}/tools/tar.gz/v${PV} -> dlang-tools-${PV}.tar.gz
-	dman? (
-		${GITHUB_URI}/dmd/tar.gz/v${PV} -> dmd-${PV}.tar.gz
-		${GITHUB_URI}/druntime/tar.gz/v${PV} -> druntime-${PV}.tar.gz
-		${GITHUB_URI}/phobos/tar.gz/v${PV} -> phobos-${PV}.tar.gz
-		${GITHUB_URI}/dlang.org/tar.gz/v${PV} -> dlang.org-${PV}.tar.gz
-	)"
-PATCHES=( "${FILESDIR}/2.067-no-narrowing.patch" "${FILESDIR}/replace-bits-mathdef-h.patch" )
+
+BETA="$(ver_cut 4)"
+VERSION="$(ver_cut 1-3)"
+
+if [[ -n "${BETA}" ]]; then
+	# We want to convert a Gentoo version string into an upstream one: 2.097.0_rc1 -> 2.097.0-rc.1
+	VERSION="$(ver_rs 3 "-" 4 ".")"
+fi
+SRC_URI="https://codeload.github.com/dlang/tools/tar.gz/v${VERSION} -> dlang-tools-${VERSION}.tar.gz"
 
 DLANG_VERSION_RANGE="${DLANG_SLOT}-2.070"
 DLANG_PACKAGE_TYPE="single"
 
-inherit eutils dlang xdg-utils
+inherit desktop dlang xdg-utils
 
-S="${WORKDIR}"
-
-src_prepare() {
-	mv "tools-${PV}" "tools" || die "Could not rename tools-${PV} to tools"
-	if use dman; then
-		mv "dlang.org-${PV}" "dlang.org" || die "Could not rename dlang.org-${PV} to dlang.org"
-		mv "dmd-${PV}" "dmd" || die "Could not rename dmd-${PV} to dmd"
-		touch dmd/.cloned || die "Could not touch 'dmd/.cloned'"
-		mv "druntime-${PV}" "druntime" || die "Could not rename druntime-${PV} to druntime"
-		mv "phobos-${PV}" "phobos" || die "Could not rename phobos-${PV} to phobos"
-	fi
-	# Apply patches
-	dlang_src_prepare
-}
+S="${WORKDIR}/tools-${VERSION}"
 
 d_src_compile() {
 	for tool in ${TOOLS}; do
 		if use "${tool}"; then
-			emake -C "tools" -f posix.mak DMD="${DMD}" DFLAGS="${DMDFLAGS}" "${tool}"
+			emake -f posix.mak DMD="${DMD}" DFLAGS="${DMDFLAGS}" "${tool}"
 		fi
 	done
-	if use dman; then
-		# This builds chmgen with the system D compiler (and also a vanilla DMD
-		# as a dependency from the make file.) A dummy PHOBOS_DIR is set to make
-		# the build process use the system Phobos instead.
-		emake -C "dlang.org" -f posix.mak RELEASE=1 LATEST="${PV}" TARGET_CPU=X86 DMD="${DMD}" PHOBOS_DIR="." chmgen
-		# Next we populate the druntime/import directory as required by the HTML
-		# generation process.
-		emake -C "druntime" -f posix.mak DMD="${DMD}" import copy
-		# Then we generate Phobos HTML documentation that can be parsed by
-		# chmgen when building dman.
-		emake -C "phobos" -f posix.mak DOC_OUTPUT_DIR="../dlang.org/web/phobos" DMD="${DMD}" html
-		# The last step creates the actual executable.
-		emake -C "tools" -f posix.mak RELEASE=1 LATEST="${PV}" DMD="${DMD}" DFLAGS="${DMDFLAGS} -J../dlang.org" dman
-	fi
 }
 
 d_src_install() {
-	for tool in ${TOOLS} dman; do
+	for tool in ${TOOLS}; do
 		if use "${tool}"; then
-			dobin tools/generated/linux/*/"${tool}"
+			dobin generated/linux/*/"${tool}"
 		fi
+	done
+
+	# file icons
+	for size in 16 22 24 32 48 256; do
+		newicon --size "${size}" --context mimetypes "${FILESDIR}/icons/${size}/dmd-source.png" text-x-dsrc.png
 	done
 }
 
