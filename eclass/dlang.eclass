@@ -1,6 +1,7 @@
 # @ECLASS: dlang.eclass
 # @MAINTAINER:
 # Marco Leise <marco.leise@gmx.de>
+# @SUPPORTED_EAPIS: 6 7 8
 # @BLURB: install D libraries in multiple locations for each D version and compiler
 # @DESCRIPTION:
 # The dlang eclass faciliates creating dependiencies on D libraries for use
@@ -32,12 +33,13 @@
 if [[ ${_ECLASS_ONCE_DLANG} != "recur -_+^+_- spank" ]] ; then
 _ECLASS_ONCE_DLANG="recur -_+^+_- spank"
 
-if has ${EAPI:-0} 0 1 2 3 4 5; then
-	die "EAPI must be >= 6 for dlang packages."
-fi
+case ${EAPI:-0} in
+	6) inherit eapi7-ver ;;
+	7|8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
+esac
 
 inherit flag-o-matic dlang-compilers
-test ${EAPI:-0} -lt 7 && inherit eapi7-ver
 if [[ "${DLANG_PACKAGE_TYPE}" == "multi" ]]; then
 	# We handle a multi instance package.
 	inherit multilib-minimal
