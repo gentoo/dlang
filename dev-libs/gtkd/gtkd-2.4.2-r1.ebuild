@@ -1,7 +1,7 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
 DESCRIPTION="D binding and OO wrapper of GTK+ and is released on the LGPL license"
 HOMEPAGE="http://gtkd.org/"
@@ -15,9 +15,9 @@ SRC_URI="https://gtkd.org/Downloads/sources/GtkD-${PV}.zip"
 DLANG_VERSION_RANGE="2.063-2.067 2.071-2.080"
 DLANG_PACKAGE_TYPE="multi"
 
-inherit eutils dlang
+inherit dlang multilib-build
 
-DEPEND="app-arch/unzip"
+BDEPEND="app-arch/unzip"
 RDEPEND="
 	>=x11-libs/gtk+-3.10:3[${MULTILIB_USEDEP}]
 	sourceview? ( >=x11-libs/gtksourceview-3.10:3.0 )
@@ -34,7 +34,10 @@ MAJOR=$(ver_cut 1)
 MINOR=$(ver_cut 2-)
 
 src_unpack() {
-	unzip -q "${DISTDIR}/${A}" -d "${S}"
+	mkdir "${S}" || die "Could not create source directory"
+	pushd "${S}" >/dev/null
+	unpack "${A}"
+	popd >/dev/null
 }
 
 d_src_compile() {
