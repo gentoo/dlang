@@ -45,7 +45,6 @@ fi
 
 EXPORT_FUNCTIONS src_prepare src_configure src_compile src_test src_install
 
-
 # Definition of know compilers and supported front-end versions from dlang-compilers.eclass
 dlang-compilers_declare_versions
 
@@ -57,11 +56,11 @@ dlang-compilers_declare_versions
 # MODEL: This is either 32 or 64.
 # DLANG_VENDOR: Either DigitalMars, GNU or LDC.
 # DC: D compiler command. E.g.
-#   /usr/x86_64-pc-linux-gnu/gcc-bin/9.1.1/x86_64-pc-linux-gnu-gdc,
+#   /usr/x86_64-pc-linux-gnu/gcc-bin/12/x86_64-pc-linux-gnu-gdc,
 #   /usr/lib/dmd/2.067/bin/dmd, or
 #   /usr/lib/ldc2/0.17/bin/ldc2
 # DMD: DMD compiler command. E.g.
-#   /usr/x86_64-pc-linux-gnu/gcc-bin/9.1.1/x86_64-pc-linux-gnu-gdmd,
+#   /usr/x86_64-pc-linux-gnu/gcc-bin/12/x86_64-pc-linux-gnu-gdmd,
 #   /usr/lib/dmd/2.086/bin/dmd, or
 #   /usr/lib/ldc2/0.17/bin/ldmd2
 # DC_VERSION: Release version of the compiler. This is the version excluding any
@@ -145,7 +144,6 @@ dlang_src_test() {
 dlang_src_install() {
 	_dlang_phase_wrapper install
 }
-
 
 # @FUNCTION: dlang_exec
 # @DESCRIPTION:
@@ -274,7 +272,6 @@ dlang_dmdw_dcflags() {
 	fi
 }
 
-
 # @FUNCTION: dlang_system_imports
 # @DESCRIPTION:
 # Returns a list of standard system import paths (one per line) for the current
@@ -285,7 +282,7 @@ dlang_system_imports() {
 		echo "/usr/lib/dmd/${DC_VERSION}/import"
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
 		# gcc's SLOT is its major version component.
-		echo "/usr/lib/gcc/${CHOST_default}/$(ver_cut 1 ${DC_VERSION})/include/d"
+		echo "/usr/lib/gcc/${CHOST_default}/${DC_VERSION}/include/d"
 	elif [[ "${DLANG_VENDOR}" == "LDC" ]]; then
 		echo "/usr/lib/ldc2/${DC_VERSION}/include/d"
 		echo "/usr/lib/ldc2/${DC_VERSION}/include/d/ldc"
@@ -336,7 +333,7 @@ declare -a _dlang_depends
 _dlang_compiler_masked_archs_for_version_range() {
 	local iuse=$1
 	if [[ "$iuse" == gdc* ]]; then
-		local depend="$iuse? ( $2 dev-util/gdmd:$(ver_cut 1 ${iuse#gdc-}) )"
+		local depend="$iuse? ( $2 dev-util/gdmd:${iuse#gdc-} )"
 	else
 		local depend="$iuse? ( $2 )"
 	fi
@@ -419,8 +416,8 @@ _dlang_filter_compilers() {
 	# GDC (doesn't support sub-slots, to stay compatible with upstream GCC)
 	for dc_version in "${!_dlang_gdc_frontend[@]}"; do
 		mapping="${_dlang_gdc_frontend[${dc_version}]}"
-		iuse=gdc-$(ver_rs 1-2 _ $dc_version)
-		depend="~sys-devel/gcc-$dc_version[d,-d-bootstrap(-)]"
+		iuse="gdc-${dc_version}"
+		depend="sys-devel/gcc:$dc_version[d,-d-bootstrap(-)]"
 		_dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
 	done
 
@@ -568,13 +565,12 @@ _dlang_build_configurations() {
 				# on the right, the correct $version_component:
 				#
 				# dmd-2_088              dmd-2.088
-				# gdc-12_2_0             gdc-12.2.0
-				# gdc-11_3_1_p20230303   gdc-11.3.1_p20230303
+				# gdc-12                 gdc-12
+				# gdc-11                 gdc-11
 				# ldc-1_29               ldc-1.29
 				# ldc2-1_30              ldc2-1.30
 				#
 				# Note: for ldc2 there is an empty separater betwen the 'c' and the '2'.
-				# Same thing for gdc, between the 'p' and the '2'.
 				if [[ "${use_flag}" =~ ldc2-* ]]; then
 					version_component=$(ver_rs 3 . ${use_flag})
 				else
@@ -647,12 +643,12 @@ _dlang_use_build_vars() {
 	elif [[ "${DLANG_VENDOR}" == "GNU" ]]; then
 		# Note that ldc2 expects the compiler name to be 'gdmd', not 'x86_64-pc-linux-gnu-gdmd'.
 		# gcc's SLOT is its major version component.
-		export DC="/usr/${CHOST_default}/gcc-bin/$(ver_cut 1 ${DC_VERSION})/${CHOST_default}-gdc"
-		export DMD="/usr/${CHOST_default}/gcc-bin/$(ver_cut 1 ${DC_VERSION})/gdmd"
+		export DC="/usr/${CHOST_default}/gcc-bin/${DC_VERSION}/${CHOST_default}-gdc"
+		export DMD="/usr/${CHOST_default}/gcc-bin/${DC_VERSION}/gdmd"
 		if [[ "${DLANG_PACKAGE_TYPE}" == "multi" ]] && multilib_is_native_abi; then
-			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/$(ver_cut 1 ${DC_VERSION})"
+			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/${DC_VERSION}"
 		else
-			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/$(ver_cut 1 ${DC_VERSION})/${MODEL}"
+			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/${DC_VERSION}/${MODEL}"
 		fi
 		export DCFLAGS="${GDCFLAGS} -shared-libphobos"
 		export DLANG_LINKER_FLAG="-Xlinker "

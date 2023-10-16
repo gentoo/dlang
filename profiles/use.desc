@@ -40,14 +40,9 @@ dmd-2_102 - Build for DMD 2.102
 dmd-2_103 - Build for DMD 2.103
 dmd-2_104 - Build for DMD 2.104
 dmd-2_105 - Build for DMD 2.105
-gdc-11_3_1_p20230427 - Build for GCC 11.3.1_p20230427
-gdc-11_4_0 - Build for GCC 11.4.0
-gdc-11_4_1_p20230622 - Build for GCC 11.4.1_p20230622
-gdc-12_2_1_p20230428 - Build for GCC 12.2.1_p20230428
-gdc-12_3_1_p20230526 - Build for GCC 12.3.1_p20230526
-gdc-12_3_1_p20230623 - Build for GCC 12.3.1_p20230623
-gdc-13_1_1_p20230527 - Build for GCC 13.1.1_p20230527
-gdc-13_2_0 - Build for GCC 13.2.0
+gdc-11 - Build for GCC 11
+gdc-12 - Build for GCC 12
+gdc-13 - Build for GCC 13
 ldc2-1_29 - Build for ldc2 1.29
 ldc2-1_30 - Build for ldc2 1.30
 ldc2-1_31 - Build for ldc2 1.31
