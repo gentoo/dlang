@@ -1,3 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
-<pkgmetadata/>
+<pkgmetadata>
+  <upstream>
+    <bugs-to>https://github.com/ldc-developers/ldc/issues</bugs-to>
+    <changelog>https://github.com/ldc-developers/ldc/blob/master/CHANGELOG.md</changelog>
+    <doc lang="en">https://wiki.dlang.org/LDC</doc>
+    <remote-id type="github">ldc-developers/ldc</remote-id>
+  </upstream>
+</pkgmetadata>
