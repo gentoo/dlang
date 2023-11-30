@@ -610,6 +610,17 @@ _dlang_use_build_vars() {
 	# The original value is exported as LIBDIR_HOST.
 	local libdir_var="LIBDIR_${ABI}"
 	export LIBDIR_HOST="${!libdir_var}"
+	# Save the default pkgconfig path
+	if [[ ! -v DLANG_SAVE_PKG_CONFIG_PATH ]]; then
+		# Copy the logic from meson.eclass for setting PKG_CONFIG_PATH
+		export DLANG_SAVE_PKG_CONFIG_PATH="${PKG_CONFIG_PATH}${PKG_CONFIG_PATH:+:}/usr/share/pkgconfig"
+	fi
+	if [[ ! -v DLANG_SAVE_PKG_CONFIG_LIBDIR ]]; then
+		# either save the value or provide a sane default lest other eclasses get confused.
+		# e.g. meson.eclass will set PKG_CONFIG_LIBDIR using $(get_libdir) which won't
+		# work properly since we will overwrite $LIBDIR_$ABI
+		export DLANG_SAVE_PKG_CONFIG_LIBDIR="${PKG_CONFIG_LIBDIR:-/usr/$(get_libdir)/pkgconfig}"
+	fi
 	export ABI="$(echo ${MULTIBUILD_VARIANT} | cut -d- -f1)"
 	export DC="$(echo ${MULTIBUILD_VARIANT} | cut -d- -f2)"
 	export DC_VERSION="$(echo ${MULTIBUILD_VARIANT} | cut -d- -f3)"
@@ -699,6 +710,13 @@ _dlang_use_build_vars() {
 		filter-ldflags -f{no-,}use-linker-plugin -f{no-,}lto -flto=*
 	fi
 	export LDFLAGS=`dlang_convert_ldflags`
+
+	# Add the compiler specific pkgconfig paths.
+	export PKG_CONFIG_PATH="${DLANG_SAVE_PKG_CONFIG_PATH}:/usr/$(get_libdir)/pkgconfig"
+	# Technically, this value will stay the same so it's enough to export it once
+	# but it's cleaner to keep these 2 variables close together.
+	export PKG_CONFIG_LIBDIR="${DLANG_SAVE_PKG_CONFIG_LIBDIR}"
+
 	"${@}"
 }
 
