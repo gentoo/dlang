@@ -584,7 +584,7 @@ _dlang_build_configurations() {
 						variants="${variants} ${abi}-${version_component}"
 					done
 				else
-					variants="default-${version_component}"
+					variants="${DEFAULT_ABI:-default}-${version_component}"
 				fi
 				;;
 			selfhost)
@@ -647,10 +647,15 @@ _dlang_use_build_vars() {
 		# gcc's SLOT is its major version component.
 		export DC="/usr/${CHOST_default}/gcc-bin/${DC_VERSION}/${CHOST_default}-gdc"
 		export DMD="/usr/${CHOST_default}/gcc-bin/${DC_VERSION}/gdmd"
-		if [[ "${DLANG_PACKAGE_TYPE}" == "multi" ]] && multilib_is_native_abi; then
+		if [[ ${DLANG_PACKAGE_TYPE} != multi ]]; then
+			# Both single and dmd enter this branch
 			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/${DC_VERSION}"
 		else
-			export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/${DC_VERSION}/${MODEL}"
+			if multilib_is_native_abi; then
+				export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/${DC_VERSION}"
+			else
+				export LIBDIR_${ABI}="lib/gcc/${CHOST_default}/${DC_VERSION}/${MODEL}"
+			fi
 		fi
 		export DCFLAGS="${GDCFLAGS} -shared-libphobos"
 		export DLANG_LINKER_FLAG="-Xlinker "

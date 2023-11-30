@@ -295,8 +295,26 @@ EOF
 		fi
 
 		# Install shared lib.
+		# dlang.eclass will set LIBDIR_$ABI to the path of the host compiler
+		# library direcory (if not selfhosting). We don't care about that
+		# location, however, and we instead want to have it point
+		# to the path where this package is supposed to install the libraries
+		# to, i.e. the system library directory. We can use $LIBDIR_HOST
+		# to restore that value to the correct one but only if the ABI
+		# this function is running into is the same as the one set
+		# by dlang.eclass. Since dlang.eclass treats dmd as a 'single'
+		# type package, it will only treat the case where $ABI is the
+		# native one.
+		if ! use selfhost && multilib_is_native_abi; then
+			# We aren't going to use LIBDIR_$ABI for this ABI anymore
+			# so just overwrite it, don't bother saving it.
+			export LIBDIR_${ABI}="${LIBDIR_HOST}"
+		fi
+
+		# We are installing the real file into the system libdir.
 		dolib.so phobos/generated/linux/release/${MODEL}/"${SONAME}"
 		dosym "${SONAME}" /usr/"$(get_libdir)"/"${SONAME_SYM}"
+		# We create an additional symlink in this package's specific libdir.
 		dosym ../../../../../usr/"$(get_libdir)"/"${SONAME}" /usr/"${libdir}"/libphobos2.so
 
 		# Install static lib if requested.
