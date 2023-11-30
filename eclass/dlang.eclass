@@ -30,6 +30,14 @@
 # @DESCRIPTION:
 # The path that is used to install include files. A sub-directory specific to the package should be used.
 
+# @ECLASS_VARIABLE: DLANG_COMPILER_DISABLED_BACKENDS
+# @PRE_INHERIT
+# @DEFAULT_UNSET
+# @DESCRIPTION:
+# Optional list of D compiler backends to disable as a Bash array.
+# Possible values include dmd, ldc2, and gdc.
+# Set before inheritting the eclass.
+
 if [[ ${_ECLASS_ONCE_DLANG} != "recur -_+^+_- spank" ]] ; then
 _ECLASS_ONCE_DLANG="recur -_+^+_- spank"
 
@@ -402,39 +410,45 @@ _dlang_compiler_masked_archs_for_version_range() {
 _dlang_filter_compilers() {
 	local dc_version mapping iuse depend
 
-	# filter for DMD (hardcoding support for x86 and amd64 only)
-	for dc_version in "${!_dlang_dmd_frontend[@]}"; do
-		mapping="${_dlang_dmd_frontend[${dc_version}]}"
-		iuse="dmd-$(ver_rs 1- _ $dc_version)"
-		if [ "${DLANG_PACKAGE_TYPE}" == "multi" ]; then
-			depend="[${MULTILIB_USEDEP}]"
-		else
-			depend=""
-		fi
-		depend="dev-lang/dmd:$dc_version=$depend"
-		_dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
-	done
+	if _dlang_compiler_backend_is_enabled "dmd"; then
+		# filter for DMD (hardcoding support for x86 and amd64 only)
+		for dc_version in "${!_dlang_dmd_frontend[@]}"; do
+			mapping="${_dlang_dmd_frontend[${dc_version}]}"
+			iuse="dmd-$(ver_rs 1- _ $dc_version)"
+			if [ "${DLANG_PACKAGE_TYPE}" == "multi" ]; then
+				depend="[${MULTILIB_USEDEP}]"
+			else
+				depend=""
+			fi
+			depend="dev-lang/dmd:$dc_version=$depend"
+			_dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
+		done
+	fi
 
-	# GDC (doesn't support sub-slots, to stay compatible with upstream GCC)
-	for dc_version in "${!_dlang_gdc_frontend[@]}"; do
-		mapping="${_dlang_gdc_frontend[${dc_version}]}"
-		iuse="gdc-${dc_version}"
-		depend="sys-devel/gcc:$dc_version[d,-d-bootstrap(-)]"
-		_dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
-	done
+	if _dlang_compiler_backend_is_enabled "gdc"; then
+		# GDC (doesn't support sub-slots, to stay compatible with upstream GCC)
+		for dc_version in "${!_dlang_gdc_frontend[@]}"; do
+			mapping="${_dlang_gdc_frontend[${dc_version}]}"
+			iuse="gdc-${dc_version}"
+			depend="sys-devel/gcc:$dc_version[d,-d-bootstrap(-)]"
+			_dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
+		done
+	fi
 
-	# filter for LDC2
-	for dc_version in "${!_dlang_ldc2_frontend[@]}"; do
-		mapping="${_dlang_ldc2_frontend[${dc_version}]}"
-		iuse=ldc2-$(ver_rs 1- _ $dc_version)
-		if [ "${DLANG_PACKAGE_TYPE}" == "multi" ]; then
-			depend="[${MULTILIB_USEDEP}]"
-		else
-			depend=""
-		fi
-		depend="dev-lang/ldc2:$dc_version=$depend"
-		_dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
-	done
+	if _dlang_compiler_backend_is_enabled "ldc2"; then
+		# filter for LDC2
+		for dc_version in "${!_dlang_ldc2_frontend[@]}"; do
+			mapping="${_dlang_ldc2_frontend[${dc_version}]}"
+			iuse=ldc2-$(ver_rs 1- _ $dc_version)
+			if [ "${DLANG_PACKAGE_TYPE}" == "multi" ]; then
+				depend="[${MULTILIB_USEDEP}]"
+			else
+				depend=""
+			fi
+			depend="dev-lang/ldc2:$dc_version=$depend"
+			_dlang_compiler_masked_archs_for_version_range "$iuse" "$depend" "$mapping" "$1" "$2"
+		done
+	fi
 }
 
 # @FUNCTION: _dlang_filter_versions
@@ -760,6 +774,21 @@ _dlang_additional_flags() {
 		$(_dlang_prefix_words $import_prefix $imports)\
 		$(_dlang_prefix_words $string_import_prefix $string_imports)\
 		$(_dlang_prefix_words "${DLANG_LINKER_FLAG}-l" $libs)
+}
+
+# @FUNCTION: _dlang_compiler_backend_is_enabled
+# @USAGE: _dlang_compiler_backend_is_enabled <backend>
+# @RETURN: Truth if the backend is enabled
+# @INTERNAL
+# @DESCRIPTION:
+# Check if the given backend is enabled.
+# Possible values for the backend are: dmd, ldc2 and gdc
+_dlang_compiler_backend_is_enabled() {
+	local disabled_backend
+	for disabled_backend in "${DLANG_COMPILER_DISABLED_BACKENDS[@]}"; do
+		[[ ${disabled_backend} == ${1} ]] && return 1
+	done
+	return 0
 }
 
 # Setting DLANG_USE_COMPILER skips the generation of USE-flags for compilers
