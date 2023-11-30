@@ -41,9 +41,9 @@ MINOR=$(ver_cut 2-)
 
 src_unpack() {
 	mkdir "${S}" || die "Could not create source directory"
-	pushd "${S}" >/dev/null
+	pushd "${S}" >/dev/null || die
 	unpack "${A}"
-	popd >/dev/null
+	popd >/dev/null || die
 }
 
 d_src_compile() {
@@ -73,6 +73,26 @@ d_src_compile() {
 				dlang_exec ${DC} ${DCFLAGS} -m${MODEL} -Isrc -Igenerated/gtkd ${sources} -lib -od=${SRC_DIR} -oq ${LDFLAGS} ${DLANG_OUTPUT_FLAG}${libname}.a
 			fi
 		fi
+
+		# Generate the pkg-config file. The make rules don't depend on anything so
+		# it's fine to use them even though we compiled the library in another way.
+
+		# Due to some quirkyness in meson, -L= isn't recognized as a D linker flag
+		# so we have to change it for ldc2.
+		local linker_flag
+		if [[ ${DLANG_VENDOR} == "LDC" ]]; then
+			linker_flag="-L"
+		else
+			linker_flag="${DLANG_LINKER_FLAG}"
+		fi
+		local mymakeargs=(
+			LINKERFLAG="${linker_flag}"
+			prefix="${EPREFIX}/usr"
+			libdir="$(get_libdir)"
+		)
+		emake "${mymakeargs[@]}" "${LIB_NAME}-${MAJOR}.pc"
+		sed -i -e 's@include/d@include/dlang@' "${LIB_NAME}-${MAJOR}.pc" || \
+			die "Could not modify include path for ${LIB_NAME}-${MAJOR}.pc"
 	}
 
 	foreach_used_component compile_libs
@@ -94,6 +114,10 @@ d_src_install() {
 		if use static-libs; then
 			dolib.a "lib${LIB_NAME}-${MAJOR}.a"
 		fi
+
+		# Install the pkg-config files
+		insinto "/usr/$(get_libdir)/pkgconfig"
+		doins "${LIB_NAME}-${MAJOR}.pc"
 	}
 
 	foreach_used_component install_libs
