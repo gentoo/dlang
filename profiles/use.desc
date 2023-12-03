@@ -40,6 +40,7 @@ dmd-2_102 - Build for DMD 2.102
 dmd-2_103 - Build for DMD 2.103
 dmd-2_104 - Build for DMD 2.104
 dmd-2_105 - Build for DMD 2.105
+dmd-2_106 - Build for DMD 2.106
 gdc-11 - Build for GCC 11
 gdc-12 - Build for GCC 12
 gdc-13 - Build for GCC 13
