@@ -3,7 +3,6 @@
 <pkgmetadata>
   <use>
     <flag name="gstreamer">Build additional bindings to media-libs/gstreamer</flag>
-    <flag name="libgda">Build additional bindings to gnome-extra/libgda</flag>
     <flag name="opengl">Build additional bindings to x11-libs/gtkglext</flag>
     <flag name="peas">Build additonal bindings to dev-libs/libpeas</flag>
     <flag name="sourceview">Build additional bindings to x11-libs/gtksourceview</flag>
