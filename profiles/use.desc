@@ -8,9 +8,6 @@ dmd-2_106 - Build for DMD 2.106
 gdc-11 - Build for GCC 11
 gdc-12 - Build for GCC 12
 gdc-13 - Build for GCC 13
-ldc2-1_29 - Build for ldc2 1.29
-ldc2-1_30 - Build for ldc2 1.30
-ldc2-1_31 - Build for ldc2 1.31
 ldc2-1_32 - Build for ldc2 1.32
 ldc2-1_33 - Build for ldc2 1.33
 ldc2-1_34 - Build for ldc2 1.34
