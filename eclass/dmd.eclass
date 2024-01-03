@@ -84,7 +84,7 @@ fi
 SONAME="${SONAME-libphobos2.so.0.${MINOR}.${PATCH}}"
 SONAME_SYM="${SONAME%.*}"
 
-IUSE="doc examples static-libs tools"
+IUSE="doc examples static-libs"
 
 # Self-hosting versions of DMD need a host compiler.
 if dmd_ge 2.068; then
@@ -120,7 +120,6 @@ RDEPEND="
 	${COMMON_DEPEND}
 	!dev-lang/dmd-bin
 	"
-PDEPEND="tools? ( >=dev-util/dlang-tools-${PV} )"
 
 S="${WORKDIR}/dmd2"
 PREFIX="usr/lib/${PN}/${SLOT}"
