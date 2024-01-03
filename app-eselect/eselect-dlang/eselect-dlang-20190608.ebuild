@@ -4,7 +4,7 @@
 EAPI=7
 
 DESCRIPTION="Eselect module for management of multiple D versions"
-HOMEPAGE="https://github.com/gentoo-dlang"
+HOMEPAGE="https://github.com/gentoo/dlang"
 
 LICENSE="GPL-2"
 SLOT="0"
