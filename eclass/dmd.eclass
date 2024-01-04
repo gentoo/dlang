@@ -35,7 +35,7 @@ HTML_DOCS="html/*"
 # DMD supports amd64/x86 exclusively
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 
-inherit desktop edos2unix multilib-build toolchain-funcs
+inherit desktop edos2unix multilib-build optfeature toolchain-funcs
 
 # @FUNCTION: dmd_eq
 # @DESCRIPTION:
@@ -354,6 +354,8 @@ dmd_pkg_postinst() {
 
 	use examples && elog "Examples can be found in: /${PREFIX}/samples"
 	use doc && elog "HTML documentation is in: /usr/share/doc/${PF}/html"
+
+	optfeature "additional D development tools" "dev-util/dlang-tools"
 }
 
 dmd_pkg_postrm() {
