@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,10 +8,10 @@ HOMEPAGE="http://gtkd.org/"
 LICENSE="LGPL-3"
 
 SLOT="3"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 SRC_URI="https://gtkd.org/Downloads/sources/GtkD-${PV}.zip"
 
-DLANG_VERSION_RANGE="2.074-"
+DLANG_VERSION_RANGE="2.100-"
 DLANG_PACKAGE_TYPE="multi"
 
 inherit dlang
