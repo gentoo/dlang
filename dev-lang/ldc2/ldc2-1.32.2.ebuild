@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -19,7 +19,7 @@ SLOT="$(ver_cut 1-2)/$(ver_cut 3)"
 IUSE="static-libs"
 
 # Upstream supports LLVM 9.0 through 15.0.
-RDEPEND="dev-util/ninja
+RDEPEND="
 	|| (
 		sys-devel/llvm:15
 		sys-devel/llvm:14
