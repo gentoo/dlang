@@ -3,7 +3,7 @@
 
 EAPI=8
 
-inherit multilib-build cmake llvm
+inherit flag-o-matic multilib-build cmake llvm
 
 MY_PV="${PV//_/-}"
 MY_P="ldc-${MY_PV}-src"
@@ -18,7 +18,7 @@ SLOT="$(ver_cut 1-2)/$(ver_cut 3)"
 
 IUSE="static-libs"
 
-# Upstream supports LLVM 11.0 through 16.0.
+# Upstream supports LLVM 11.0 through 17.0.
 DEPEND="
 	|| (
 		sys-devel/llvm:17
@@ -53,6 +53,8 @@ d_src_configure() {
 	# We disable assertions so we have to apply the same workaround as for
 	# sys-devel/llvm: add -DNDEBUG to CPPFLAGS.
 	local CPPFLAGS="${CPPFLAGS} -DNDEBUG"
+	# https://bugs.gentoo.org/show_bug.cgi?id=922590
+	append-flags -fno-strict-aliasing
 	local mycmakeargs=(
 		-DD_VERSION=2
 		-DCMAKE_INSTALL_PREFIX=/usr/lib/ldc2/$(ver_cut 1-2)
