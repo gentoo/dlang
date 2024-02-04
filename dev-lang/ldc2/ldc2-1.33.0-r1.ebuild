@@ -33,7 +33,7 @@ PATCHES="${FILESDIR}/ldc2-1.15.0-link-defaultlib-shared.patch"
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 
 # Upstream supports "2.079-"
-DLANG_VERSION_RANGE="2.075-2.080 2.082-"
+DLANG_VERSION_RANGE="2.075-2.080 2.082-2.106"
 DLANG_PACKAGE_TYPE="single"
 
 inherit dlang

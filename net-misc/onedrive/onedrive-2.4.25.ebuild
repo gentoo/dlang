@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -19,7 +19,7 @@ DEPEND="
 	virtual/pkgconfig
 "
 SRC_URI="https://codeload.github.com/abraunegg/onedrive/tar.gz/v${PV} -> ${P}.tar.gz"
-DLANG_VERSION_RANGE="2.087-"
+DLANG_VERSION_RANGE="2.087-2.106"
 DLANG_PACKAGE_TYPE="single"
 IUSE="debug libnotify"
 

@@ -25,7 +25,7 @@ if [[ -n "${BETA}" ]]; then
 fi
 SRC_URI="https://codeload.github.com/dlang/tools/tar.gz/v${VERSION} -> dlang-tools-${VERSION}.tar.gz"
 
-DLANG_VERSION_RANGE="2.075-"
+DLANG_VERSION_RANGE="2.075-2.106"
 DLANG_PACKAGE_TYPE="single"
 
 inherit desktop dlang xdg-utils
