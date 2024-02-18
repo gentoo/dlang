@@ -1,0 +1,15 @@
+diff --git a/druntime/Makefile b/druntime/Makefile
+index 50e4104..ddffc78 100644
+--- a/druntime/Makefile
++++ b/druntime/Makefile
+@@ -17,8 +17,9 @@ QUIET:=
+ 
+ DUB=dub
+ TOOLS_DIR=../../tools
++DMD_DIR=../
+ 
+-include ../compiler/src/osmodel.mak
++include $(DMD_DIR)/src/osmodel.mak
+ 
+ ifeq (windows,$(OS))
+     DOTEXE:=.exe

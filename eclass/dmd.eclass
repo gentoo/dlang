@@ -217,12 +217,38 @@ dmd_src_compile() {
 			CC="$(tc-getCC)"
 			DMD_DIR=../dmd
 		)
+		# <2.107 use posix.mak, >=dmd-2.107 use Makefile
+		! dmd_ge 2.107 && mymakeargs+=(-f posix.mak)
+
+		local druntimeMakeArgs=(
+			MANIFEST=
+		)
+		local phobosMakeArgs=(
+			CUSTOM_DRUNTIME=1
+			DRUNTIME_PATH=../druntime
+		)
+		# Let's try to specify the build args to avoid building both
+		# shared+static libraries with !static-libs. Do this only for
+		# >=2.107, if it's useful backport the improvements later.
+		if dmd_ge 2.107; then
+			phobosMakeArgs=( $(usex static-libs 'lib dll' 'dll') )
+			# druntime's notion of a shared library is a static archive
+			# that is embedded into the phobos shared library.
+			#
+			# Technically there is the dll_so target which is the proper
+			# so file but who's gonna use it? Perhaps if phobos would
+			# not incorporate druntime we could install them as separate
+			# libraries (like ldc2 and gdc).
+			druntimeMakeArgs=( $(usex static-libs 'lib dll' 'dll') )
+			# Either way, now we no longer build static-libs
+			# indiscriminately.
+		fi
 
 		einfo 'Building druntime...'
-		emake -C druntime -f posix.mak "${mymakeargs[@]}" MANIFEST=
+		emake -C druntime "${mymakeargs[@]}" "${druntimeMakeArgs[@]}"
 
 		einfo 'Building Phobos 2...'
-		emake -C phobos -f posix.mak "${mymakeargs[@]}" CUSTOM_DRUNTIME=1 DRUNTIME_PATH=../druntime
+		emake -C phobos "${mymakeargs[@]}" "${phobosMakeArgs[@]}"
 	}
 
 	dmd_foreach_abi compile_libraries
