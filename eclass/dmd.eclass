@@ -233,7 +233,22 @@ dmd_src_compile() {
 
 dmd_src_test() {
 	test_hello_world() {
-		"$(dmd_gen_exe_dir)/dmd" -m${MODEL} -fPIC -Iphobos -Idruntime/import -L-Lphobos/generated/linux/release/${MODEL} samples/d/hello.d || die "Failed to build hello.d (${MODEL}-bit)"
+		local phobosDir=phobos/generated/linux/release/"${MODEL}"
+		local commandArgs=(
+			# Copied from below, where dmd.conf is generated
+			-L--export-dynamic
+			-defaultlib=phobos2 # If unspecified, defaults to libphobos2.a
+			-fPIC
+			-L-L"${phobosDir}"
+			-L-rpath="${phobosDir}"
+
+			-conf= # Don't use dmd.conf
+			-m"${MODEL}"
+			-Iphobos
+			-Idruntime/import
+		)
+		"$(dmd_gen_exe_dir)/dmd" "${commandArgs[@]}" samples/d/hello.d \
+			|| die "Failed to build hello.d (${MODEL}-bit)"
 		./hello ${MODEL}-bit || die "Failed to run test sample (${MODEL}-bit)"
 		rm hello.o hello || die "Could not remove temporary files"
 	}
