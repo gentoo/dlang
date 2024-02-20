@@ -1,3 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
-<pkgmetadata/>
+<pkgmetadata>
+  <use>
+    <flag name="doc">Generate and install man pages. Requires building dub twice.</flag>
+  </use>
+</pkgmetadata>
