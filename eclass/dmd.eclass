@@ -231,7 +231,7 @@ dmd_src_compile() {
 		# shared+static libraries with !static-libs. Do this only for
 		# >=2.107, if it's useful backport the improvements later.
 		if dmd_ge 2.107; then
-			phobosMakeArgs=( $(usex static-libs 'lib dll' 'dll') )
+			phobosMakeArgs+=( $(usex static-libs 'lib dll' 'dll') )
 			# druntime's notion of a shared library is a static archive
 			# that is embedded into the phobos shared library.
 			#
@@ -239,7 +239,7 @@ dmd_src_compile() {
 			# so file but who's gonna use it? Perhaps if phobos would
 			# not incorporate druntime we could install them as separate
 			# libraries (like ldc2 and gdc).
-			druntimeMakeArgs=( $(usex static-libs 'lib dll' 'dll') )
+			druntimeMakeArgs+=( $(usex static-libs 'lib dll' 'dll') )
 			# Either way, now we no longer build static-libs
 			# indiscriminately.
 		fi
