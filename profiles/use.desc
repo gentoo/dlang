@@ -1,3 +1,38 @@
+dlang_single_target_dmd-2_101 - Build for DMD 2.101 only
+dlang_single_target_dmd-2_102 - Build for DMD 2.102 only
+dlang_single_target_dmd-2_103 - Build for DMD 2.103 only
+dlang_single_target_dmd-2_104 - Build for DMD 2.104 only
+dlang_single_target_dmd-2_105 - Build for DMD 2.105 only
+dlang_single_target_dmd-2_106 - Build for DMD 2.106 only
+dlang_single_target_dmd-2_107 - Build for DMD 2.107 only
+
+dlang_single_target_gdc-12 - Build for GCC 12 only
+dlang_single_target_gdc-13 - Build for GCC 13 only
+
+dlang_single_target_ldc2-1_32 - Build for ldc2 1.32 only
+dlang_single_target_ldc2-1_33 - Build for ldc2 1.33 only
+dlang_single_target_ldc2-1_34 - Build for ldc2 1.34 only
+dlang_single_target_ldc2-1_35 - Build for ldc2 1.35 only
+dlang_single_target_ldc2-1_36 - Build for ldc2 1.36 only
+
+dlang_targets_dmd-2_101 - Build with DMD 2.101
+dlang_targets_dmd-2_102 - Build with DMD 2.102
+dlang_targets_dmd-2_103 - Build with DMD 2.103
+dlang_targets_dmd-2_104 - Build with DMD 2.104
+dlang_targets_dmd-2_105 - Build with DMD 2.105
+dlang_targets_dmd-2_106 - Build with DMD 2.106
+dlang_targets_dmd-2_107 - Build with DMD 2.107
+
+dlang_targets_gdc-12 - Build with GCC 12
+dlang_targets_gdc-13 - Build with GCC 13
+
+dlang_targets_ldc2-1_32 - Build with ldc2 1.32
+dlang_targets_ldc2-1_33 - Build with ldc2 1.33
+dlang_targets_ldc2-1_34 - Build with ldc2 1.34
+dlang_targets_ldc2-1_35 - Build with ldc2 1.35
+dlang_targets_ldc2-1_36 - Build with ldc2 1.36
+
+
 dmd-2_101 - Build for DMD 2.101
 dmd-2_102 - Build for DMD 2.102
 dmd-2_103 - Build for DMD 2.103
