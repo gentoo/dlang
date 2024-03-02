@@ -57,7 +57,7 @@ S="${WORKDIR}/${PN}-${MY_VER}"
 SLOT="0"
 KEYWORDS="~amd64"
 
-DLANG_VERSION_RANGE="2.100-2.106"
+DLANG_VERSION_RANGE="2.100-2.107"
 DLANG_PACKAGE_TYPE="single"
 # gdc currently fails due to a bug in mir-cpuid, see: https://github.com/libmir/mir-cpuid/pull/46
 DLANG_COMPILER_DISABLED_BACKENDS=(gdc)
