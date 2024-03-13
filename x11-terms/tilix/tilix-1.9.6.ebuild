@@ -10,7 +10,7 @@ LICENSE="MPL-2.0"
 SLOT="0"
 KEYWORDS="amd64 x86"
 
-DLANG_VERSION_RANGE="2.099-2.105"
+DLANG_VERSION_RANGE="2.099-2.106"
 DLANG_PACKAGE_TYPE="single"
 # Using dmd and gdc results in linking errors currently.
 # Upstream only tests with ldc2 as well.
