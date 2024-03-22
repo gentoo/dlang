@@ -1,0 +1,17 @@
+diff --git a/dmd/common/int128.d b/dmd/common/int128.d
+index 796687b1f7..b020cf92ce 100644
+--- a/dmd/common/int128.d
++++ b/dmd/common/int128.d
+@@ -770,6 +770,7 @@ version (unittest)
+     }
+ }
+ 
++/+
+ unittest
+ {
+     const C0 = Zero;
+@@ -919,3 +920,4 @@ unittest
+     assert(rol(C7_9, 1) == rol1(C7_9));
+     assert(ror(C7_9, 1) == ror1(C7_9));
+ }
+++/

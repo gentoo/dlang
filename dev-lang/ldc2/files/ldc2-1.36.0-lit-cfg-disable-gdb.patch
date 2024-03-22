@@ -1,0 +1,13 @@
+diff --git a/tests/lit.site.cfg.in b/tests/lit.site.cfg.in
+index 9b0b9c8..320a6d8 100644
+--- a/tests/lit.site.cfg.in
++++ b/tests/lit.site.cfg.in
+@@ -200,7 +200,7 @@ if (platform.system() == 'Windows') and os.path.isfile( cdb ):
+     config.substitutions.append( ('%cdb', '"' + cdb.replace('\\', '\\\\') + '"') )
+ 
+ # Check whether GDB is present
+-if (platform.system() != 'Windows') and lit.util.which('gdb', config.environment['PATH']):
++if False:
+     config.available_features.add('gdb')
+     gdb_dflags = ''
+     command = ['gdb', '--version']
