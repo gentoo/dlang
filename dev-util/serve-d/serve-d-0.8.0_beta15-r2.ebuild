@@ -113,14 +113,12 @@ src_unpack() {
 
 src_configure() {
 	# There's an issue with ldc that when -mcpu=native is specified you
-	# get an llvm stack trace. I have to investigate it further before
-	# reporting. -mcpu=<resolve-march-native> works though.  For now
-	# just remove -mcpu=native for ldc2.
+	# get an llvm stack trace. It seems to be related to the use of
+	# certain intrinsics that depend on the target cpu.
 	if [[ ${EDC} == ldc2* && ${DCFLAGS} == *-mcpu=native* ]]; then
 		ewarn "-mcpu=native causes issues with ldc2 so it will be removed"
-		ewarn "from your flags. If you still want to specify it use"
-		ewarn "app-misc/resolve-march-native to get your actual architecture"
-		ewarn "and use that with -mcpu, like in -mcpu=znver3."
+		ewarn "from your flags."
+		ewarn "See: https://github.com/libmir/mir-ion/pull/46"
 	fi
 	dlang-filter-dflags "ldc2*" "-mcpu=native"
 
