@@ -12,7 +12,7 @@ HOMEPAGE="https://github.com/bpozdena/OneDriveGUI"
 
 RDEPEND="net-misc/onedrive
 	dev-python/requests
-	dev-python/pyside6[webengine(+)]
+	dev-python/pyside6[gui(+),webengine(+),widgets(+)]
 "
 
 LICENSE="GPL-3"
