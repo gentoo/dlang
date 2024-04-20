@@ -331,8 +331,9 @@ dmd-r1_src_install() {
 dmd-r1_pkg_postinst() {
 	"${EROOT}"/usr/bin/eselect dlang update dmd
 
-	use examples && elog "Examples can be found in: ${dmd_prefix}/samples"
-	use doc && elog "HTML documentation is in: /usr/share/doc/${PF}/html"
+	use examples &&
+		elog "Examples can be found in: ${EPREFIX}/usr/lib/${PN}/${SLOT}/samples"
+	use doc && elog "HTML documentation is in: ${EPREFIX}/usr/share/doc/${PF}/html"
 
 	optfeature "additional D development tools" "dev-util/dlang-tools"
 }
