@@ -97,7 +97,7 @@ dmd-r1_pkg_setup() {
 dmd-r1_src_unpack() {
 	# Here because pkgdev complains about it being in pkg_setup
 	if use selfhost; then
-		export DC=${WORKDIR}/dmd2/linux/bin$(_get_abi_bits)/dmd
+		export DC=${WORKDIR}/dmd2/linux/bin$(dlang_get_abi_bits)/dmd
 		export DMDW=${DC}
 	fi
 
@@ -149,7 +149,7 @@ dmd-r1_src_compile() {
 	"${cmd[@]}" || die "Failed to build dmd"
 
 	# The release here is from ENABLE_RELEASE, keep them in sync.
-	export GENERATED_DMD=${S}/dmd/generated/linux/release/$(_get_abi_bits)/dmd
+	export GENERATED_DMD=${S}/dmd/generated/linux/release/$(dlang_get_abi_bits)/dmd
 
 	compile_libraries() {
 		local commonMakeArgs=(
@@ -229,7 +229,7 @@ dmd-r1_src_compile() {
 		# ${GENERATED_DMD} is not yet fully functional as we didn't
 		# create a good dmd.conf. But instead of doing that we're going
 		# to specify our flags here.
-		DFLAGS="-defaultlib=phobos2 -L-rpath=${S}/phobos/generated/linux/release/$(_get_abi_bits)"
+		DFLAGS="-defaultlib=phobos2 -L-rpath=${S}/phobos/generated/linux/release/$(dlang_get_abi_bits)"
 	)
 	echo "${cmd[@]}"
 	"${cmd[@]}" || die "Could not generate man pages"
@@ -383,20 +383,6 @@ EOF
 	fi
 }
 
-# @FUNCTION: _get_abi_bits
-# @USAGE: [<abi>]
-# @INTERNAL
-# @DESCRIPTION:
-# Echo the bits of abi, 64 for amd64 and 32 for x86. If unspecified, the
-# value is taken from $ABI.
-_get_abi_bits() {
-	case "${1:-${ABI}}" in
-		amd64*) echo 64 ;;
-		x86*) echo 32 ;;
-		*) die "Unknown ABI: ${ABI}." ;;
-	esac
-}
-
 # @FUNCTION: _dmd_foreach_abi
 # @USAGE: <cmd> [<args>...]
 # @INTERNAL
@@ -409,7 +395,7 @@ _dmd_foreach_abi() {
 
 	local ABI
 	for ABI in $(multilib_get_enabled_abis); do
-		local MODEL=$(_get_abi_bits)
+		local MODEL=$(dlang_get_abi_bits)
 		einfo "Executing ${1} in ${MODEL}-bit"
 		"${@}"
 	done
