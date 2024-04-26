@@ -699,6 +699,20 @@ dlang-filter-dflags() {
 	return 0
 }
 
+# @FUNCTION: dlang_get_abi_bits
+# @USAGE: [<abi>]
+# @DESCRIPTION:
+# Echo the bits of the given abi. When unspecified take the value from
+# $ABI.
+#
+# If the abi is x86, echo 32, if amd64 echo 64, otherwise do nothing.
+dlang_get_abi_bits() {
+	case "${1:-${ABI}}" in
+		amd64*) echo 64 ;;
+		x86*) echo 32 ;;
+	esac
+}
+
 # @FUNCTION: _dlang_export
 # @USAGE: [<impl>] <variables>...
 # @INTERNAL
@@ -816,12 +830,9 @@ _dlang_export() {
 						# The logic is controlled by us so the calculation
 						# is found in dlang.eclass. Just copy it here, mostly.
 						# Simplify the ABI usage a little.
-						local model
-						case "${ABI}" in
-							x86*) model=32 ;;
-							amd64*) model=64 ;;
-							*) die "Unknown ABI ${ABI} for dmd implementation." ;;
-						esac
+						[[ ${ABI} == @(x86|amd64) ]] ||
+							die "Unknown ABI ${ABI} for dmd implementation."
+						local model=$(dlang_get_abi_bits)
 
 						if has_multilib_profile || [[ ${model} == 64 ]]; then
 							libdirname=lib${model}
@@ -850,11 +861,9 @@ _dlang_export() {
 			DLANG_MODEL_FLAG)
 				if has_multilib_profile; then
 					# Only x86/amd64 multilib is supported
-					case "${ABI}" in
-						x86*) DLANG_MODEL_FLAG=-m32 ;;
-						amd64*) DLANG_MODEL_FLAG=-m64 ;;
-						*) die "ABI ${ABI} is not supported in a multilib configuration."
-					esac
+					[[ ${ABI} == @(x86|amd64) ]] ||
+						die "ABI ${ABI} is not supported in a multilib configuration."
+					DLANG_MODEL_FLAG=-m$(dlang_get_abi_bits)
 				else
 					DLANG_MODEL_FLAG=
 				fi

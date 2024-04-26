@@ -277,3 +277,10 @@ dlang-filter-dflags "gdc*" "-march=native"
 	[[ "${DCFLAGS}" == "-O2 -pipe" ]] &&
 	[[ "${DMDW_DCFLAGS}" == "-q,-O2 -q,-pipe" ]]
 tend $?
+
+tbegin "dlang_get_abi_bits"
+assert_eq $(dlang_get_abi_bits x86) 32
+assert_eq $(dlang_get_abi_bits amd64) 64
+assert_eq $(dlang_get_abi_bits aarch64) ""
+assert_eq $(ABI=x86 dlang_get_abi_bits) 32
+tend
