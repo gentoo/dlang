@@ -7,14 +7,14 @@ inherit multilib-minimal
 
 DESCRIPTION="GtkD is a D binding and OO wrapper of GTK+"
 HOMEPAGE="https://gtkd.org/"
+SRC_URI="https://gtkd.org/Downloads/sources/GtkD-${PV}.zip"
 LICENSE="LGPL-3"
 
 SLOT="3"
 KEYWORDS="~amd64 ~x86"
-SRC_URI="https://gtkd.org/Downloads/sources/GtkD-${PV}.zip"
 
 MULTILIB_COMPAT=( abi_x86_{32,64} )
-DLANG_COMPAT=( dmd-2_{106..107} gdc-13 ldc2-1_{35..36} )
+DLANG_COMPAT=( dmd-2_{106..108} gdc-13 ldc2-1_{35..36} )
 declare -A DLANG_REQ_USE=(
 	[dmd]="${MULTILIB_USEDEP}"
 	[gdc]=""
@@ -103,36 +103,34 @@ multilib_src_compile() {
 
 multilib_src_test() {
 	simple_test() {
-		if multilib_is_native_abi; then
-			local cmd=(
+		local cmd=(
+			${DC} ${DCFLAGS} ${DLANG_LDFLAGS}
+			$(dlang_get_model_flag)
+			-Igenerated/gtkd
+			demos/gtkD/TestWindow/*.d
+			$(dlang_get_linker_flag)./libgtkd-3.so
+			$(dlang_get_linker_flag)-ldl
+			$(dlang_get_linker_flag)-rpath=./
+			$(dlang_get_output_flag)TestWindow
+		)
+
+		dlang_exec "${cmd[@]}"
+
+		if use static-libs; then
+			cmd=(
 				${DC} ${DCFLAGS} ${DLANG_LDFLAGS}
 				$(dlang_get_model_flag)
 				-Igenerated/gtkd
 				demos/gtkD/TestWindow/*.d
-				$(dlang_get_linker_flag)./libgtkd-3.so
-				$(dlang_get_linker_flag)-ldl
-				$(dlang_get_linker_flag)-rpath=./
-				$(dlang_get_output_flag)TestWindow
+				./libgtkd-3.a
+				$(dlang_get_output_flag)TestWindow-static
 			)
 
 			dlang_exec "${cmd[@]}"
-
-			if use static-libs; then
-				cmd=(
-					${DC} ${DCFLAGS} ${DLANG_LDFLAGS}
-					$(dlang_get_model_flag)
-					-Igenerated/gtkd
-					demos/gtkD/TestWindow/*.d
-					./libgtkd-3.a
-					$(dlang_get_output_flag)TestWindow-static
-				)
-
-				dlang_exec "${cmd[@]}"
-			fi
 		fi
 	}
 
-	dlang_foreach_impl simple_test
+	multilib_is_native_abi && dlang_foreach_impl simple_test
 }
 
 multilib_src_install() {
