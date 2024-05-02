@@ -5,10 +5,7 @@ EAPI=8
 
 DESCRIPTION="Dfmt is a formatter for D source code"
 HOMEPAGE="https://github.com/dlang-community/dfmt"
-LICENSE="Boost-1.0"
 
-SLOT="0"
-KEYWORDS="~amd64 ~arm64 ~x86"
 LIBDPARSE="fe6d1e38fb4fc04323170389cfec67ed7fd4e24a"
 ALLOCATOR="ae237cabd1843774cc78aad0729c914a3dd579db"
 SRC_URI="
@@ -16,6 +13,10 @@ SRC_URI="
 	https://github.com/dlang-community/libdparse/archive/${LIBDPARSE}.tar.gz -> libdparse-${LIBDPARSE}.tar.gz
 	https://github.com/dlang-community/stdx-allocator/archive/${ALLOCATOR}.tar.gz -> stdx-allocator-${ALLOCATOR}.tar.gz
 	"
+LICENSE="Boost-1.0"
+
+SLOT="0"
+KEYWORDS="~amd64 ~arm64 ~x86"
 
 DLANG_COMPAT=( dmd-2_{106..107} gdc-13 ldc2-1_{35..36} )
 
