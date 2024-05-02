@@ -1,0 +1,115 @@
+From cc77cfa4ebbda25edcb3296edae71ceb49795d61 Mon Sep 17 00:00:00 2001
+From: Andrei Horodniceanu <a.horodniceanu@proton.me>
+Date: Tue, 30 Apr 2024 15:43:54 +0300
+Subject: [PATCH] tests/extra/tc_ufcs_all_kinds: support gdc
+
+Remove the usage of `-run` which isn't supported by gdc and only pass
+`-verrors=0` to dmd and ldc2 since gdc doesn't support the flag and,
+by default, all errors are printed.
+
+Change the format in which errors are printed to keep it consistent
+across all the three major compilers (a style that they all support is
+the gnu style) and make the matching code in generate_tests.d more
+readable by using a regex.
+
+Signed-off-by: Andrei Horodniceanu <a.horodniceanu@proton.me>
+---
+ .gitignore                                    |  2 ++
+ .../extra/tc_ufcs_all_kinds/generate_tests.d  | 31 +++++++++----------
+ tests/extra/tc_ufcs_all_kinds/run.sh          | 24 +++++++++++++-
+ 3 files changed, 40 insertions(+), 17 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index 57869d6a..8273543a 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -31,6 +31,8 @@ stdout.txt
+ # script-generated expected with absolute file paths
+ tests/tc_locate_ufcs_function/expected.txt
+ tests/tc_recursive_public_import/expected.txt
++# other script-generated files
++tests/extra/tc_ufcs_all_kinds/generate_tests
+ 
+ # Dub files
+ .dub
+diff --git a/tests/extra/tc_ufcs_all_kinds/generate_tests.d b/tests/extra/tc_ufcs_all_kinds/generate_tests.d
+index 637b2416..91466e66 100644
+--- a/tests/extra/tc_ufcs_all_kinds/generate_tests.d
++++ b/tests/extra/tc_ufcs_all_kinds/generate_tests.d
+@@ -129,29 +129,28 @@ int main(string[] args)
+ 
+ 	fs.write("proc_test.d", code);
+ 
+-	auto output = executeShell("$DC -verrors=0 -c proc_test.d").output;
++	// $DC and $ERROR_FLAGS are set up in run.sh
++	auto output = executeShell("$DC $ERROR_FLAGS -c proc_test.d").output;
+ 
+ 	size_t numErrors = 0;
+ 
+ 	string[][string] variableIncompatibilities;
+ 
++	// Example of a line we want to match: `proc_test.d:2568:22: error: [...]'
++	auto errRegex = regex(`proc_test\.d:([0-9]*):[0-9]*: error`, "i");
+ 	foreach (err; output.lineSplitter)
+ 	{
+-		if (!err.startsWith("proc_test.d("))
+-			continue;
+-		err = err["proc_test.d(".length .. $];
+-		auto lineNo = err.parse!int;
+-		if (!err.startsWith("): Error: "))
+-			continue;
+-		err = err["): Error: ".length .. $];
+-		string line = lines[lineNo - 1];
+-		enforce(line.endsWith("();"), "Unexpected error in line " ~ lineNo.to!string);
+-		line = line[0 .. $ - 3];
+-		string varName = line.findSplit(".")[0];
+-		string funcName = line.findSplit(".")[2];
+-		// writeln("variable type ", varLookup[varName], " can't call ", funcLookup[funcName]);
+-		variableIncompatibilities[varName] ~= funcName;
+-		numErrors++;
++		if (auto m = matchFirst(err, errRegex)) {
++			auto lineNo = to!int(m[1]);
++			string line = lines[lineNo - 1];
++			enforce(line.endsWith("();"), "Unexpected error in line " ~ lineNo.to!string);
++			line = line[0 .. $ - 3];
++			string varName = line.findSplit(".")[0];
++			string funcName = line.findSplit(".")[2];
++			// writeln("variable type ", varLookup[varName], " can't call ", funcLookup[funcName]);
++			variableIncompatibilities[varName] ~= funcName;
++			numErrors++;
++		}
+ 	}
+ 
+ 	enforce(numErrors > 1_000, "compiler didn't error as expected, need to adjust tests!");
+diff --git a/tests/extra/tc_ufcs_all_kinds/run.sh b/tests/extra/tc_ufcs_all_kinds/run.sh
+index 2c5e79cb..66ee663b 100755
+--- a/tests/extra/tc_ufcs_all_kinds/run.sh
++++ b/tests/extra/tc_ufcs_all_kinds/run.sh
+@@ -4,4 +4,26 @@ if [ -z "${DC:-}" ]; then
+ 	DC=dmd
+ fi
+ 
+-DC="$DC" "$DC" -run generate_tests.d "$1"
++DCBASE=$(basename ${DC})
++
++# Set up ERROR_FLAGS to make all compilers output errors in the same
++# format to make matching easier in generate_tests.d. Also make them
++# output all errors.
++if [[ ${DCBASE} == *gdc* ]]; then
++	outputFlag=-o
++	# Not needed as gdc defaults to printing all errors
++	ERROR_FLAGS=
++elif [[ ${DCBASE} == *gdmd* ]]; then
++	outputFlag=-of
++	ERROR_FLAGS=
++elif [[ ${DCBASE} == *ldc* || ${DCBASE} == *dmd* ]]; then
++	outputFlag=-of
++	ERROR_FLAGS='-verrors=0 -verror-style=gnu -vcolumns'
++else
++	echo "Unknown compiler ${DC}"
++	exit 1
++fi
++
++$DC ${outputFlag}generate_tests generate_tests.d
++export DC ERROR_FLAGS
++./generate_tests "${1}"
