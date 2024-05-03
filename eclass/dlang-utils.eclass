@@ -277,6 +277,19 @@ dlang_get_be_version() {
 	echo "${DLANG_BE_VERSION}"
 }
 
+# @FUNCTION: dlang_get_debug_flag
+# @USAGE: [<impl>]
+# @DESCRIPTION:
+# Obtain and print the compiler debug flag for the given
+# implementation. If no implementation is provided, ${EDC} will be
+# used.
+dlang_get_debug_flag() {
+	debug-print-function ${FUNCNAME} "${@}"
+
+	_dlang_export "${@}" DLANG_DEBUG_FLAG
+	echo "${DLANG_DEBUG_FLAG}"
+}
+
 # @FUNCTION: dlang_get_linker_flag
 # @USAGE: [<impl>]
 # @DESCRIPTION:
@@ -983,6 +996,12 @@ _dlang_export() {
 				esac
 				export DLANG_DMDW_LDFLAGS=${DLANG_LDFLAGS}
 				debug-print "${FUNCNAME}: DLANG_DMDW_LDFLAGS = ${DLANG_DMDW_LDFLAGS}"
+				;;
+			DLANG_DEBUG_FLAG)
+				export DLANG_DEBUG_FLAG=$(
+					_dlang_echo_implementation_string \
+						"${impl}" "-debug" "-fdebug" "-d-debug")
+				debug-print "${FUNCNAME}: DLANG_DEBUG_FLAG = ${DLANG_DEBUG_FLAG}"
 				;;
 			DLANG_LINKER_FLAG)
 				export DLANG_LINKER_FLAG=$(

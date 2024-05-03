@@ -95,6 +95,10 @@ test_var DLANG_DMDW_LDFLAGS dmd-2.106 "-L-O1 -L--as-needed -garbage"
 test_var DLANG_DMDW_LDFLAGS gdc-13 "-L-O1 -L--as-needed -garbage -q,-shared-libphobos"
 test_var DLANG_DMDW_LDFLAGS ldc2-1_35 "-L-O1 -L--as-needed -garbage"
 
+test_var DLANG_DEBUG_FLAG dmd-2.102 "-debug"
+test_var DLANG_DEBUG_FLAG gdc-13 "-fdebug"
+test_var DLANG_DEBUG_FLAG ldc2-1_36  "-d-debug"
+
 test_var DLANG_LINKER_FLAG dmd-2.102 "-L"
 test_var DLANG_LINKER_FLAG gdc-13 "-Wl,"
 test_var DLANG_LINKER_FLAG ldc2-1_36  "-L"
