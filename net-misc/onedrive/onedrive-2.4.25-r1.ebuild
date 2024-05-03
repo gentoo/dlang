@@ -12,7 +12,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="debug libnotify"
 
-DLANG_COMPAT=( dmd-2_{106..108} ldc2-1_{35..36} )
+DLANG_COMPAT=( dmd-2_{106..108} ldc2-1_{35..37} )
 
 inherit dlang-single systemd bash-completion-r1
 
