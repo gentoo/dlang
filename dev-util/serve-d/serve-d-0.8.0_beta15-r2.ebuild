@@ -50,10 +50,9 @@ https://code.dlang.org/packages/vibe-core/2.2.0.zip -> vibe-core-2.2.0.zip
 https://code.dlang.org/packages/vibe-d/0.9.6.zip -> vibe-d-0.9.6.zip
 https://code.dlang.org/packages/xdgpaths/0.2.5.zip -> xdgpaths-0.2.5.zip
 "
-
+S="${WORKDIR}/${PN}-${MY_VER}"
 LICENSE="MIT"
 LICENSE+=" Apache-2.0 BSD-2 BSD Boost-1.0 GPL-3 ISC LGPL-3 MIT public-domain Unlicense || ( openssl SSLeay )"
-S="${WORKDIR}/${PN}-${MY_VER}"
 SLOT="0"
 KEYWORDS="~amd64"
 
