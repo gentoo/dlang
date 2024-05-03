@@ -5,11 +5,11 @@ EAPI=8
 
 DESCRIPTION="Free Client for OneDrive on Linux"
 HOMEPAGE="https://abraunegg.github.io/"
+SRC_URI="https://codeload.github.com/abraunegg/onedrive/tar.gz/v${PV} -> ${P}.tar.gz"
 LICENSE="GPL-3"
 
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-SRC_URI="https://codeload.github.com/abraunegg/onedrive/tar.gz/v${PV} -> ${P}.tar.gz"
 IUSE="debug libnotify"
 
 DLANG_COMPAT=( dmd-2_{106..107} ldc2-1_{35..36} )
