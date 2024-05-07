@@ -24,7 +24,8 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
 TOOLS="ddemangle detab dustmite rdmd"
-IUSE="+ddemangle detab dustmite +rdmd"
+IUSE="+ddemangle detab dustmite +rdmd test"
+RESTRICT="!test? ( test )"
 
 DLANG_COMPAT=( dmd-2_{106..108} gdc-13 ldc2-1_{35..37} )
 
@@ -36,7 +37,7 @@ PATCHES=(
 	"${FILESDIR}/gdc-13-fix-parentheses.patch"
 )
 
-REQUIRED_USE="|| ( ${TOOLS[@]} ) ${DLANG_REQUIRED_USE}"
+REQUIRED_USE="|| ( ${TOOLS[@]} ) ${DLANG_REQUIRED_USE} test? ( || ( ddemangle dustmite rdmd ) )"
 DEPEND=${DLANG_DEPS}
 BDEPEND=${DLANG_DEPS}
 RDEPEND=${DLANG_DEPS}
