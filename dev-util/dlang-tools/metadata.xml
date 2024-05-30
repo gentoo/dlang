@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
+  <upstream>
+    <remote-id type="github">dlang/tools</remote-id>
+  </upstream>
   <use>
     <flag name="ddemangle">An improved D symbol demangler. Replaces all occurrences of mangled D symbols in the input with their unmangled form, and writes the result to standard output.</flag>
     <flag name="detab">Replace tabs with spaces, and remove trailing whitespace from lines.</flag>
