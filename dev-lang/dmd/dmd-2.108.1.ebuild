@@ -4,7 +4,7 @@
 EAPI=8
 
 KEYWORDS="-* ~amd64 ~x86"
-DLANG_COMPAT=( dmd-2_{106..108} gdc-13 ldc2-1_{35..37} )
+DLANG_COMPAT=( dmd-2_{106..108} gdc-13 ldc2-1_{35..38} )
 
 inherit dmd-r1
 
