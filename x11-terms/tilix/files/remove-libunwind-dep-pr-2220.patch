@@ -1,0 +1,66 @@
+From a7988f90dfa7950fd3ab654466e05a258ccf68e8 Mon Sep 17 00:00:00 2001
+From: Andrei Horodniceanu <a.horodniceanu@proton.me>
+Date: Fri, 31 May 2024 12:08:32 +0300
+Subject: [PATCH] meson.build: Remove libunwind dependency
+
+The dependency has been added in
+6923ee9194523526a9d54d7be8ddcf51847b3c72 in the context of
+https://github.com/gnunn1/tilix/issues/1502#issuecomment-425723007
+which was trying to diagnose issues with building using meson.
+
+The commit has been added so others can use it as a starting point but
+it has never been removed. The dub configuration doesn't add it as a
+dependency as well.
+
+Additionally update CI not to install it.
+
+Signed-off-by: Andrei Horodniceanu <a.horodniceanu@proton.me>
+---
+ .github/ci/install-deps-deb.sh   | 1 -
+ .github/workflows/build-test.yml | 1 -
+ meson.build                      | 2 --
+ 3 files changed, 4 deletions(-)
+
+diff --git a/.github/ci/install-deps-deb.sh b/.github/ci/install-deps-deb.sh
+index 0a55aa674..45b164893 100755
+--- a/.github/ci/install-deps-deb.sh
++++ b/.github/ci/install-deps-deb.sh
+@@ -26,6 +26,5 @@ eatmydata apt-get install -yq \
+         libgtkd-3-dev \
+         librsvg2-dev \
+         libsecret-1-dev \
+-        libunwind-dev \
+         libvted-3-dev \
+         po4a
+diff --git a/.github/workflows/build-test.yml b/.github/workflows/build-test.yml
+index 3e05e1372..9a1e531c4 100644
+--- a/.github/workflows/build-test.yml
++++ b/.github/workflows/build-test.yml
+@@ -29,7 +29,6 @@ jobs:
+                 libpango1.0-dev \
+                 librsvg2-dev \
+                 libsecret-1-dev \
+-                libunwind-dev \
+                 libgtksourceview-3.0-dev \
+                 libpeas-dev \
+                 libvte-2.91-dev
+diff --git a/meson.build b/meson.build
+index 73f3ebe83..1d14c1046 100644
+--- a/meson.build
++++ b/meson.build
+@@ -99,7 +99,6 @@ sources_dir = include_directories('source/')
+ gtkd_dep = dependency('gtkd-3', version: '>=3.8.5')
+ vted_dep = dependency('vted-3', version: '>=3.8.5')
+ xlib_dep = dependency('x11')
+-libunwind_dep = dependency('libunwind')
+ libsecret_dep = dependency('libsecret-1', required: false)
+ 
+ subdir('po')
+@@ -112,7 +111,6 @@ executable('tilix',
+     dependencies : [gtkd_dep,
+                     vted_dep,
+                     xlib_dep,
+-                    libunwind_dep,
+                     libsecret_dep],
+     d_args: d_extra_args,
+     d_module_versions: ['StdLoggerDisableTrace'],
