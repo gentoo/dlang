@@ -29,7 +29,7 @@ PATCHES=(
 	"${FILESDIR}/pr-774.patch"
 )
 
-DLANG_COMPAT=( dmd-2_{106..108} gdc-13 ldc2-1_{35..37} )
+DLANG_COMPAT=( dmd-2_{106..108} gdc-13 ldc2-1_{35..38} )
 
 inherit dlang-single systemd bash-completion-r1
 
