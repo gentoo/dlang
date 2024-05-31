@@ -48,7 +48,7 @@ pkg_postinst() {
 	gnome2_schemas_update
 
 	optfeature "Nautilus integration" "dev-python/nautilus-python"
-	optfeature "Password support" "app-crypt/libsecret gnome-base/gnome-keyring"
+	optfeature "Password support" "app-crypt/libsecret"
 }
 
 pkg_postrm() {
