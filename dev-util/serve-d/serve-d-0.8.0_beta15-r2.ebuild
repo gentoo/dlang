@@ -57,7 +57,7 @@ SLOT="0"
 KEYWORDS="~amd64"
 
 # gdc currently fails due to a bug in mir-cpuid, see: https://github.com/libmir/mir-cpuid/pull/46
-DLANG_COMPAT=( dmd-2_{106..108} ldc2-1_{35..37} )
+DLANG_COMPAT=( dmd-2_{106..108} ldc2-1_{35..38} )
 
 CHECKREQS_MEMORY="10G" # mir is a chonker
 
