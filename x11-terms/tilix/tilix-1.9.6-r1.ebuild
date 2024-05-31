@@ -5,13 +5,14 @@ EAPI=8
 
 DESCRIPTION="A tiling terminal emulator for Linux using GTK+ 3"
 HOMEPAGE="https://gnunn1.github.io/tilix-web/"
+
+GITHUB_URI="https://codeload.github.com/gnunn1"
+SRC_URI="${GITHUB_URI}/${PN}/tar.gz/${PV} -> ${PN}-${PV}.tar.gz"
 LICENSE="MPL-2.0"
 
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
-GITHUB_URI="https://codeload.github.com/gnunn1"
-SRC_URI="${GITHUB_URI}/${PN}/tar.gz/${PV} -> ${PN}-${PV}.tar.gz"
 IUSE="test"
 RESTRICT="!test? ( test )"
 
