@@ -36,6 +36,7 @@ dlang_targets_ldc2-1_34 - Build with ldc2 1.34
 dlang_targets_ldc2-1_35 - Build with ldc2 1.35
 dlang_targets_ldc2-1_36 - Build with ldc2 1.36
 dlang_targets_ldc2-1_37 - Build with ldc2 1.37
+dlang_targets_ldc2-1_38 - Build with ldc2 1.38
 
 
 dmd-2_101 - Build for DMD 2.101
