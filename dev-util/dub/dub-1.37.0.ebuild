@@ -36,7 +36,7 @@ KEYWORDS="~amd64 ~arm64 ~x86"
 IUSE="doc test"
 RESTRICT="!test? ( test )"
 
-DLANG_COMPAT=( dmd-2_{106..108} gdc-13 ldc2-1_{35..38} )
+DLANG_COMPAT=( dmd-2_{106..108} gdc-1{3,4} ldc2-1_{35..38} )
 
 inherit dlang-single shell-completion
 
@@ -84,7 +84,7 @@ src_compile() {
 	# Fixed in >=sys-devel/gcc-13.2.1_p20240330. Adding -mno-sse2 makes
 	# tests fail so defer to removing the common way users get avx
 	# instructions enabled (-march=native) and warn them.
-	if [[ ${ARCH} == amd64 && ${EDC} == gdc* && ${DCFLAGS} == *-march=native* ]]; then
+	if [[ ${ARCH} == amd64 && ${EDC} == gdc-13 && ${DCFLAGS} == *-march=native* ]]; then
 		ewarn "<sys-devel/gcc-13.2.1_p20240330 is known to generate invalid code"
 		ewarn "on amd64 with certain flags. For this reason -march=native will be"
 		ewarn "removed from your flags. Feel free to use -march=<cpu> to bypass this"
@@ -132,7 +132,7 @@ src_test() {
 	# We have an importC test and not all compilers pass it properly.
 	# gdc doesn't support #include's in its importC implementation yet.
 	# Only check == 13 since 12 is skipped by the script.
-	[[ ${EDC} == gdc* ]] && [[ $(dlang_get_be_version) == 13 ]] && dropImportCTest=1
+	[[ ${EDC} == gdc-13 ]] && dropImportCTest=1
 	# Nor does <=ldc2-1.32.
 	[[ ${EDC} == ldc* ]] && $(ver_test $(dlang_get_be_version) -le 1.32) && dropImportCTest=1
 	# dmd can do #include's but there are some other errors about
