@@ -50,7 +50,21 @@ BDEPEND="
 "
 
 src_configure() {
-	DFLAGS="${DCFLAGS}" meson_src_configure -Dd_link_args="${DCFLAGS} ${DLANG_LDFLAGS}"
+	# meson is very strict in how he expects the linker flags. It
+	# modifies our flags from:
+	# -Lz -Lpack-relative-relocs
+	# to:
+	# -Lz -L=-Lpack-relative-relocs
+	#
+	# Note that specyfing -L=z -L=pack-relative-relocs is still not enough
+	# as meson modifies the second argument again.
+	#
+	# This only works so long as the eclass doesn't add any extra flags
+	# for dmd or ldc (it does for gdc).
+	local largs
+	[[ ${EDC} != gdc* ]] && largs="${LDFLAGS}" || largs="${DLANG_LDFLAGS}"
+
+	DFLAGS="${DCFLAGS}" meson_src_configure -Dd_link_args="${largs}"
 }
 
 pkg_postinst() {
