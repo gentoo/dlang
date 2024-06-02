@@ -34,7 +34,7 @@ KEYWORDS="~amd64 ~arm64 ~x86"
 IUSE="debug test"
 RESTRICT="!test? ( test )"
 
-DLANG_COMPAT=( dmd-2_{106..108} gdc-13 ldc2-1_{35..38} )
+DLANG_COMPAT=( dmd-2_{106..108} gdc-1{3,4} ldc2-1_{35..38} )
 
 inherit dlang-single
 
@@ -58,7 +58,7 @@ src_prepare() {
 }
 
 src_compile() {
-	if [[ ${EDC} == gdc* && ${DCFLAGS} == *-march=native* ]]; then
+	if [[ ${EDC} == gdc-13 && ${DCFLAGS} == *-march=native* ]]; then
 		# At this point I wonder if we should have been stripping it in the eclass.
 		# Fixed for >=sys-devel/gcc-13.2.1_p20240330
 		ewarn '-march=native has been removed from your flags.'
