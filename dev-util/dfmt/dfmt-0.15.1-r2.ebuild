@@ -16,7 +16,7 @@ LICENSE="Boost-1.0"
 SLOT="0"
 KEYWORDS="~amd64 ~arm64 ~x86"
 
-DLANG_COMPAT=( dmd-2_{106..108} gdc-13 ldc2-1_{35..38} )
+DLANG_COMPAT=( dmd-2_{106..108} gdc-1{3,4} ldc2-1_{35..38} )
 
 inherit dlang-single bash-completion-r1
 
@@ -40,7 +40,7 @@ src_prepare() {
 	export D_FLAGS="$(dlang_get_dmdw_dcflags) $(dlang_get_dmdw_ldflags) \$(INCLUDE_PATHS)"
 	# Tests fail with -march=native and -O2 with <sys-devel/gcc-13.2.1_p20240330,
 	# probably https://gcc.gnu.org/bugzilla/show_bug.cgi?id=114171 again.
-	if [[ ${EDC} == gdc* && ${D_FLAGS} == *-march=native* ]]; then
+	if [[ ${EDC} == gdc-13 && ${D_FLAGS} == *-march=native* ]]; then
 		ewarn '-march=native has been removed from your flags.'
 		ewarn 'See: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=114171'
 		# Interestingly `-q,` is a valid gdmd flag.
