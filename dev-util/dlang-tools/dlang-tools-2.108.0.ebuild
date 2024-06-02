@@ -27,7 +27,7 @@ TOOLS="ddemangle detab dustmite rdmd"
 IUSE="+ddemangle detab dustmite +rdmd test"
 RESTRICT="!test? ( test )"
 
-DLANG_COMPAT=( dmd-2_{106..108} gdc-13 ldc2-1_{35..38} )
+DLANG_COMPAT=( dmd-2_{106..108} gdc-1{3,4} ldc2-1_{35..38} )
 
 inherit desktop dlang-single xdg-utils
 
