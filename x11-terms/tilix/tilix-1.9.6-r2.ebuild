@@ -21,7 +21,7 @@ KEYWORDS="~amd64 ~x86"
 IUSE="test"
 RESTRICT="!test? ( test )"
 
-DLANG_COMPAT=( dmd-2_10{6..8} gdc-13 ldc2-1_{35..38} )
+DLANG_COMPAT=( dmd-2_10{6..8} gdc-1{3,4} ldc2-1_{35..38} )
 
 inherit dlang-single gnome2-utils meson optfeature
 
