@@ -1,0 +1,55 @@
+From 27758f2a20849fe2a6b1c20f44451d1cc58ed232 Mon Sep 17 00:00:00 2001
+From: Andrei Horodniceanu <a.horodniceanu@proton.me>
+Date: Sat, 18 May 2024 22:40:49 +0300
+Subject: [PATCH] tests/codegen/mangling.d: change argument type of naked_dFunc
+ to int
+
+Avoid issues on x86 with the calling convention by having an int
+argument, which can be passed through a register, therefore, lifting
+the burden of cleaning the stack, instead of a double.
+
+Signed-off-by: Andrei Horodniceanu <a.horodniceanu@proton.me>
+---
+ tests/codegen/inputs/mangling_definitions.d | 6 ++++--
+ tests/codegen/mangling.d                    | 6 +++---
+ 2 files changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/tests/codegen/inputs/mangling_definitions.d b/tests/codegen/inputs/mangling_definitions.d
+index 6234999bfc4..a6ed0fec9e8 100644
+--- a/tests/codegen/inputs/mangling_definitions.d
++++ b/tests/codegen/inputs/mangling_definitions.d
+@@ -46,6 +46,8 @@ version(AsmX86)
+     else
+         static assert(naked_cppFunc.mangleof == "_ZN15cpp_naked_funcs13naked_cppFuncEd");
+ 
+-    int naked_dFunc(double a) { asm { naked; ret; } }
+-    static assert(naked_dFunc.mangleof == "_D11definitions11naked_dFuncFdZi");
++    // Pass an int instead of a double due to x86 calling convetion
++    // See: https://github.com/ldc-developers/ldc/pull/4661
++    int naked_dFunc(int a) { asm { naked; ret; } }
++    static assert(naked_dFunc.mangleof == "_D11definitions11naked_dFuncFiZi");
+ }
+diff --git a/tests/codegen/mangling.d b/tests/codegen/mangling.d
+index d79793192a6..054d4d79926 100644
+--- a/tests/codegen/mangling.d
++++ b/tests/codegen/mangling.d
+@@ -61,8 +61,8 @@ version(AsmX86)
+     extern(C++, decl_cpp_naked_funcs) pragma(mangle, nakedCppFuncMangle)
+     int decl_naked_cppFunc(double a);
+ 
+-    pragma(mangle, "_D11definitions11naked_dFuncFdZi")
+-    int decl_naked_dFunc(double a);
++    pragma(mangle, "_D11definitions11naked_dFuncFiZi")
++    int decl_naked_dFunc(int a);
+ }
+ 
+ // Interfacing with C via pragma(mangle, …), without having to take care
+@@ -84,7 +84,7 @@ void main()
+     {
+         decl_naked_cFunc(1.0);
+         decl_naked_cppFunc(2.0);
+-        decl_naked_dFunc(3.0);
++        decl_naked_dFunc(3);
+     }
+ 
+     assert(decl_cos(0.0) == 1.0);

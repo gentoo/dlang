@@ -1,0 +1,585 @@
+# A lot of unrelated work in one PR.
+# - It changes some wrong autodetection to lower to amount of stuff being
+# built.
+# - It better supports compiler-rt-sanitizers by handling the way they
+# are installed in Gentoo.
+# - It adds some more fixes for upstream which I didn't take out of the
+# the PR to keep it as is.
+From 58550bbd27e572d1706b04f39132d60c5c2797ac Mon Sep 17 00:00:00 2001
+From: Andrei Horodniceanu <a.horodniceanu@proton.me>
+Date: Wed, 15 May 2024 18:33:46 +0300
+Subject: [PATCH 1/6] utils/CMakeLists.txt: Fix typo split-filea => split-file
+
+Signed-off-by: Andrei Horodniceanu <a.horodniceanu@proton.me>
+---
+ utils/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/utils/CMakeLists.txt b/utils/CMakeLists.txt
+index 6b61a068373..379edf2c1b4 100644
+--- a/utils/CMakeLists.txt
++++ b/utils/CMakeLists.txt
+@@ -68,7 +68,7 @@ set_target_properties(
+ target_link_libraries(not  ${LLVM_LIBRARIES} ${CMAKE_DL_LIBS} ${LLVM_LDFLAGS})
+ endif()
+ 
+-if ((TARGET split-file) OR (EXISTS ${LLVM_ROOT_DIR}/bin/split-filea))
++if ((TARGET split-file) OR (EXISTS ${LLVM_ROOT_DIR}/bin/split-file))
+   # already provided by LLVM
+   message(STATUS "Skip building split-file, it is already provided by LLVM")
+ else()
+
+From 9b22e4a2b534fe4da54a02aadde486d9cc963574 Mon Sep 17 00:00:00 2001
+From: Andrei Horodniceanu <a.horodniceanu@proton.me>
+Date: Fri, 17 May 2024 23:12:58 +0300
+Subject: [PATCH 2/6] cmake: Add option to disable bundling ldc-profdata and
+ ldc-profgen
+
+Add the configure option LDC_BUNDLE_LLVM_TOOLS that can be used to
+disable packaging ldc-profdata and ldc-profgen. Since the users's llvm
+installation may contain these programs there should be a way to
+specify to ldc not to build them.
+
+Move the definitions for LDCPROF(DATA|GEN)_BIN from tests/ to tools/
+in order to handle this option.
+
+Signed-off-by: Andrei Horodniceanu <a.horodniceanu@proton.me>
+---
+ tests/CMakeLists.txt |  3 --
+ tools/CMakeLists.txt | 81 +++++++++++++++++++++++++-------------------
+ 2 files changed, 47 insertions(+), 37 deletions(-)
+
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index fc988f59560..f428d08b5de 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -1,6 +1,4 @@
+ set( LDC2_BIN          ${PROJECT_BINARY_DIR}/bin/${LDC_EXE} )
+-set( LDCPROFDATA_BIN   ${PROJECT_BINARY_DIR}/bin/ldc-profdata )
+-set( LDCPROFGEN_BIN    ${PROJECT_BINARY_DIR}/bin/ldc-profgen )
+ set( LDCPRUNECACHE_BIN ${PROJECT_BINARY_DIR}/bin/${LDCPRUNECACHE_EXE} )
+ set( LDCBUILDPLUGIN_BIN ${PROJECT_BINARY_DIR}/bin/${LDC_BUILD_PLUGIN_EXE} )
+ set( TIMETRACE2TXT_BIN ${PROJECT_BINARY_DIR}/bin/${TIMETRACE2TXT_EXE} )
+@@ -25,4 +23,3 @@ configure_file(runlit.py       runlit.py    COPYONLY)
+ add_test(NAME lit-tests
+     COMMAND ${PYTHON_EXE} runlit.py -v .
+ )
+-
+diff --git a/tools/CMakeLists.txt b/tools/CMakeLists.txt
+index facb939472d..ab147a9d029 100644
+--- a/tools/CMakeLists.txt
++++ b/tools/CMakeLists.txt
+@@ -1,6 +1,8 @@
+ # "tools" are supposed to be packaged with LDC.
+ # (in contrast to "utils" which are only used for building / testing)
+ 
++option(LDC_BUNDLE_LLVM_TOOLS "Build and install ldc-profgen and ldc-profdata utilities instead of using their llvm counterparts" TRUE)
++
+ #############################################################################
+ # Build ldc-prune-cache
+ set(LDCPRUNECACHE_EXE ldc-prune-cache)
+@@ -23,47 +25,58 @@ build_d_executable(
+ )
+ install(PROGRAMS ${LDCPRUNECACHE_EXE_FULL} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+ 
+-#############################################################################
+-# Build ldc-profdata for converting profile data formats (source version depends on LLVM version)
+-set(LDCPROFDATA_SRC ldc-profdata/llvm-profdata-${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR}.cpp)
+-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${LDCPROFDATA_SRC})
+-    add_executable(ldc-profdata ${LDCPROFDATA_SRC})
+-    set_target_properties(
+-        ldc-profdata PROPERTIES
++if(LDC_BUNDLE_LLVM_TOOLS)
++  #############################################################################
++  # Build ldc-profdata for converting profile data formats (source version depends on LLVM version)
++  set(LDCPROFDATA_SRC ldc-profdata/llvm-profdata-${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR}.cpp)
++  if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${LDCPROFDATA_SRC})
++      add_executable(ldc-profdata ${LDCPROFDATA_SRC})
++      set_target_properties(
++	ldc-profdata PROPERTIES
++	RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin
++	COMPILE_FLAGS "${LLVM_CXXFLAGS} ${LDC_CXXFLAGS}"
++	LINK_FLAGS "${SANITIZE_LDFLAGS}"
++      )
++      target_link_libraries(ldc-profdata ${LLVM_LIBRARIES} ${CMAKE_DL_LIBS} ${LLVM_LDFLAGS})
++      install(TARGETS ldc-profdata DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
++
++      # Set path to executable, used by the lit testsuite.
++      set(LDCPROFDATA_BIN ${PROJECT_BINARY_DIR}/bin/ldc-profdata PARENT_SCOPE)
++  else()
++      message(WARNING "ldc-profdata source (${LDCPROFDATA_SRC}) not found")
++  endif()
++
++  #############################################################################
++  # Build ldc-profgen utility that generates a profile data file from given perf script
++  # data files for sample-based profile guided optimization (-fprofile-sample-use).
++  # https://llvm.org/docs/CommandGuide/llvm-profgen.html
++  # The source in ldc-profgen/ldc-profgen-xx.x is an unmodified copy of llvm's llvm-profgen source dir.
++  if(LDC_LLVM_VER GREATER_EQUAL 1400)
++    macro(add_llvm_tool llvm_name)
++      string(REPLACE "llvm-" "ldc-" ldc_name ${llvm_name})
++      message(STATUS "Configuring ${ldc_name} build target")
++      add_executable(${ldc_name} ${ARGN})
++      set_target_properties(
++        ${ldc_name} PROPERTIES
+         RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin
+         COMPILE_FLAGS "${LLVM_CXXFLAGS} ${LDC_CXXFLAGS}"
+         LINK_FLAGS "${SANITIZE_LDFLAGS}"
+-    )
+-    target_link_libraries(ldc-profdata ${LLVM_LIBRARIES} ${CMAKE_DL_LIBS} ${LLVM_LDFLAGS})
+-    install(TARGETS ldc-profdata DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+-else()
+-    message(WARNING "ldc-profdata source (${LDCPROFDATA_SRC}) not found")
+-endif()
+-
+-#############################################################################
+-# Build ldc-profgen utility that generates a profile data file from given perf script
+-# data files for sample-based profile guided optimization (-fprofile-sample-use).
+-# https://llvm.org/docs/CommandGuide/llvm-profgen.html
+-# The source in ldc-profgen/ldc-profgen-xx.x is an unmodified copy of llvm's llvm-profgen source dir.
+-if(LDC_LLVM_VER GREATER_EQUAL 1400)
+-    macro(add_llvm_tool llvm_name)
+-        string(REPLACE "llvm-" "ldc-" ldc_name ${llvm_name})
+-        message(STATUS "Configuring ${ldc_name} build target")
+-        add_executable(${ldc_name} ${ARGN})
+-        set_target_properties(
+-            ${ldc_name} PROPERTIES
+-            RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin
+-            COMPILE_FLAGS "${LLVM_CXXFLAGS} ${LDC_CXXFLAGS}"
+-            LINK_FLAGS "${SANITIZE_LDFLAGS}"
+-        )
+-        target_link_libraries(${ldc_name} ${LLVM_LIBRARIES} ${CMAKE_DL_LIBS} ${LLVM_LDFLAGS})
+-        install(TARGETS ${ldc_name} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
++      )
++      target_link_libraries(${ldc_name} ${LLVM_LIBRARIES} ${CMAKE_DL_LIBS} ${LLVM_LDFLAGS})
++      install(TARGETS ${ldc_name} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+     endmacro()
+     if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ldc-profgen/ldc-profgen-${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR})
+-        add_subdirectory(ldc-profgen/ldc-profgen-${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR})
++      add_subdirectory(ldc-profgen/ldc-profgen-${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR})
++      # Set path to executable, potentially to be used by the lit tests in the future
++      set(LDCPROFGEN_BIN ${PROJECT_BINARY_DIR}/bin/ldc-profgen PARENT_SCOPE)
+     else()
+-        message(WARNING "ldc-profgen source not found (${CMAKE_CURRENT_SOURCE_DIR}/ldc-profgen/ldc-profgen-${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR})")
++      message(WARNING "ldc-profgen source not found (${CMAKE_CURRENT_SOURCE_DIR}/ldc-profgen/ldc-profgen-${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR})")
+     endif()
++  endif()
++else()
++  message(STATUS "Using llvm provided llvm-profdata and llvm-profgen")
++  set(LDCPROFDATA_BIN ${LLVM_ROOT_DIR}/bin/llvm-profdata PARENT_SCOPE)
++  set(LDCPROFGEN_BIN ${LLVM_ROOT_DIR}/bin/llvm-profgen PARENT_SCOPE)
+ endif()
+ 
+ #############################################################################
+
+From ddb6c8763c60261d88498a3a09ea8d62bde18ee6 Mon Sep 17 00:00:00 2001
+From: Andrei Horodniceanu <a.horodniceanu@proton.me>
+Date: Fri, 17 May 2024 23:19:03 +0300
+Subject: [PATCH 3/6] Support out-of-llvm compiler-rt installations
+
+Currently, the build systems assumes that the compiler-rt libraries
+are under the ${LLVM_LIBRARY_DIRS} directory. This is not always true,
+e.g on Gentoo they are installed in /usr/lib/clang/... This has been
+fixed by adding the COMPILER_RT_BASE_DIR option.
+
+Additionally the code for determining the os-specific compiler-rt
+directory has been slightly refactored and the option
+LDC_INSTALL_LLVM_RUNTIME_LIBS_OS has been renamed to
+COMPILER_RT_LIBDIR_OS since this value can now be used outside of
+LDC_INSTALL_LLVM_RUNTIME_LIBS.
+
+The configuration files (ldc2*.conf) have been modified to optionally
+embed a compiler-rt libdir in case the default search paths would not
+find the libraries.
+
+Signed-off-by: Andrei Horodniceanu <a.horodniceanu@proton.me>
+---
+ CMakeLists.txt       | 107 ++++++++++++++++++++++++++++---------------
+ ldc2.conf.in         |   2 +-
+ ldc2_install.conf.in |   2 +-
+ ldc2_phobos.conf.in  |   2 +-
+ 4 files changed, 72 insertions(+), 41 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b1e41665c07..98bda6d8ce1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -798,9 +798,38 @@ else()
+ endif()
+ 
+ #
+-# Locate ASan and other LLVM compiler-rt libraries, and copy them to our lib folder
+-# Location is LLVM_LIBRARY_DIRS/clang/<version>/lib/<OS>/ , for example LLVM_LIBRARY_DIRS/clang/4.0.0/lib/darwin/
+-#
++# Locate ASan and other LLVM compiler-rt libraries, and copy them to our lib
++# folder or save that folder in the config files. Location is typically
++# LLVM_LIBRARY_DIRS/clang/<version>/lib/<OS>/ , for example
++# LLVM_LIBRARY_DIRS/clang/4.0.0/lib/darwin/ , but we allow the user to specify
++# another directory.
++set(COMPILER_RT_BASE_DIR "${LLVM_LIBRARY_DIRS}" CACHE PATH "Base path of compiler-rt libraries. If they in are /usr/lib/clang/17/lib/linux/libclang_rt* you should set this value to /usr/lib")
++# If it's different than the default it will need to be added to the config files
++if(COMPILER_RT_BASE_DIR STREQUAL LLVM_LIBRARY_DIRS)
++    set(WANT_COMPILER_RT_LIBDIR_CONFIG FALSE)
++else()
++    set(WANT_COMPILER_RT_LIBDIR_CONFIG TRUE)
++endif()
++set(COMPILER_RT_LIBDIR "${COMPILER_RT_BASE_DIR}/clang")
++if(LDC_LLVM_VER LESS 1600)
++    set(COMPILER_RT_LIBDIR "${COMPILER_RT_LIBDIR}/${LLVM_VERSION_BASE_STRING}")
++else()
++    set(COMPILER_RT_LIBDIR "${COMPILER_RT_LIBDIR}/${LLVM_VERSION_MAJOR}")
++endif()
++set(COMPILER_RT_LIBDIR "${COMPILER_RT_LIBDIR}/lib")
++if(APPLE)
++    set(COMPILER_RT_LIBDIR "${COMPILER_RT_LIBDIR}/darwin")
++elseif(UNIX)
++    if(LDC_LLVM_VER LESS 1500)
++        set(COMPILER_RT_LIBDIR_OS_DEFAULT "linux")
++    else()
++        set(COMPILER_RT_LIBDIR_OS_DEFAULT "x86_64-unknown-linux-gnu")
++    endif()
++    set(COMPILER_RT_LIBDIR_OS "${COMPILER_RT_LIBDIR_OS_DEFAULT}"   CACHE STRING "Non-Mac Posix: OS used as directory name for the compiler-rt source libraries, e.g., 'freebsd'.")
++    set(COMPILER_RT_LIBDIR "${COMPILER_RT_LIBDIR}/${COMPILER_RT_LIBDIR_OS}")
++elseif(WIN32)
++    set(COMPILER_RT_LIBDIR "${COMPILER_RT_LIBDIR}/windows")
++endif()
+ if(LLVM_IS_SHARED)
+     set(LDC_INSTALL_LLVM_RUNTIME_LIBS_DEFAULT OFF)
+ else()
+@@ -808,11 +837,7 @@ else()
+ endif()
+ set(LDC_INSTALL_LLVM_RUNTIME_LIBS ${LDC_INSTALL_LLVM_RUNTIME_LIBS_DEFAULT} CACHE BOOL "Copy/install LLVM compiler-rt libraries (ASan, libFuzzer, ...) from LLVM/Clang into LDC lib dir when available.")
+ function(copy_compilerrt_lib llvm_lib_name ldc_lib_name fixup_dylib)
+-    if(LDC_LLVM_VER LESS 1600)
+-        set(llvm_lib_path ${LLVM_LIBRARY_DIRS}/clang/${LLVM_VERSION_BASE_STRING}/lib/${llvm_lib_name})
+-    else()
+-        set(llvm_lib_path ${LLVM_LIBRARY_DIRS}/clang/${LLVM_VERSION_MAJOR}/lib/${llvm_lib_name})
+-    endif()
++    set(llvm_lib_path ${COMPILER_RT_LIBDIR}/${llvm_lib_name})
+     if(EXISTS ${llvm_lib_path})
+         message(STATUS "--  - ${llvm_lib_path} --> ${ldc_lib_name}")
+         copy_and_install_llvm_library(${llvm_lib_path} ${ldc_lib_name} ${fixup_dylib})
+@@ -824,57 +849,63 @@ message(STATUS "-- Including LLVM compiler-rt libraries (LDC_INSTALL_LLVM_RUNTIM
+ if (LDC_INSTALL_LLVM_RUNTIME_LIBS)
+     # Locate LLVM sanitizer runtime libraries, and copy them to our lib folder
+ 
++    # No need to add another libdir, the default ldc one will have the libraries
++    set(WANT_COMPILER_RT_LIBDIR_CONFIG FALSE)
++
+     if(APPLE)
+-        copy_compilerrt_lib("darwin/libclang_rt.asan_osx_dynamic.dylib" "libldc_rt.asan.dylib" TRUE)
+-        copy_compilerrt_lib("darwin/libclang_rt.lsan_osx_dynamic.dylib" "libldc_rt.lsan.dylib" TRUE)
+-        copy_compilerrt_lib("darwin/libclang_rt.tsan_osx_dynamic.dylib" "libldc_rt.tsan.dylib" TRUE)
+-        copy_compilerrt_lib("darwin/libclang_rt.osx.a"                  "libldc_rt.builtins.a" FALSE)
+-        copy_compilerrt_lib("darwin/libclang_rt.profile_osx.a"          "libldc_rt.profile.a"  FALSE)
+-        copy_compilerrt_lib("darwin/libclang_rt.fuzzer_osx.a"           "libldc_rt.fuzzer.a"   FALSE)
+-        copy_compilerrt_lib("darwin/libclang_rt.xray_osx.a"             "libldc_rt.xray.a"     FALSE)
+-        copy_compilerrt_lib("darwin/libclang_rt.xray-basic_osx.a"      "libldc_rt.xray-basic.a"     FALSE)
+-        copy_compilerrt_lib("darwin/libclang_rt.xray-fdr_osx.a"        "libldc_rt.xray-fdr.a"       FALSE)
+-        copy_compilerrt_lib("darwin/libclang_rt.xray-profiling_osx.a"  "libldc_rt.xray-profiling.a" FALSE)
++        copy_compilerrt_lib("libclang_rt.asan_osx_dynamic.dylib" "libldc_rt.asan.dylib" TRUE)
++        copy_compilerrt_lib("libclang_rt.lsan_osx_dynamic.dylib" "libldc_rt.lsan.dylib" TRUE)
++        copy_compilerrt_lib("libclang_rt.tsan_osx_dynamic.dylib" "libldc_rt.tsan.dylib" TRUE)
++        copy_compilerrt_lib("libclang_rt.osx.a"                  "libldc_rt.builtins.a" FALSE)
++        copy_compilerrt_lib("libclang_rt.profile_osx.a"          "libldc_rt.profile.a"  FALSE)
++        copy_compilerrt_lib("libclang_rt.fuzzer_osx.a"           "libldc_rt.fuzzer.a"   FALSE)
++        copy_compilerrt_lib("libclang_rt.xray_osx.a"             "libldc_rt.xray.a"     FALSE)
++        copy_compilerrt_lib("libclang_rt.xray-basic_osx.a"      "libldc_rt.xray-basic.a"     FALSE)
++        copy_compilerrt_lib("libclang_rt.xray-fdr_osx.a"        "libldc_rt.xray-fdr.a"       FALSE)
++        copy_compilerrt_lib("libclang_rt.xray-profiling_osx.a"  "libldc_rt.xray-profiling.a" FALSE)
+     elseif(UNIX)
+         if(LDC_LLVM_VER LESS 1500)
+-            set(LDC_INSTALL_LLVM_RUNTIME_LIBS_OS_DEFAULT "linux")
+             set(LDC_INSTALL_LLVM_RUNTIME_LIBS_ARCH_DEFAULT "x86_64")
+         else()
+-            set(LDC_INSTALL_LLVM_RUNTIME_LIBS_OS_DEFAULT "x86_64-unknown-linux-gnu")
+             set(LDC_INSTALL_LLVM_RUNTIME_LIBS_ARCH_DEFAULT "")
+         endif()
+-        set(LDC_INSTALL_LLVM_RUNTIME_LIBS_OS   "${LDC_INSTALL_LLVM_RUNTIME_LIBS_OS_DEFAULT}"   CACHE STRING "Non-Mac Posix: OS used as directory name for the compiler-rt source libraries, e.g., 'freebsd'.")
+-        set(LDC_INSTALL_LLVM_RUNTIME_LIBS_ARCH "${LDC_INSTALL_LLVM_RUNTIME_LIBS_ARCH_DEFAULT}" CACHE STRING "Non-Mac Posix: architecture used as libname suffix for the compiler-rt source libraries, e.g., 'aarch64'.")
++        set(LDC_INSTALL_LLVM_RUNTIME_LIBS_ARCH "${LDC_INSTALL_LLVM_RUNTIME_LIBS_ARCH_DEFAULT}" CACHE STRING
++	    "Non-Mac Posix: architecture used as libname suffix for the compiler-rt source libraries, e.g., 'aarch64'.")
+         if(LDC_INSTALL_LLVM_RUNTIME_LIBS_ARCH STREQUAL "")
+             set(compilerrt_suffix "")
+         else()
+             set(compilerrt_suffix "-${LDC_INSTALL_LLVM_RUNTIME_LIBS_ARCH}")
+         endif()
+ 
+-        copy_compilerrt_lib("${LDC_INSTALL_LLVM_RUNTIME_LIBS_OS}/libclang_rt.asan${compilerrt_suffix}.a"       "libldc_rt.asan.a"     FALSE)
+-        copy_compilerrt_lib("${LDC_INSTALL_LLVM_RUNTIME_LIBS_OS}/libclang_rt.lsan${compilerrt_suffix}.a"       "libldc_rt.lsan.a"     FALSE)
+-        copy_compilerrt_lib("${LDC_INSTALL_LLVM_RUNTIME_LIBS_OS}/libclang_rt.msan${compilerrt_suffix}.a"       "libldc_rt.msan.a"     FALSE)
+-        copy_compilerrt_lib("${LDC_INSTALL_LLVM_RUNTIME_LIBS_OS}/libclang_rt.tsan${compilerrt_suffix}.a"       "libldc_rt.tsan.a"     FALSE)
+-        copy_compilerrt_lib("${LDC_INSTALL_LLVM_RUNTIME_LIBS_OS}/libclang_rt.builtins${compilerrt_suffix}.a"   "libldc_rt.builtins.a" FALSE)
+-        copy_compilerrt_lib("${LDC_INSTALL_LLVM_RUNTIME_LIBS_OS}/libclang_rt.profile${compilerrt_suffix}.a"    "libldc_rt.profile.a"  FALSE)
+-        copy_compilerrt_lib("${LDC_INSTALL_LLVM_RUNTIME_LIBS_OS}/libclang_rt.xray${compilerrt_suffix}.a"       "libldc_rt.xray.a"     FALSE)
+-        copy_compilerrt_lib("${LDC_INSTALL_LLVM_RUNTIME_LIBS_OS}/libclang_rt.fuzzer${compilerrt_suffix}.a"     "libldc_rt.fuzzer.a"   FALSE)
+-        copy_compilerrt_lib("${LDC_INSTALL_LLVM_RUNTIME_LIBS_OS}/libclang_rt.xray-basic${compilerrt_suffix}.a"      "libldc_rt.xray-basic.a"     FALSE)
+-        copy_compilerrt_lib("${LDC_INSTALL_LLVM_RUNTIME_LIBS_OS}/libclang_rt.xray-fdr${compilerrt_suffix}.a"        "libldc_rt.xray-fdr.a"       FALSE)
+-        copy_compilerrt_lib("${LDC_INSTALL_LLVM_RUNTIME_LIBS_OS}/libclang_rt.xray-profiling${compilerrt_suffix}.a"  "libldc_rt.xray-profiling.a" FALSE)
++        copy_compilerrt_lib("libclang_rt.asan${compilerrt_suffix}.a"           "libldc_rt.asan.a"     FALSE)
++        copy_compilerrt_lib("libclang_rt.lsan${compilerrt_suffix}.a"           "libldc_rt.lsan.a"     FALSE)
++        copy_compilerrt_lib("libclang_rt.msan${compilerrt_suffix}.a"           "libldc_rt.msan.a"     FALSE)
++        copy_compilerrt_lib("libclang_rt.tsan${compilerrt_suffix}.a"           "libldc_rt.tsan.a"     FALSE)
++        copy_compilerrt_lib("libclang_rt.builtins${compilerrt_suffix}.a"       "libldc_rt.builtins.a" FALSE)
++        copy_compilerrt_lib("libclang_rt.profile${compilerrt_suffix}.a"        "libldc_rt.profile.a"  FALSE)
++        copy_compilerrt_lib("libclang_rt.xray${compilerrt_suffix}.a"           "libldc_rt.xray.a"     FALSE)
++        copy_compilerrt_lib("libclang_rt.fuzzer${compilerrt_suffix}.a"         "libldc_rt.fuzzer.a"   FALSE)
++        copy_compilerrt_lib("libclang_rt.xray-basic${compilerrt_suffix}.a"     "libldc_rt.xray-basic.a"     FALSE)
++        copy_compilerrt_lib("libclang_rt.xray-fdr${compilerrt_suffix}.a"       "libldc_rt.xray-fdr.a"       FALSE)
++        copy_compilerrt_lib("libclang_rt.xray-profiling${compilerrt_suffix}.a" "libldc_rt.xray-profiling.a" FALSE)
+     elseif(WIN32)
+         set(compilerrt_arch_suffix "x86_64")
+         if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+             set(compilerrt_arch_suffix "i386")
+         endif()
+-        copy_compilerrt_lib("windows/clang_rt.asan-${compilerrt_arch_suffix}.lib"       "ldc_rt.asan.lib"     FALSE)
+-        copy_compilerrt_lib("windows/clang_rt.lsan-${compilerrt_arch_suffix}.lib"       "ldc_rt.lsan.lib"     FALSE)
+-        copy_compilerrt_lib("windows/clang_rt.builtins-${compilerrt_arch_suffix}.lib"   "ldc_rt.builtins.lib" FALSE)
+-        copy_compilerrt_lib("windows/clang_rt.profile-${compilerrt_arch_suffix}.lib"    "ldc_rt.profile.lib"  FALSE)
+-        copy_compilerrt_lib("windows/clang_rt.fuzzer-${compilerrt_arch_suffix}.lib"     "ldc_rt.fuzzer.lib"   FALSE)
++        copy_compilerrt_lib("clang_rt.asan-${compilerrt_arch_suffix}.lib"     "ldc_rt.asan.lib"     FALSE)
++        copy_compilerrt_lib("clang_rt.lsan-${compilerrt_arch_suffix}.lib"     "ldc_rt.lsan.lib"     FALSE)
++        copy_compilerrt_lib("clang_rt.builtins-${compilerrt_arch_suffix}.lib" "ldc_rt.builtins.lib" FALSE)
++        copy_compilerrt_lib("clang_rt.profile-${compilerrt_arch_suffix}.lib"  "ldc_rt.profile.lib"  FALSE)
++        copy_compilerrt_lib("clang_rt.fuzzer-${compilerrt_arch_suffix}.lib"   "ldc_rt.fuzzer.lib"   FALSE)
+     endif()
+ endif()
+ 
++if(WANT_COMPILER_RT_LIBDIR_CONFIG)
++    message(STATUS "Adding ${COMPILER_RT_LIBDIR} to libdir in configuration files")
++    set(OPTIONAL_COMPILER_RT_DIR "\n        \"${COMPILER_RT_LIBDIR}\",")
++endif()
++
+ #
+ # Auxiliary build and test utils.
+ #
+diff --git a/ldc2.conf.in b/ldc2.conf.in
+index 1ec4ce854c4..0ef4caa07a2 100644
+--- a/ldc2.conf.in
++++ b/ldc2.conf.in
+@@ -28,7 +28,7 @@ default:
+     ];
+     // default directories to be searched for libraries when linking
+     lib-dirs = [
+-        "@CMAKE_BINARY_DIR@/lib@LIB_SUFFIX@",
++        "@CMAKE_BINARY_DIR@/lib@LIB_SUFFIX@",@OPTIONAL_COMPILER_RT_DIR@
+     ];
+     // default rpath when linking against the shared default libs
+     rpath = "@SHARED_LIBS_RPATH@";
+diff --git a/ldc2_install.conf.in b/ldc2_install.conf.in
+index 7536f8f0d4f..f8afa42613c 100644
+--- a/ldc2_install.conf.in
++++ b/ldc2_install.conf.in
+@@ -26,7 +26,7 @@ default:
+     ];
+     // default directories to be searched for libraries when linking
+     lib-dirs = [
+-        "@CMAKE_INSTALL_LIBDIR@",
++        "@CMAKE_INSTALL_LIBDIR@",@OPTIONAL_COMPILER_RT_DIR@
+     ];
+     // default rpath when linking against the shared default libs
+     rpath = "@SHARED_LIBS_INSTALL_RPATH@";
+diff --git a/ldc2_phobos.conf.in b/ldc2_phobos.conf.in
+index 9bc5b1aa484..f2c00634f16 100644
+--- a/ldc2_phobos.conf.in
++++ b/ldc2_phobos.conf.in
+@@ -29,7 +29,7 @@ default:
+     ];
+     // default directories to be searched for libraries when linking
+     lib-dirs = [
+-        "@CMAKE_BINARY_DIR@/lib@LIB_SUFFIX@",
++        "@CMAKE_BINARY_DIR@/lib@LIB_SUFFIX@",@OPTIONAL_COMPILER_RT_DIR@
+     ];
+     // default rpath when linking against the shared default libs
+     rpath = "@SHARED_LIBS_RPATH@";
+
+From 25d3243a35761bd520a31732913923c366fdfa1a Mon Sep 17 00:00:00 2001
+From: Andrei Horodniceanu <a.horodniceanu@proton.me>
+Date: Sat, 18 May 2024 00:58:03 +0300
+Subject: [PATCH 4/6] tests/CMakeLists.txt: Add option for controlling
+ compiler-rt tests
+
+https://github.com/ldc-developers/ldc/pull/4636 and
+https://github.com/ldc-developers/ldc/pull/4638 added some checks when
+deciding if tests that require certain compiler-rt libraries will be
+run. They uses globbing to determine if the library files exist. This
+is insufficient as the compiler-rt libs can be in directories other
+than the ldc2 libdir. Globbing also has the downside of tests being
+silently skipped when the failure to find the libraries should have
+been vocal.
+
+To solve this the TEST_COMPILER_RT_LIBRARIES option has been added to
+control which compiler-rt dependent tests will be run.
+
+Signed-off-by: Andrei Horodniceanu <a.horodniceanu@proton.me>
+---
+ tests/CMakeLists.txt           |  7 +++++++
+ tests/PGO/lit.local.cfg        |  6 ++----
+ tests/instrument/lit.local.cfg |  6 ++----
+ tests/lit.site.cfg.in          |  1 +
+ tests/sanitizers/lit.local.cfg | 15 +++++++--------
+ 5 files changed, 19 insertions(+), 16 deletions(-)
+
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index f428d08b5de..39be385f5d6 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -11,6 +11,13 @@ if(WIN32)
+     set(PYTHON_EXE python)
+ endif()
+ 
++set(TEST_COMPILER_RT_LIBRARIES "all" CACHE STRING "List of compiler-rt libraries to test, separated by ';'. Can be set to 'all' and 'none'")
++if(TEST_COMPILER_RT_LIBRARIES STREQUAL "all")
++    set(TEST_COMPILER_RT_LIBRARIES "profile;xray;lsan;tsan;asan;msan;fuzzer")
++elseif(TEST_COMPILER_RT_LIBRARIES STREQUAL "none")
++    set(TEST_COMPILER_RT_LIBRARIES "")
++endif()
++
+ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+     set( DEFAULT_TARGET_BITS 64 )
+ else()
+diff --git a/tests/PGO/lit.local.cfg b/tests/PGO/lit.local.cfg
+index d63318065a8..466a9bad6da 100644
+--- a/tests/PGO/lit.local.cfg
++++ b/tests/PGO/lit.local.cfg
+@@ -1,5 +1,3 @@
+-from glob import glob
+-
+-# Add "PGO_RT" feature, if the `profile` compiler-rt library is available
+-if glob(os.path.join(config.ldc2_lib_dir, "*profile*")):
++# Add "PGO_RT" feature
++if 'profile' in config.enabled_rt_libs:
+     config.available_features.add('PGO_RT')
+diff --git a/tests/instrument/lit.local.cfg b/tests/instrument/lit.local.cfg
+index e97afbfa4bc..71968d9cd78 100644
+--- a/tests/instrument/lit.local.cfg
++++ b/tests/instrument/lit.local.cfg
+@@ -1,7 +1,5 @@
+ import platform
+-from glob import glob
+-
+-# Add "XRay_RT" feature on non-Windows, if the compiler-rt libraries are available
++# Add "XRay_RT" feature on non-Windows
+ if (platform.system() != 'Windows'):
+-    if glob(os.path.join(config.ldc2_lib_dir, "*xray*")):
++    if 'xray' in config.enabled_rt_libs:
+         config.available_features.add('XRay_RT')
+diff --git a/tests/lit.site.cfg.in b/tests/lit.site.cfg.in
+index 1e966a78805..4aa1a8294cc 100644
+--- a/tests/lit.site.cfg.in
++++ b/tests/lit.site.cfg.in
+@@ -37,6 +37,7 @@ config.ldc_host_arch       = "@LLVM_NATIVE_ARCH@"
+ config.ldc_with_lld        = @LDC_WITH_LLD@
+ config.spirv_enabled       = @LLVM_SPIRV_FOUND@
+ config.rt_supports_sanitizers = @RT_SUPPORT_SANITIZERS@
++config.enabled_rt_libs        = set("@TEST_COMPILER_RT_LIBRARIES@".split(';'))
+ config.shared_rt_libs_only = "@BUILD_SHARED_LIBS@" == "ON"
+ 
+ config.name = 'LDC'
+diff --git a/tests/sanitizers/lit.local.cfg b/tests/sanitizers/lit.local.cfg
+index 82e35e28dd0..bdac8304b84 100644
+--- a/tests/sanitizers/lit.local.cfg
++++ b/tests/sanitizers/lit.local.cfg
+@@ -1,32 +1,31 @@
+ import os
+ import platform
+-from glob import glob
+ 
+ sys = platform.system()
+ 
+-# Add "LSan" feature, if the compiler-rt library is available
+-if glob(os.path.join(config.ldc2_lib_dir, "*lsan*")):
++# Add "LSan" feature
++if 'lsan' in config.enabled_rt_libs:
+     config.available_features.add('LSan')
+ 
+ # FreeBSD TSan doesn't seem to work,
+ # Linux TSan currently only works with static druntime,
+ # and there's no Windows TSan (yet?).
+ if (sys != 'FreeBSD') and (sys != 'Windows') and not (sys == 'Linux' and config.shared_rt_libs_only):
+-    if glob(os.path.join(config.ldc2_lib_dir, "*tsan*")):
++    if 'tsan' in config.enabled_rt_libs:
+         config.available_features.add('TSan')
+ 
+ # FreeBSD ASan and MSan don't cope well with ASLR (might do with FreeBSD 14 according to https://github.com/llvm/llvm-project/pull/73439)
+ if sys != 'FreeBSD':
+-    if glob(os.path.join(config.ldc2_lib_dir, "*asan*")):
++    if 'asan' in config.enabled_rt_libs:
+         config.available_features.add('ASan')
+ 
+ # MSan is supported on Linux, FreeBSD (modulo ASLR issue), and OpenBSD: https://clang.llvm.org/docs/MemorySanitizer.html#supported-platforms
+ if (sys == 'Linux') or (sys == 'OpenBSD'):
+-    if glob(os.path.join(config.ldc2_lib_dir, "*msan*")):
++    if 'msan' in config.enabled_rt_libs:
+         config.available_features.add('MSan')
+ 
+-# Add "Fuzzer" feature, assuming the compiler-rt library is available
+-if glob(os.path.join(config.ldc2_lib_dir, "*fuzzer*")):
++# Add "Fuzzer" feature
++if 'fuzzer' in config.enabled_rt_libs:
+     config.available_features.add('Fuzzer')
+ 
+ if 'ASan' in config.available_features:
+
+From 46e41aebfec7d5657a9824e05acaa97f87bafa58 Mon Sep 17 00:00:00 2001
+From: Andrei Horodniceanu <a.horodniceanu@proton.me>
+Date: Sat, 18 May 2024 04:25:28 +0300
+Subject: [PATCH 5/6] utils/CMakeLists.txt: Build split-file if llvm is too old
+
+Signed-off-by: Andrei Horodniceanu <a.horodniceanu@proton.me>
+---
+ utils/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/utils/CMakeLists.txt b/utils/CMakeLists.txt
+index 379edf2c1b4..abb6312f5b7 100644
+--- a/utils/CMakeLists.txt
++++ b/utils/CMakeLists.txt
+@@ -68,7 +68,7 @@ set_target_properties(
+ target_link_libraries(not  ${LLVM_LIBRARIES} ${CMAKE_DL_LIBS} ${LLVM_LDFLAGS})
+ endif()
+ 
+-if ((TARGET split-file) OR (EXISTS ${LLVM_ROOT_DIR}/bin/split-file))
++if ((TARGET split-file) OR (EXISTS ${LLVM_ROOT_DIR}/bin/split-file AND ${LLVM_VERSION_MAJOR} GREATER_EQUAL 14))
+   # already provided by LLVM
+   message(STATUS "Skip building split-file, it is already provided by LLVM")
+ else()
+
+From cff48ff2b462f2fe4004e6f2dea29744f8b5fa26 Mon Sep 17 00:00:00 2001
+From: Andrei Horodniceanu <a.horodniceanu@proton.me>
+Date: Sat, 18 May 2024 04:27:33 +0300
+Subject: [PATCH 6/6] ci: rename LDC_INSTALL_LLVM_RUNTIME_LIBS_OS to
+ COMPILER_RT_LIBDIR_OS
+
+Signed-off-by: Andrei Horodniceanu <a.horodniceanu@proton.me>
+---
+ .cirrus.yml                | 2 +-
+ .github/workflows/main.yml | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/.cirrus.yml b/.cirrus.yml
+index c2263856d93..4b4d0689c51 100644
+--- a/.cirrus.yml
++++ b/.cirrus.yml
+@@ -248,7 +248,7 @@ task:
+       -DEXTRA_CXXFLAGS=-flto=full
+       -DCMAKE_EXE_LINKER_FLAGS=-static-libstdc++
+       -DJITRT_EXTRA_LDFLAGS=-static-libstdc++
+-      -DLDC_INSTALL_LLVM_RUNTIME_LIBS_OS=aarch64-unknown-linux-gnu
++      -DCOMPILER_RT_LIBDIR_OS=aarch64-unknown-linux-gnu
+       -DLLVM_ROOT_DIR=$CIRRUS_WORKING_DIR/../llvm
+       -DD_COMPILER=$CIRRUS_WORKING_DIR/../bootstrap-ldc/bin/ldmd2
+     PARALLELISM: 4
+diff --git a/.github/workflows/main.yml b/.github/workflows/main.yml
+index bb2474f1fa3..166f00739f1 100644
+--- a/.github/workflows/main.yml
++++ b/.github/workflows/main.yml
+@@ -188,7 +188,7 @@ jobs:
+             arch: aarch64
+             android_x86_arch: x86_64
+             extra_cmake_flags: >-
+-              -DLDC_INSTALL_LLVM_RUNTIME_LIBS_OS=linux
++              -DCOMPILER_RT_LIBDIR_OS=linux
+               -DLDC_INSTALL_LLVM_RUNTIME_LIBS_ARCH=aarch64-android
+ 
+     name: ${{ matrix.job_name }}

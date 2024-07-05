@@ -12,12 +12,7 @@ DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://github.com/ldc-developers/ldc"
 MY_PV="${PV//_/-}"
 MY_P="ldc-${MY_PV}-src"
-PR_URL="https://github.com/ldc-developers/ldc/pull"
-SRC_URI="https://github.com/ldc-developers/ldc/releases/download/v${MY_PV}/${MY_P}.tar.gz
-	${PR_URL}/4659.patch -> ${PN}-pr-4659.patch
-	${PR_URL}/4661.patch -> ${PN}-pr-4661.patch
-	${PR_URL}/4662.patch -> ${PN}-pr-4662.patch
-"
+SRC_URI="https://github.com/ldc-developers/ldc/releases/download/v${MY_PV}/${MY_P}.tar.gz"
 S=${WORKDIR}/${MY_P}
 LICENSE="BSD"
 # dmd code + runtime lib
@@ -73,6 +68,9 @@ PATCHES=(
 	"${FILESDIR}/${PN}"-1.36.0-fix-phobos-OS-dependent-test-string.patch
 	# https://github.com/ldc-developers/ldc/issues/4614#issuecomment-2034169152
 	"${FILESDIR}/${PN}"-remove-dmd-common-int128-unittest.patch
+	"${FILESDIR}/${PN}"-cmake-autodetect-and-compiler-rt-fixes-pr-4659.patch
+	"${FILESDIR}/${PN}"-x86-mangling-test-fix-pr-4661.patch
+	"${FILESDIR}/${PN}"-x86-tests-avoid-calling-amd64-gcc-pr-4662.patch
 )
 
 pkg_setup() {
@@ -85,8 +83,6 @@ src_prepare(){
 	# Disable GDB tests by passing GDB_FLAGS=OFF
 	# Put this here to avoid trigerring reconfigurations later on.
 	sed -i 's/\(GDB_FLAGS=\)\S\+/\1OFF/' "${S}"/tests/dmd/CMakeLists.txt
-
-	eapply "${DISTDIR}/${PN}-pr-"{4659,4661,4662}".patch"
 
 	cmake_src_prepare
 }
