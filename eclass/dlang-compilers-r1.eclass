@@ -45,6 +45,7 @@ readonly _DLANG_DMD_FRONTENDS=(
 	"2.106 2.106 ~amd64 ~x86"
 	"2.107 2.107 ~amd64 ~x86"
 	"2.108 2.108 ~amd64 ~x86"
+	"2.109 2.109 ~amd64 ~x86"
 )
 
 # @ECLASS_VARIABLE: _DLANG_GDC_FRONTENDS

@@ -1,0 +1,25 @@
+# This is needed for proper gcc-14 compatibility. Without this
+# >=gcc-14 will print warnings whenever it preprocesses a C file which
+# is very noisy and breaks the C testsuite.
+
+From 3413932f954bede7e112d7e112f52f3a481bef23 Mon Sep 17 00:00:00 2001
+From: ryuukk <44361234+ryuukk@users.noreply.github.com>
+Date: Fri, 21 Jun 2024 14:06:12 +0200
+Subject: [PATCH] Mute noisy warnings
+
+--- a/dmd/druntime/src/importc.h
++++ b/dmd/druntime/src/importc.h
+@@ -8,6 +8,13 @@
+  * Source: $(DRUNTIMESRC importc.h)
+  */
+ 
++/**********************
++ * Silence noisy warnings for this file
++ */
++#ifdef __GNUC__
++#pragma GCC system_header
++#endif
++
+ /**********************
+  * For special casing ImportC code.
+  */
