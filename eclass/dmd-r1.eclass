@@ -163,7 +163,7 @@ dmd-r1_src_compile() {
 		"${BUILD_D}"
 		-j$(makeopts_jobs)
 		# A bit overkill to specify the flags here but it does get the
-		# jobs done.
+		# job done.
 		DFLAGS="${DMDW_DCFLAGS} ${DMDW_LDFLAGS}"
 	)
 
@@ -232,7 +232,7 @@ dmd-r1_src_compile() {
 			$(usex static-libs 'lib dll' dll)
 		)
 		# Prefer compiling C files with CC, not with dmd. (USE_IMPORTC=1
-		# adds dependency on libdruntime.a)
+		# adds a dependency on libdruntime.a)
 		ver_test -ge 2.108.0 && phobosMakeArgs+=( "USE_IMPORTC=0" )
 
 		emake -C dmd/druntime "${commonMakeArgs[@]}" "${druntimeMakeArgs[@]}"
