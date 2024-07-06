@@ -38,6 +38,29 @@ MULTILIB_COMPAT=( abi_x86_{32,64} )
 inherit desktop edos2unix dlang-single multilib-build multiprocessing optfeature
 
 LICENSE=Boost-1.0
+# A couple of files are public domain, e.g. dmd/compiler/src/dmd/backend/bcomplex.d
+LICENSE+=" public-domain"
+# valgrind headers are BSD-like, see: dmd/druntime/src/etc/valgrind/memcheck.h
+LICENSE+=" BZIP2"
+# curl header: phobos/etc/c/curl.d
+LICENSE+=" curl"
+# zlib header: phobos/etc/c/zlib.d
+LICENSE+=" ZLIB"
+# Older versions use md5 for hashing newer ones use blake3
+if ver_test -ge 2.109.0_beta1; then
+	# see: dmd/compiler/src/dmd/common/blake3.d which is based on:
+	# https://github.com/oconnor663/blake3_reference_impl_c
+	LICENSE+=" || ( CC0-1.0 Apache-2.0 )"
+else
+	# see: dmd/compiler/src/dmd/common/md5.d
+	LICENSE+=" RSA"
+fi
+# Some files in dmd/compiler/samples like htmlget.d are public-domain.
+# dmd/compiler/samples/d2html.d has a license which sounds like the colt
+# license which is not free. The file has little value so it won't be
+# installed.
+LICENSE+=" examples? ( public-domain )"
+
 SLOT=$(ver_cut 1-2)
 readonly MAJOR=$(ver_cut 1)
 readonly MINOR=$(ver_cut 2)
@@ -317,6 +340,9 @@ dmd-r1_src_install() {
 	doins dmd/generated/docs/man/man5/dmd.conf.5
 
 	if use examples; then
+		# Problematic license
+		rm dmd/compiler/samples/d2html.d || die
+
 		insinto "${dmd_prefix}"/samples
 		doins -r dmd/compiler/samples/*
 		docompress -x "${dmd_prefix}"/samples
