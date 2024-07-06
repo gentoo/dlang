@@ -85,10 +85,10 @@ IDEPEND=">=app-eselect/eselect-dlang-20140709"
 BDEPEND="!selfhost? ( ${DLANG_DEPS} )"
 # We don't need anything in DEPEND, curl is dl-opened
 # so it belongs in RDEPEND.
+#
+# Thinking about this more ${DLANG_DEPS} should probably go in DEPEND. I
+# want, however, to test this before making the fix.
 #DEPEND=
-# Since 2.107.0, dmd links the standard library of the host
-# compiler. Since this eclass is only used by >=dmd-2.107.0-r1 the
-# dependency is added unconditionally.
 RDEPEND="
 	${IDEPEND}
 	net-misc/curl[${MULTILIB_USEDEP}]
