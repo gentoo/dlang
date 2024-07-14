@@ -5,7 +5,7 @@ EAPI=7
 
 DESCRIPTION="GtkD is a D binding and OO wrapper of GTK+"
 HOMEPAGE="http://gtkd.org/"
-LICENSE="LGPL-3"
+LICENSE="LGPL-3+-with-gtkd-exceptions test? ( LGPL-3+ )"
 
 SLOT="3"
 KEYWORDS="amd64 x86"
@@ -34,7 +34,8 @@ RDEPEND="
 GTKD_USE_FLAGS=(gtk  opengl sourceview gstreamer  vte  peas)
 GTKD_LIB_NAMES=(gtkd gtkdgl gtkdsv     gstreamerd vted peasd)
 GTKD_SRC_DIRS=( gtkd gtkdgl sourceview gstreamer  vte  peas)
-IUSE="${GTKD_USE_FLAGS[@]:1} static-libs"
+IUSE="${GTKD_USE_FLAGS[@]:1} static-libs test"
+RESTRICT="!test? ( test )"
 
 MAJOR=$(ver_cut 1)
 MINOR=$(ver_cut 2-)
