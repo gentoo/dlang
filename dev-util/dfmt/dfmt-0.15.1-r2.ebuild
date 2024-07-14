@@ -16,7 +16,7 @@ LICENSE="Boost-1.0"
 SLOT="0"
 KEYWORDS="~amd64 ~arm64 ~x86"
 
-DLANG_COMPAT=( dmd-2_{106..108} gdc-1{3,4} ldc2-1_{35..38} )
+DLANG_COMPAT=( dmd-2_{106..109} gdc-1{3,4} ldc2-1_{35..39} )
 
 inherit dlang-single bash-completion-r1
 
