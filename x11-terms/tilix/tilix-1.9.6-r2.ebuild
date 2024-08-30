@@ -3,6 +3,9 @@
 
 EAPI=8
 
+DLANG_COMPAT=( dmd-2_10{6..9} gdc-1{3,4} ldc2-1_{35..39} )
+inherit dlang-single gnome2-utils meson optfeature
+
 DESCRIPTION="A tiling terminal emulator for Linux using GTK+ 3"
 HOMEPAGE="https://gnunn1.github.io/tilix-web/"
 
@@ -21,11 +24,7 @@ KEYWORDS="~amd64 ~x86"
 IUSE="test"
 RESTRICT="!test? ( test )"
 
-DLANG_COMPAT=( dmd-2_10{6..8} gdc-1{3,4} ldc2-1_{35..38} )
-
-inherit dlang-single gnome2-utils meson optfeature
-
-# Older gcc ICEs due to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=113125
+# Older gcc ICEs due to https://gcc.gnu.org/PR113125
 MY_DLANG_DEPS="${DLANG_DEPS}
 	$(dlang_gen_cond_dep '
 		>=sys-devel/gcc-13.3:13
