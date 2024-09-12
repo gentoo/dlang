@@ -8,11 +8,18 @@ LLVM_COMPAT=( {15..17} )
 PYTHON_COMPAT=( python3_{10..12} )
 inherit cmake llvm-r1 multilib-build multiprocessing python-any-r1 toolchain-funcs
 
+PATCH_VER=1
+PATCH_TAG_NAME="${PV}-patches-${PATCH_VER}"
+PATCH_URL_BASE="https://github.com/the-horo/ldc-patches/archive/refs/tags"
+
 DESCRIPTION="LLVM D Compiler"
 HOMEPAGE="https://github.com/ldc-developers/ldc"
 MY_PV="${PV//_/-}"
 MY_P="ldc-${MY_PV}-src"
-SRC_URI="https://github.com/ldc-developers/ldc/releases/download/v${MY_PV}/${MY_P}.tar.gz"
+SRC_URI="
+	https://github.com/ldc-developers/ldc/releases/download/v${MY_PV}/${MY_P}.tar.gz
+	${PATCH_URL_BASE}/${PATCH_TAG_NAME}.tar.gz -> ${P}-patches-${PATCH_VER}.tar.gz
+"
 S=${WORKDIR}/${MY_P}
 LICENSE="BSD"
 
@@ -54,19 +61,6 @@ python_check_deps() {
 		python_has_version "dev-python/lit[${PYTHON_USEDEP}]"
 }
 
-PATCHES=(
-	"${FILESDIR}"/ldc2-1.15.0-link-defaultlib-shared.patch
-	"${FILESDIR}/${PN}"-1.36.0-disable-compiler-rt-sanitizers-tests.patch
-	"${FILESDIR}/${PN}"-1.36.0-lit-cfg-disable-gdb.patch
-
-	# https://github.com/dlang/phobos/pull/8956
-	"${FILESDIR}/${PN}"-1.36.0-fix-phobos-OS-dependent-test-string.patch
-	# https://github.com/ldc-developers/ldc/pull/4612
-	"${FILESDIR}/${PN}"-1.36.0-tests-dshell-remove--m-switch.patch
-	# https://github.com/ldc-developers/ldc/issues/4614#issuecomment-2034169152
-	"${FILESDIR}/${PN}"-remove-dmd-common-int128-unittest.patch
-)
-
 pkg_setup() {
 	dlang_setup
 	llvm-r1_pkg_setup
@@ -74,6 +68,8 @@ pkg_setup() {
 }
 
 src_prepare(){
+	apply_patches
+
 	# Disable GDB tests by passing GDB_FLAGS=OFF
 	# Put this here to avoid trigerring reconfigurations later on.
 	sed -i 's/\(GDB_FLAGS=\)\S\+/\1OFF/' "${S}"/tests/dmd/CMakeLists.txt
@@ -192,4 +188,14 @@ pkg_postinst() {
 
 pkg_postrm() {
 	"${EROOT}"/usr/bin/eselect dlang update ldc2
+}
+
+apply_patches() {
+	local patches_dir="${WORKDIR}/ldc-patches-${PATCH_TAG_NAME}"
+	local patch
+	while read -rd '' patch; do
+		eapply "${patch}"
+	done < <(find "${patches_dir}" -mindepth 1 -maxdepth 1 \
+				  -type f -name '*.patch' \
+				  -print0)
 }
