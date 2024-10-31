@@ -133,18 +133,6 @@ dmd-r1_src_unpack() {
 	mv -T "phobos-${MY_VER}" "${S}/phobos" || die
 }
 
-dmd-r1_src_prepare() {
-	einfo "Removing dos-style line endings."
-	local file
-	while read -rd '' file; do
-		edos2unix "${file}"
-	done < <( find "${WORKDIR}" \( -name '*.txt' -o -name '*.html' -o -name '*.d' \
-				   -o -name '*.di' -o -name '*.ddoc' -type f \) \
-				   -print0 )
-
-	default
-}
-
 dmd-r1_src_compile() {
 	einfo "Building dmd build script"
 	dlang_compile_bin dmd/compiler/src/build{,.d}
@@ -429,5 +417,4 @@ _dmd_foreach_abi() {
 
 fi
 
-EXPORT_FUNCTIONS pkg_setup src_unpack src_prepare src_compile src_test src_install \
-				 pkg_postinst pkg_postrm
+EXPORT_FUNCTIONS pkg_setup src_unpack src_compile src_test src_install pkg_postinst pkg_postrm
