@@ -65,21 +65,45 @@ SLOT=$(ver_cut 1-2)
 readonly MAJOR=$(ver_cut 1)
 readonly MINOR=$(ver_cut 2)
 readonly PATCH=$(ver_cut 3)
-readonly VERSION=$(ver_cut 1-3)
-readonly BETA=$(ver_cut 4-)
+: "${BOOTSTRAP_VERSION:=${PV}}"
 
 # For prereleases, 2.097.0_rc1 -> 2.097.0-rc.1
 MY_VER=$(ver_rs 3 - 4 .)
+MY_BOOTSTRAP_VER=$(ver_rs 3 - 4 . "${BOOTSTRAP_VERSION}")
 
-DLANG_ORG=https://downloads.dlang.org/${BETA:+pre-}releases/2.x/${VERSION}
-SRC_URI="
-	https://github.com/dlang/${PN}/archive/refs/tags/v${MY_VER}.tar.gz -> ${PN}-${MY_VER}.tar.gz
-	https://github.com/dlang/phobos/archive/refs/tags/v${MY_VER}.tar.gz -> phobos-${MY_VER}.tar.gz
-	selfhost? ( ${DLANG_ORG}/dmd.${MY_VER}.linux.tar.xz )
-	doc? ( ${DLANG_ORG}/dmd.${MY_VER}.linux.tar.xz )
-"
 
-IUSE="doc examples +selfhost static-libs"
+# @FUNCTION: _gen_dmd_tarball_uri
+# @USAGE: <version>
+# @INTERNAL
+# @DESCRIPTION:
+# Output a URI to the dmd upstream tarball identified by the given version.
+_gen_dmd_tarball_uri() {
+	local v=${1}
+	local isBeta=$(ver_cut 4- "${v}")
+	local directory=$(ver_cut 1-3 "${v}")
+	echo "https://downloads.dlang.org/${isBeta:+pre-}releases/2.x/${directory}/dmd.${v}.linux.tar.xz"
+}
+
+if [[ ${PV} != *9999* ]]; then
+	SRC_URI="
+		https://github.com/dlang/${PN}/archive/refs/tags/v${MY_VER}.tar.gz -> ${PN}-${MY_VER}.tar.gz
+		https://github.com/dlang/phobos/archive/refs/tags/v${MY_VER}.tar.gz -> phobos-${MY_VER}.tar.gz
+	"
+else
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/dlang/dmd"
+	PHOBOS_REPO_URI="https://github.com/dlang/phobos"
+	: "${EGIT_BRANCH:=master}"
+fi
+
+SRC_URI+=" selfhost? ( $(_gen_dmd_tarball_uri "${MY_BOOTSTRAP_VER}") )"
+IUSE="examples +selfhost static-libs"
+
+if [[ ${PV} != *9999* ]]; then
+	SRC_URI+=" doc? ( $(_gen_dmd_tarball_uri "${MY_VER}") )"
+	IUSE+=" doc"
+fi
+
 REQUIRED_USE="^^ ( selfhost ${DLANG_REQUIRED_USE} )"
 IDEPEND=">=app-eselect/eselect-dlang-20140709"
 BDEPEND="!selfhost? ( ${DLANG_DEPS} )"
@@ -126,11 +150,19 @@ dmd-r1_src_unpack() {
 
 	default
 
-	# $S may collide with $PN-$MY_VER
-	mv "${PN}-${MY_VER}" tmp || die
-	mkdir "${S}" || die
-	mv -T tmp "${S}/${PN}" || die
-	mv -T "phobos-${MY_VER}" "${S}/phobos" || die
+	if [[ ${PV} != *9999* ]]; then
+		# $S may collide with $PN-$MY_VER
+		mv "${PN}-${MY_VER}" tmp || die
+		mkdir "${S}" || die
+		mv -T tmp "${S}/${PN}" || die
+		mv -T "phobos-${MY_VER}" "${S}/phobos" || die
+	else
+		git-r3_fetch
+		git-r3_fetch "${PHOBOS_REPO_URI}" "refs/heads/${EGIT_BRANCH}"
+
+		git-r3_checkout "" "${S}/dmd"
+		git-r3_checkout "${PHOBOS_REPO_URI}" "${S}/phobos"
+	fi
 }
 
 dmd-r1_src_compile() {
@@ -248,8 +280,8 @@ dmd-r1_src_compile() {
 	# Now clean up some artifacts that would make the install phase
 	# harder (we rely on globbing and recursive calls a lot).
 
-	# The object file is useless
-	rm -f phobos/generated/linux/release/*/libphobos2.so.0.${MINOR}.o || die
+	# The object file is useless, to support 9999 we glob for it
+	rm -f phobos/generated/linux/release/*/libphobos2.so.*.o || die
 	# the zlib folder contains source code which is no longer
 	# needed. Don't touch etc/c/zlib.d however, that's important.
 	rm -rf phobos/etc/c/zlib || die
@@ -312,11 +344,14 @@ dmd-r1_src_install() {
 		dlang_dolib.so "${G}"/libphobos2.so*
 		use static-libs && dlang_dolib.a "${G}"/libphobos2.a
 
-		# The symlinks under $(get_libdir) are only for backwards
-		# compatibility purposes.
-		local filename=libphobos2.so.0.${MINOR}
-		dosym -r "/usr/$(dlang_get_libdir)/${filename}" "/usr/$(get_libdir)/${filename}"
-		dosym -r "/usr/$(dlang_get_libdir)/${filename}.${PATCH}" "/usr/$(get_libdir)/${filename}.${PATCH}"
+		# Avoid collisions of 9999 and other slots
+		if [[ ${PV} != *9999* ]]; then
+			# The symlinks under $(get_libdir) are only for backwards
+			# compatibility purposes.
+			local filename=libphobos2.so.0.${MINOR}
+			dosym -r "/usr/$(dlang_get_libdir)/${filename}" "/usr/$(get_libdir)/${filename}"
+			dosym -r "/usr/$(dlang_get_libdir)/${filename}.${PATCH}" "/usr/$(get_libdir)/${filename}.${PATCH}"
+		fi
 	}
 	_dmd_foreach_abi install_phobos_2
 	insinto "${dmd_prefix}"/import
@@ -336,7 +371,7 @@ dmd-r1_src_install() {
 		docompress -x "${dmd_prefix}"/samples
 	fi
 
-	if use doc; then
+	if _use_doc; then
 		HTML_DOCS=( "${WORKDIR}"/dmd2/html/* )
 		einstalldocs
 		insinto "/usr/share/doc/${PF}/html"
@@ -353,13 +388,20 @@ dmd-r1_pkg_postinst() {
 
 	use examples &&
 		elog "Examples can be found in: ${EPREFIX}/usr/lib/${PN}/${SLOT}/samples"
-	use doc && elog "HTML documentation is in: ${EPREFIX}/usr/share/doc/${PF}/html"
+	_use_doc && elog "HTML documentation is in: ${EPREFIX}/usr/share/doc/${PF}/html"
 
 	optfeature "additional D development tools" "dev-util/dlang-tools"
 }
 
 dmd-r1_pkg_postrm() {
 	"${ERROT}"/usr/bin/eselect dlang update dmd
+}
+
+# @FUNCTION: _use_doc
+# @INTERNAL
+# @RETURN: shell true if the doc USE flag is enabled
+_use_doc() {
+	[[ ${PV} != *9999* ]] && use doc
 }
 
 # @FUNCTION: _gen_dmd.conf
