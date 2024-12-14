@@ -39,7 +39,7 @@ REQUIRED_USE=${DLANG_REQUIRED_USE}
 DEPEND="
 	${DLANG_DEPS}
 	$(llvm_gen_dep '
-	  sys-devel/llvm:${LLVM_SLOT}=
+	  llvm-core/llvm:${LLVM_SLOT}=
 	')
 	net-misc/curl[${MULTILIB_USEDEP}]
 "
@@ -80,7 +80,7 @@ src_prepare(){
 
 src_configure() {
 	# We disable assertions so we have to apply the same workaround as for
-	# sys-devel/llvm: add -DNDEBUG to CPPFLAGS.
+	# llvm-core/llvm: add -DNDEBUG to CPPFLAGS.
 	local CPPFLAGS="${CPPFLAGS} -DNDEBUG"
 	# https://bugs.gentoo.org/show_bug.cgi?id=922590
 	append-flags -fno-strict-aliasing

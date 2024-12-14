@@ -38,7 +38,7 @@ REQUIRED_USE=${DLANG_REQUIRED_USE}
 DEPEND="
 	${DLANG_DEPS}
 	$(llvm_gen_dep '
-	  sys-devel/llvm:${LLVM_SLOT}=
+	  llvm-core/llvm:${LLVM_SLOT}=
 	')
 	net-misc/curl[${MULTILIB_USEDEP}]
 "
