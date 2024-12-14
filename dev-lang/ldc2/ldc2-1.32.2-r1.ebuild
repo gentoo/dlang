@@ -21,9 +21,9 @@ IUSE="static-libs"
 # Upstream supports LLVM 9.0 through 15.0.
 RDEPEND="
 	|| (
-		sys-devel/llvm:15
+		llvm-core/llvm:15
 	)
-	<sys-devel/llvm-16:=
+	<llvm-core/llvm-16:=
 	>=app-eselect/eselect-dlang-20140709"
 DEPEND="${RDEPEND}"
 LLVM_MAX_SLOT=15
