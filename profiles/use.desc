@@ -20,6 +20,7 @@ dlang_single_target_ldc2-1_36 - Build for ldc2 1.36 only
 dlang_single_target_ldc2-1_37 - Build for ldc2 1.37 only
 dlang_single_target_ldc2-1_38 - Build for ldc2 1.38 only
 dlang_single_target_ldc2-1_39 - Build for ldc2 1.39 only
+dlang_single_target_ldc2-1_40 - Build for ldc2 1.40 only
 
 dlang_targets_dmd-2_101 - Build with DMD 2.101
 dlang_targets_dmd-2_102 - Build with DMD 2.102
@@ -43,6 +44,7 @@ dlang_targets_ldc2-1_36 - Build with ldc2 1.36
 dlang_targets_ldc2-1_37 - Build with ldc2 1.37
 dlang_targets_ldc2-1_38 - Build with ldc2 1.38
 dlang_targets_ldc2-1_39 - Build with ldc2 1.39
+dlang_targets_ldc2-1_40 - Build with ldc2 1.40
 
 
 dmd-2_101 - Build for DMD 2.101

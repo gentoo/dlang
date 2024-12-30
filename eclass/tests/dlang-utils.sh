@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2024 Gentoo Authors
+# Copyright 2024-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 gentooRepo=$(portageq get_repo_path / gentoo)
@@ -8,6 +8,7 @@ readonly gentooRepo
 
 EAPI=8
 source "${gentooRepo}"/eclass/tests/tests-common.sh || exit
+source "${gentooRepo}"/eclass/tests/version-funcs.sh || exit
 TESTS_ECLASS_SEARCH_PATHS=( .. "${gentooRepo}"/eclass )
 
 # Before the inherit so multilib.eclass picks the correct value
@@ -134,6 +135,7 @@ test_var DLANG_SYSTEM_IMPORT_PATHS ldc2-1_32 "${EPREFIX}/usr/lib/ldc2/1.32/inclu
 test_var DLANG_PKG_DEP dmd-2.102 "dev-lang/dmd:2.102="
 test_var DLANG_PKG_DEP gdc-12 "sys-devel/gcc:12[d] dev-util/gdmd:12"
 test_var DLANG_PKG_DEP ldc2-1.36 "dev-lang/ldc2:1.36="
+test_var DLANG_PKG_DEP ldc2-1.40 "dev-lang/ldc2:1.40 dev-libs/ldc2-runtime:1.40="
 
 declare -A DLANG_REQ_USE=(
 	[dmd]="flag1"
@@ -143,6 +145,7 @@ declare -A DLANG_REQ_USE=(
 test_var DLANG_PKG_DEP dmd-2.102 "dev-lang/dmd:2.102=[flag1]"
 test_var DLANG_PKG_DEP gdc-12 "sys-devel/gcc:12[d,flag2] dev-util/gdmd:12"
 test_var DLANG_PKG_DEP ldc2-1.36 "dev-lang/ldc2:1.36=[flag3(-)?]"
+test_var DLANG_PKG_DEP ldc2-1.40 "dev-lang/ldc2:1.40 dev-libs/ldc2-runtime:1.40=[flag3(-)?]"
 
 get_libdir() {
 	local libdir_var="LIBDIR_${ABI}"
@@ -158,11 +161,13 @@ ABI=amd64
 test_var DLANG_LIBDIR dmd-2.102 "lib/dmd/2.102/lib64"
 test_var DLANG_LIBDIR gdc-12 "lib/gcc/${CHOST_default}/12"
 test_var DLANG_LIBDIR ldc2-1.35 "lib/ldc2/1.35/lib64"
+test_var DLANG_LIBDIR ldc2-1.40 "lib/ldc2/1.40/lib64"
 test_var DLANG_MODEL_FLAG ldc2-1.35 '-m64'
 ABI=x86
 test_var DLANG_LIBDIR dmd-2.102 "lib/dmd/2.102/lib32"
 test_var DLANG_LIBDIR gdc-12 "lib/gcc/${CHOST_default}/12/32"
 test_var DLANG_LIBDIR ldc2-1.35 "lib/ldc2/1.35/lib32"
+test_var DLANG_LIBDIR ldc2-1.40 "lib/ldc2/1.40/lib"
 test_var DLANG_MODEL_FLAG ldc2-1.35 '-m32'
 
 # nomultilib
@@ -173,11 +178,13 @@ ABI=amd64
 test_var DLANG_LIBDIR dmd-2.102 "lib/dmd/2.102/lib64"
 test_var DLANG_LIBDIR gdc-12 "lib/gcc/${CHOST_default}/12"
 test_var DLANG_LIBDIR ldc2-1.35 "lib/ldc2/1.35/lib64"
+test_var DLANG_LIBDIR ldc2-1.40 "lib/ldc2/1.40/lib64"
 test_var DLANG_MODEL_FLAG ldc2-1.35 ''
 LIBDIR_amd64=mylib
 test_var DLANG_LIBDIR dmd-2.102 "lib/dmd/2.102/lib64"
 test_var DLANG_LIBDIR gdc-12 "lib/gcc/${CHOST_default}/12"
 test_var DLANG_LIBDIR ldc2-1.35 "lib/ldc2/1.35/mylib"
+test_var DLANG_LIBDIR ldc2-1.40 "lib/ldc2/1.40/mylib"
 
 MULTILIB_ABIS=x86
 DEFAULT_ABI=x86

@@ -1,4 +1,4 @@
-# Copyright 2024 Gentoo Authors
+# Copyright 2024-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: dlang-utils.eclass
@@ -821,14 +821,19 @@ _dlang_export() {
 				local libdirname
 				case "${impl::3}" in
 					ldc)
-						# Old dlang.eclass always picked lib<bits> which
-						# isn't always correct. The proper calculation
-						# is found in runtime/CMakeLists.txt which is:
-						# - native abi is always put in lib<LIB_SUFFIX>
-						#   which is set by cmake.eclass to $(get_libdir)
-						# - x86 on amd64 is put in lib<bits>
-						libdirname=$(pick_nomulti_amd64_x86 \
-										 "$(get_libdir)" "$(get_libdir)" "lib32")
+						if ver_test "${impl#ldc2-}" -ge 1.40; then
+							# ldc started using multilib-build for the runtime
+							libdirname="$(get_libdir)"
+						else
+							# Old dlang.eclass always picked lib<bits> which
+							# isn't always correct. The proper calculation
+							# is found in runtime/CMakeLists.txt which is:
+							# - native abi is always put in lib<LIB_SUFFIX>
+							#   which is set by cmake.eclass to $(get_libdir)
+							# - x86 on amd64 is put in lib<bits>
+							libdirname=$(pick_nomulti_amd64_x86 \
+											 "$(get_libdir)" "$(get_libdir)" "lib32")
+						fi
 						;;
 					gdc)
 						# I have no idea how gcc does it but the line
@@ -1085,12 +1090,22 @@ _dlang_export() {
 				#
 				# dmd and ldc2 should have ABI compatible patch releases
 				# but we will use :slot= just in case.
+				#
+				# Since ldc2-1.40.0 the package is split into compiler +
+				# runtime. Since only the runtime provides relevant USE
+				# flags usedep is only applied to it.
+				local dmd_dep="dev-lang/dmd:${impl#dmd-}=${usedep}"
+				local gdc_dep="sys-devel/gcc:${impl#gdc-}${usedep} dev-util/gdmd:${impl#gdc-}"
+				local ldc_ver="${impl#ldc2-}" ldc_dep
+				if [[ ${impl} == ldc2* ]] && ver_test "${ldc_ver}" -ge 1.40; then
+					ldc_dep="dev-lang/ldc2:${ldc_ver} dev-libs/ldc2-runtime:${ldc_ver}=${usedep}"
+				else
+					ldc_dep="dev-lang/ldc2:${ldc_ver}=${usedep}"
+				fi
+
 				export DLANG_PKG_DEP=$(
 					_dlang_echo_implementation_string \
-						"${impl}" \
-						"dev-lang/dmd:${impl#dmd-}=${usedep}" \
-						"sys-devel/gcc:${impl#gdc-}${usedep} dev-util/gdmd:${impl#gdc-}" \
-						"dev-lang/ldc2:${impl#ldc2-}=${usedep}"
+						"${impl}" "${dmd_dep}" "${gdc_dep}" "${ldc_dep}"
 					)
 				debug-print "${FUNCNAME}: DLANG_PKG_DEP = ${DLANG_PKG_DEP}"
 				;;
