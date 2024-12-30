@@ -1,0 +1,357 @@
+# -*-eselect-*-  vim: ft=eselect
+# Copyright 1999-2024 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+inherit config
+
+DESCRIPTION="Manage D symlinks"
+MAINTAINER="marco.leise@gmx.de"
+VERSION="20241230"
+
+ETC_PATH="${EROOT}/etc"
+COMPILER_PATH="${EROOT}/usr/bin"
+MAN1_PATH="${EROOT}/usr/share/man/man1"
+MAN5_PATH="${EROOT}/usr/share/man/man5"
+INC_PATH="${EROOT}/usr/include/dlang"
+CONFIG_FILE="${EROOT}/var/lib/dlang"
+declare -A COMPILER_NAMES=([dmd]="Digital Mars D (dmd)"
+                           [ldc2]="LLVM D2 (ldc2)")
+
+
+### list action ###
+
+describe_list() {
+	echo "List installed D compilers by vendor (or all installed compilers)"
+}
+
+describe_list_options() {
+	for compiler in ${!COMPILER_NAMES[@]}; do
+		printf "% -11s : List installed %s compilers\n" $compiler "${COMPILER_NAMES[$compiler]}"
+	done
+}
+
+describe_list_parameters() {
+	echo "[<vendor>]"
+}
+
+do_list() {
+	[[ $# -eq 1 ]] && has "$1" ${!COMPILER_NAMES[@]} || [[ $# -eq 0 ]] \
+		|| die -q "Syntax: eselect dlang list [$(compiler_options)]"
+
+	for compiler in ${!COMPILER_NAMES[@]}; do
+		if [[ $# -eq 0 ]] || [[ $compiler == $1 ]]; then
+			write_list_start "Available ${COMPILER_NAMES[$compiler]} compilers:"
+			local targets=($(find_targets $compiler))
+			local active="$(do_show $compiler)"
+			local mode="$(load_config "$CONFIG_FILE" $compiler)"
+			for ((i = 0; i < ${#targets[@]}; i++)); do
+				if [[ "${targets[$i]}" == "$active" ]]; then
+					if [[ "${mode:-auto}" == "auto" ]]; then
+						targets[$i]="$(highlight_marker "${targets[$i]}" auto)"
+					else
+						targets[$i]="$(highlight_marker "${targets[$i]}" manual)"
+					fi
+				fi
+			done
+			write_numbered_list -m "(none found)" "${targets[@]}"
+			echo
+		fi
+	done
+}
+
+
+### set action ###
+
+describe_set() {
+	echo "Set active version of D compilers"
+}
+
+describe_set_options() {
+	for compiler in ${!COMPILER_NAMES[@]}; do
+		printf "% -11s : Set active %s compiler\n" $compiler "${COMPILER_NAMES[$compiler]}"
+	done
+}
+
+describe_set_parameters() {
+	echo "<vendor>"
+}
+
+do_set() {
+	[[ $# -eq 2 ]] && has "$1" ${!COMPILER_NAMES[@]} \
+		|| die -q "2 arguments required: eselect dlang set $(compiler_options) <version|index|\"auto\">"
+
+	local targets=($(find_targets $1))
+	local target="$2"
+	if [[ "$target" == "auto" ]]; then
+		local autoTarget="${targets[$((${#targets[@]} - 1))]}"
+		if [[ -n "${targets[$(($target - 1))]}" ]]; then
+			target="$autoTarget"
+		fi
+	elif is_number "$2" && [[ $2 -ge 1 ]]; then
+		local idxToTarget="${targets[$(($target - 1))]}"
+		if [[ -n "${targets[$(($target - 1))]}" ]]; then
+			target="$idxToTarget"
+		fi
+	fi
+
+	has "$target" "${targets[@]}" || die -q "Invalid or unavailable target"
+	if [[ "$2" == "auto" ]]; then
+		echo -n "Switching $1 to always latest version, currently $target..."
+	else
+		echo -n "Switching $1 to $target..."
+	fi
+
+	case $1 in
+		dmd)
+			clean_dmd_symlinks
+			symlink_helper "/usr/lib/dmd/${target}/bin/dmd"      "${COMPILER_PATH}/dmd"
+			symlink_helper "/usr/lib/dmd/${target}/bin/dmd.conf" "${ETC_PATH}/dmd.conf"
+			symlink_helper "/usr/lib/dmd/${target}/import"       "${INC_PATH}/dmd"
+			[[ -d ${MAN1_PATH} ]] && symlink_helper "/usr/lib/dmd/${target}/man/man1/dmd.1"      "${MAN1_PATH}/dmd.1"
+			[[ -d ${MAN5_PATH} ]] && symlink_helper "/usr/lib/dmd/${target}/man/man5/dmd.conf.5" "${MAN5_PATH}/dmd.conf.5"
+			;;
+		ldc2)
+			clean_ldc_symlinks
+			# Since ldc2-1.40 the package is split into dev-lang/ldc2 and
+			# dev-libs/ldc2-runtime. Because we can't control the order in which
+			# they are merged we will try to update as many symlinks as
+			# possible.
+			symlink_helper "/usr/lib/ldc2/${target}/bin/ldc2" "${COMPILER_PATH}/ldc2"
+			symlink_helper "/usr/lib/ldc2/${target}/bin/ldmd2" "${COMPILER_PATH}/ldmd2"
+			symlink_helper "/usr/lib/ldc2/${target}/include/d" "${INC_PATH}/ldc"
+			symlink_helper "/usr/lib/ldc2/${target}/etc/ldc2.conf" "${ETC_PATH}/ldc2.conf"
+			symlink_helper "/usr/lib/ldc2/${target}/usr/share/bash-completion/completions/ldc2" "${EROOT}/usr/share/bash-completion/completions/ldc2"
+
+			# Added in LDC 1.32.0 (2023-03-12)
+			symlink_helper "/usr/lib/ldc2/${target}/bin/timetrace2txt" "${COMPILER_PATH}/timetrace2txt"
+			;;
+	esac
+	store_config "$CONFIG_FILE" $1 "$2"
+
+	echo " done"
+}
+
+clean_dmd_symlinks() {
+	rm -f "${COMPILER_PATH}/dmd"
+	rm -f "${ETC_PATH}/dmd.conf"
+	rm -f "${INC_PATH}/dmd"
+	rm -f "${MAN1_PATH}/dmd.1"
+	rm -f "${MAN5_PATH}/dmd.conf.5"
+}
+
+clean_ldc_symlinks() {
+	# Keep in sync with do_set
+	rm -f "${COMPILER_PATH}/ldc2"
+	rm -f "${COMPILER_PATH}/ldmd2"
+	rm -f "${INC_PATH}/ldc"
+	rm -f "${ETC_PATH}/ldc2.conf"
+	rm -f "${EROOT}/usr/share/bash-completion/completions/ldc2"
+	rm -f "${COMPILER_PATH}/timetrace2txt"
+}
+
+### show action ###
+
+describe_show() {
+	echo "Show active D compiler by vendor"
+}
+
+describe_show_options() {
+	for compiler in ${!COMPILER_NAMES[@]}; do
+		printf "% -11s : Show active %s compiler\n" $compiler "${COMPILER_NAMES[$compiler]}"
+	done
+}
+
+describe_show_parameters() {
+	echo "<vendor>"
+}
+
+do_show() {
+	[[ $# -eq 1 ]] && has "$1" ${!COMPILER_NAMES[@]} \
+		|| die -q "1 argument required: eselect dlang show $(compiler_options)"
+
+	local interpreter
+	case "${1}" in
+		dmd)
+			get_dmd_interpreter
+			;;
+		ldc2)
+			get_ldc_interpreter
+			;;
+		*)
+			die -q "Unknown compiler: '${1}'"
+			;;
+	esac
+
+	[[ -n "$interpreter" ]] && echo "$interpreter"
+}
+
+
+### update action ###
+
+describe_update() {
+	echo "Update active D compilers to the latest installed version in absense of a manually set version"
+}
+
+describe_update_options() {
+	for compiler in ${!COMPILER_NAMES[@]}; do
+		printf "% -11s : Update active %s compiler\n" $compiler "${COMPILER_NAMES[$compiler]}"
+	done
+}
+
+describe_update_parameters() {
+	echo "<vendor>"
+}
+
+do_update() {
+	[[ $# -eq 1 ]] && has "$1" ${!COMPILER_NAMES[@]} \
+		|| die -q "1 argument required: eselect dlang update $(compiler_options)"
+
+	local targets=($(find_targets $1))
+	if [[ ${#targets[@]} -eq 0 ]]; then
+		# No compiler available, remove symlinks
+		echo "No installed ${COMPILER_NAMES[$1]} compilers. Removing any existing symlinks."
+		case $1 in
+			# Keep this in sync with `do_set`
+			dmd)
+				clean_dmd_symlinks
+				;;
+			ldc2)
+				clean_ldc_symlinks
+				;;
+		esac
+	else
+		# Check if the active compiler is actually available, update otherwise
+		local compiler=$1
+		local active="$(do_show $compiler)"
+		local latest="${targets[$((${#targets[@]} - 1))]}"
+		local mode="$(load_config "$CONFIG_FILE" $compiler)"
+		: "${mode:=auto}"
+		if [[ "$active" == "" ]]; then
+			# First installation of a compiler
+			do_set $compiler auto
+		elif ! has "$active" "${targets[@]}"; then
+			# Active compiler is no longer valid (uninstalled), switch to "auto"
+			echo "Switching $1 from uninstalled version '$active' to '$latest'"
+			do_set $compiler auto
+		elif [[ "${mode}" == "auto" ]] && [[ "$active" != "$latest" ]]; then
+			# Active compiler was set to auto and we have a more recent version
+			echo "Updating active $1 version from '$active' to '$latest'"
+			do_set $compiler auto
+		else
+			# The active compiler is the latest
+			if [[ ${compiler} == ldc2 ]]; then
+				# It's possible that only one of dev-lang/ldc2 and
+				# dev-libs/ldc2-runtime is currently merged => we need
+				# to take care of possible broken symlinks.
+
+				local component link expected_file arr=(
+					"compiler:${COMPILER_PATH}/ldc2:${EROOT}/usr/lib/ldc2/${active}/bin/ldc2"
+					"runtime:${ETC_PATH}/ldc2.conf:${EROOT}/usr/lib/ldc2/${active}/etc/ldc2.conf"
+				)
+				local x msg=""
+				for x in "${arr[@]}"; do
+					IFS=: read -r component link expected_file <<<"${x}"
+					if [[ -L "${link}" && ! -f "${expected_file}" ]]; then
+						msg="Updating active ${compiler} version '${active}' because its ${component} has just been removed"
+						break
+					fi
+
+					if [[ ! -L "${link}" && -f "${expected_file}" ]]; then
+						msg="Updating active ${compiler} version '${active}' because its ${component} has just been merged"
+						break
+					fi
+				done
+
+				if [[ ${msg} ]]; then
+					echo "${msg}"
+					do_set "${compiler}" "${mode}"
+				fi
+			fi
+		fi
+	fi
+}
+
+
+### helper functions ###
+
+# Find a list of D versions
+find_targets() {
+	local cmd
+	case "$1" in
+		dmd)
+			cmd=(
+				find "${EROOT}/usr/lib/dmd"
+				-mindepth 1 -maxdepth 1
+				# Directories are named after a dmd SLOT like `2.109' or `9999'
+				-name "*"
+				# check for an actual compiler installation, not an empty folder
+				-exec test -x "{}/bin/dmd" \;
+				# Output one directory per line
+				-printf '%f\n'
+			)
+			;;
+		ldc2)
+			cmd=(
+				find "${EROOT}/usr/lib/ldc2"
+				-mindepth 1 -maxdepth 1
+				# Find directories with the format `1.39' or `9999'
+				-name "*"
+				# Check for the existence of either dev-lang/ldc2
+				# or dev-libs/ldc2-runtime.
+				"-(" -exec test -x "{}/bin/ldc2" \;
+				     -o -exec test -f "{}/etc/ldc2.conf" \;
+				"-)"
+				-printf '%f\n'
+			)
+			;;
+		*)
+			die "Unknown compiler '$1'"
+	esac
+
+	"${cmd[@]}" 2> /dev/null | LC_ALL=C sort -t. -k2 -g
+}
+
+# Creates a symlink or prints a message and quits on error
+symlink_helper() {
+	[[ -e ${EROOT}/${1} ]] || return
+	local link="$(canonicalise "${EROOT}/$1")"
+	ln -nfs "$link" "$2" || die -q "Couldn't symlink '$link' as '$2'!"
+}
+
+# Prints compilers as argument options <comp1|comp2|...>
+compiler_options() {
+	local additional=0
+	echo -n "<"
+	for compiler in ${!COMPILER_NAMES[@]}; do
+		[[ $additional -eq 1 ]] && echo -n "|"
+		echo -n $compiler
+		additional=1
+	done
+	echo -n ">"
+}
+
+# Get the SLOT of a D compiler path
+# The paths are expected to belong under /usr/lib/dmd or /usr/lib/ldc2
+get_slot_from_path() {
+	local path="${1}"
+	if [[ ${path} =~ ^"${EROOT}"/usr/lib/(dmd|ldc2)/([^/]*)/ ]]; then
+		echo "${BASH_REMATCH[2]}"
+	fi
+}
+
+# Get the SLOT of the eselect'ed dmd
+get_dmd_interpreter() {
+	interpreter=$(get_slot_from_path "$(readlink "${COMPILER_PATH}/dmd")")
+}
+
+# Get the SLOT of the eselect'ed ldc2
+get_ldc_interpreter() {
+	local try
+	# A link created by dev-lang/ldc2 or dev-libs/ldc2-runtime
+	for try in "${COMPILER_PATH}"/ldc2 "${ETC_PATH}"/ldc2.conf; do
+		if [[ -L ${try} ]]; then
+			interpreter=$(get_slot_from_path "$(readlink "${try}")")
+			return
+		fi
+	done
+}
