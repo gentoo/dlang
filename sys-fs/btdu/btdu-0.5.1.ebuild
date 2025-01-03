@@ -1,11 +1,11 @@
-# Copyright 2024 Gentoo Authors
+# Copyright 2024-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
 # gdc-13 is disabled due to: https://gcc.gnu.org/PR111650
 # gdc-14 is disabled due to: https://gcc.gnu.org/PR116373
-DLANG_COMPAT=( dmd-2_10{6..9} ldc2-1_3{5..9} )
+DLANG_COMPAT=( dmd-2_10{6..9} ldc2-1_{35..40} )
 DUB_DEPENDENCIES=(
 	"ae@0.0.3236"
 	"btdu@0.5.1"
