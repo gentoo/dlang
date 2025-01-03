@@ -1,11 +1,11 @@
-# Copyright 2023-2024 Gentoo Authors
+# Copyright 2023-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
 MY_PV="$(ver_rs 3 - 4 .)" # 0.8.0_beta15 -> 0.8.0-beta.15
 # gdc currently fails due to a bug in mir-cpuid, see: https://github.com/libmir/mir-cpuid/pull/46
-DLANG_COMPAT=( dmd-2_{106..109} ldc2-1_{35..39} )
+DLANG_COMPAT=( dmd-2_{106..109} ldc2-1_{35..40} )
 DUB_DEPENDENCIES=(
 	"automem@0.6.9"
 	"cachetools@0.4.1"
