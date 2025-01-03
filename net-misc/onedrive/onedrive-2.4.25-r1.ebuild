@@ -1,9 +1,9 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-DLANG_COMPAT=( dmd-2_{106..109} ldc2-1_{35..39} )
+DLANG_COMPAT=( dmd-2_{106..109} ldc2-1_{35..40} )
 inherit bash-completion-r1 dlang-single systemd
 
 DESCRIPTION="Free Client for OneDrive on Linux"
