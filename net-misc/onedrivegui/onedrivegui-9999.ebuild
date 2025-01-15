@@ -10,7 +10,7 @@ EGIT_REPO_URI="https://github.com/bpozdena/OneDriveGUI.git"
 DESCRIPTION="A simple GUI for OneDrive Linux client, with multi-account support."
 HOMEPAGE="https://github.com/bpozdena/OneDriveGUI"
 
-DEPEND="net-misc/onedrive
+DEPEND=">=net-misc/onedrive-2.5*
 	dev-python/requests
 	dev-python/pyside6[gui(+),webengine(+),widgets(+)]
 "

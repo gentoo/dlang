@@ -10,14 +10,14 @@ SRC_URI="https://github.com/bpozdena/OneDriveGUI/archive/refs/tags/v${PV}.tar.gz
 DESCRIPTION="A simple GUI for OneDrive Linux client, with multi-account support."
 HOMEPAGE="https://github.com/bpozdena/OneDriveGUI"
 
-RDEPEND="net-misc/onedrive
+RDEPEND=">=net-misc/onedrive-2.5*
 	dev-python/requests
 	dev-python/pyside6[gui(+),webengine(+),widgets(+)]
 "
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS=""
 
 S="${WORKDIR}/${M_PN}-${PV}"
 
