@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=OneDriveGUI
 StartupNotify=true
-Exec=/usr/bin/python /opt/OneDriveGUI/OneDriveGUI.py
+Exec=OneDriveGUI
 Terminal=false
-Icon=OneDriveGUI
+Icon=/usr/share/pixmaps/OneDriveGUI.png
 Type=Application

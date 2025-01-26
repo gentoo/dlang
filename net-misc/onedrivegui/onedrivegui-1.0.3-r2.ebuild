@@ -21,7 +21,7 @@ fi
 DESCRIPTION="A simple GUI for OneDrive Linux client, with multi-account support."
 HOMEPAGE="https://github.com/bpozdena/OneDriveGUI"
 
-RDEPEND=">=net-misc/onedrive-2.5
+RDEPEND="<net-misc/onedrive-2.5
 	dev-python/requests
 	dev-python/pyside6[gui(+),webengine(+),widgets(+)]
 "
