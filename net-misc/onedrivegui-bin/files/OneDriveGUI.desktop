@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=OneDriveGUI
 StartupNotify=true
-Exec=/opt/bin/OneDriveGUI
+Exec=OneDriveGUI
 Terminal=false
-Icon=OneDriveGUI
+Icon=/usr/share/pixmaps/OneDriveGUI.png
 Type=Application
