@@ -25,7 +25,7 @@ fi
 
 RESTRICT=test
 
-RDEPEND=">=net-misc/onedrive-2.5
+RDEPEND="<net-misc/onedrive-2.5
 	dev-python/requests[${PYTHON_USEDEP}]
 	dev-python/pyside[gui(+),webengine(+),widgets(+),${PYTHON_USEDEP}]
 "
