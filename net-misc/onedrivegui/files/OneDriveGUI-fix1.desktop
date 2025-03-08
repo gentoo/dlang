@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=OneDriveGUI
+StartupNotify=true
+Exec=OneDriveGUI
+Terminal=false
+Icon=OneDriveGUI
+Type=Application
