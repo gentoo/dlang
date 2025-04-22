@@ -1,4 +1,4 @@
-# Copyright 2024 Gentoo Authors
+# Copyright 2024-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: dmd-r1.eclass
@@ -89,6 +89,10 @@ if [[ ${PV} != *9999* ]]; then
 		https://github.com/dlang/${PN}/archive/refs/tags/v${MY_VER}.tar.gz -> ${PN}-${MY_VER}.tar.gz
 		https://github.com/dlang/phobos/archive/refs/tags/v${MY_VER}.tar.gz -> phobos-${MY_VER}.tar.gz
 	"
+	if ver_test -ge 2.110.0; then
+		man_pages_uri="https://github.com/the-horo/distfiles/releases/download/init"
+		SRC_URI+=" ${man_pages_uri}/${PN}-man-pages-${PV}.tar.xz"
+	fi
 else
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/dlang/dmd"
@@ -118,6 +122,8 @@ RDEPEND="
 	net-misc/curl[${MULTILIB_USEDEP}]
 	!selfhost? ( ${DLANG_DEPS} )
 "
+
+MAN_PAGES_S="${WORKDIR}/${PN}-man-pages-${PV}"
 
 dmd-r1_pkg_setup() {
 	if use !selfhost; then
@@ -261,21 +267,27 @@ dmd-r1_src_compile() {
 
 	_dmd_foreach_abi compile_libraries
 
-	# Build the man pages
-	local cmd=(
-		env
-		VERBOSE=1
-		HOST_DMD="${GENERATED_DMD}"
-		"${BUILD_D}"
-		-j$(makeopts_jobs)
-		man
-		# ${GENERATED_DMD} is not yet fully functional as we didn't
-		# create a good dmd.conf. But instead of doing that we're going
-		# to specify our flags here.
-		DFLAGS="-defaultlib=phobos2 -L-rpath=${S}/phobos/generated/linux/release/$(dlang_get_abi_bits)"
-	)
-	echo "${cmd[@]}"
-	"${cmd[@]}" || die "Could not generate man pages"
+	if [[ ${PV} == *9999* ]] || ver_test -lt 2.110.0 ; then
+		# Build the man pages
+		local cmd=(
+			env
+			VERBOSE=1
+			HOST_DMD="${GENERATED_DMD}"
+			"${BUILD_D}"
+			-j$(makeopts_jobs)
+			man
+			# ${GENERATED_DMD} is not yet fully functional as we didn't
+			# create a good dmd.conf. But instead of doing that we're going
+			# to specify our flags here.
+			DFLAGS="-defaultlib=phobos2 -L-rpath=${S}/phobos/generated/linux/release/$(dlang_get_abi_bits)"
+		)
+		echo "${cmd[@]}"
+		"${cmd[@]}" || die "Could not generate man pages"
+
+		# Place them in a predictable directory
+		mkdir "${MAN_PAGES_S}" || die
+		cp dmd/generated/docs/man/{man1/dmd.1,man5/dmd.conf.5} "${MAN_PAGES_S}" || die
+	fi
 
 	# Now clean up some artifacts that would make the install phase
 	# harder (we rely on globbing and recursive calls a lot).
@@ -314,7 +326,6 @@ dmd-r1_src_test() {
 	}
 
 	_dmd_foreach_abi test_hello_world
-
 }
 
 dmd-r1_src_install() {
@@ -358,9 +369,9 @@ dmd-r1_src_install() {
 	doins -r phobos/{etc,std}
 
 	insinto "${dmd_prefix}"/man/man1
-	doins dmd/generated/docs/man/man1/dmd.1
+	doins "${MAN_PAGES_S}"/dmd.1
 	insinto "${dmd_prefix}"/man/man5
-	doins dmd/generated/docs/man/man5/dmd.conf.5
+	doins "${MAN_PAGES_S}"/dmd.conf.5
 
 	if use examples; then
 		# Problematic license
