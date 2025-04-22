@@ -37,6 +37,13 @@ MULTILIB_COMPAT=( abi_x86_{32,64} )
 
 inherit desktop edos2unix dlang-single multilib-build multiprocessing optfeature
 
+# @FUNCTION: _have_examples
+# @INTERNAL
+# @RETURN: shell true if the package version has the samples folder
+_have_examples() {
+	ver_test -lt 2.111.0_beta1
+}
+
 LICENSE=Boost-1.0
 # A couple of files are public domain, e.g. dmd/compiler/src/dmd/backend/bcomplex.d
 LICENSE+=" public-domain"
@@ -59,7 +66,7 @@ fi
 # dmd/compiler/samples/d2html.d has a license which sounds like the colt
 # license which is not free. The file has little value so it won't be
 # installed.
-LICENSE+=" examples? ( public-domain )"
+_have_examples && LICENSE+=" examples? ( public-domain )"
 
 SLOT=$(ver_cut 1-2)
 readonly MAJOR=$(ver_cut 1)
@@ -101,7 +108,8 @@ else
 fi
 
 SRC_URI+=" selfhost? ( $(_gen_dmd_tarball_uri "${MY_BOOTSTRAP_VER}") )"
-IUSE="examples +selfhost static-libs"
+IUSE="+selfhost static-libs"
+_have_examples && IUSE+=" examples"
 
 if [[ ${PV} != *9999* ]]; then
 	SRC_URI+=" doc? ( $(_gen_dmd_tarball_uri "${MY_VER}") )"
@@ -303,6 +311,18 @@ dmd-r1_src_test() {
 	# As opposed to old dmd.eclass we have access to actual tests. For
 	# porting reasons we're going to keep only the old test,
 	# hello_world.
+	cat <<-EOF > "${T}/hello.d"
+	import std.stdio;
+
+	void main(string[] args) {
+		writeln("hello world");
+		writefln("args.length = %d", args.length);
+
+		foreach (index, arg; args) {
+			writefln("args[%d] = '%s'", index, arg);
+		}
+	}
+EOF
 
 	test_hello_world() {
 		local phobosDir=${S}/phobos/generated/linux/release/${MODEL}
@@ -320,7 +340,7 @@ dmd-r1_src_test() {
 			-Idmd/druntime/import
 		)
 
-		"${GENERATED_DMD}" "${commandArgs[@]}" dmd/compiler/samples/hello.d \
+		"${GENERATED_DMD}" "${commandArgs[@]}" "${T}/hello.d" \
 			|| die "Failed to build hello.d (${MODEL}-bit)"
 		./hello ${MODEL}-bit || die "Failed to run test sample (${MODEL}-bit)"
 	}
@@ -373,7 +393,7 @@ dmd-r1_src_install() {
 	insinto "${dmd_prefix}"/man/man5
 	doins "${MAN_PAGES_S}"/dmd.conf.5
 
-	if use examples; then
+	if _use_examples; then
 		# Problematic license
 		rm dmd/compiler/samples/d2html.d || die
 
@@ -397,7 +417,7 @@ dmd-r1_src_install() {
 dmd-r1_pkg_postinst() {
 	"${EROOT}"/usr/bin/eselect dlang update dmd
 
-	use examples &&
+	_use_examples &&
 		elog "Examples can be found in: ${EPREFIX}/usr/lib/${PN}/${SLOT}/samples"
 	_use_doc && elog "HTML documentation is in: ${EPREFIX}/usr/share/doc/${PF}/html"
 
@@ -413,6 +433,13 @@ dmd-r1_pkg_postrm() {
 # @RETURN: shell true if the doc USE flag is enabled
 _use_doc() {
 	[[ ${PV} != *9999* ]] && use doc
+}
+
+# @FUNCTION: _use_examples
+# @INTERNAL
+# @RETURN: shell true if the examples use flag exists and is enabled
+_use_examples() {
+	_have_examples && use examples
 }
 
 # @FUNCTION: _gen_dmd.conf
