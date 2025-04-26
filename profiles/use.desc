@@ -13,6 +13,7 @@ dlang_single_target_dmd-2_111 - Build for DMD 2.111 only
 dlang_single_target_gdc-12 - Build for GCC 12 only
 dlang_single_target_gdc-13 - Build for GCC 13 only
 dlang_single_target_gdc-14 - Build for GCC 14 only
+dlang_single_target_gdc-15 - Build for GCC 15 only
 
 dlang_single_target_ldc2-1_32 - Build for ldc2 1.32 only
 dlang_single_target_ldc2-1_33 - Build for ldc2 1.33 only
@@ -39,6 +40,7 @@ dlang_targets_dmd-2_111 - Build with DMD 2.111
 dlang_targets_gdc-12 - Build with GCC 12
 dlang_targets_gdc-13 - Build with GCC 13
 dlang_targets_gdc-14 - Build with GCC 14
+dlang_targets_gdc-15 - Build with GCC 15
 
 dlang_targets_ldc2-1_32 - Build with ldc2 1.32
 dlang_targets_ldc2-1_33 - Build with ldc2 1.33
