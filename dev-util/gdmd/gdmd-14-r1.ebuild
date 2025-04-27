@@ -1,7 +1,9 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
+
+inherit prefix
 
 DESCRIPTION="Wrapper script for gdc that emulates the dmd command"
 HOMEPAGE="https://www.gdcproject.org/"
@@ -15,9 +17,17 @@ SLOT="${PV}"
 KEYWORDS="~amd64 ~arm64 ~x86"
 RESTRICT="test" # no tests
 
-RDEPEND="sys-devel/gcc:${PV}[d]"
+RDEPEND="
+	dev-lang/perl
+	sys-devel/gcc:${PV}[d]
+"
 
 PATCHES="${FILESDIR}/${PN}-no-dmd-conf.patch"
+
+src_prepare() {
+	hprefixify dmd-script
+	default
+}
 
 src_compile() {
 	:
@@ -28,6 +38,9 @@ src_install() {
 	exeinto "${binPath}"
 	newexe dmd-script "${CHOST}-gdmd"
 	dosym "${CHOST}-gdmd" "${binPath}/gdmd"
+
+	dosym -r "${binPath}/${CHOST}-gdmd" "/usr/bin/${CHOST}-gdmd-${SLOT}"
+	dosym -r "${binPath}/${CHOST}-gdmd" "/usr/bin/gdmd-${SLOT}"
 }
 
 pkg_postinst() {
@@ -52,7 +65,7 @@ maybe_update_gcc_config() {
 	local curr_config_ver=$(gcc-config -S ${curr_config} | awk '{print $2}')
 	local curr_specs=$(gcc-config -S ${curr_config} | awk '{print $3}')
 
-	if [[ ${curr_config_ver} == ${SLOT}  && ! ${curr_specs} ]]; then
+	if [[ ${curr_config_ver} == ${SLOT} && ! ${curr_specs} ]]; then
 		# We should call gcc-config to make sure the addition of gdmd is
 		# propagated in $PATH. Don't do anything if not on a traditional
 		# layout, the risk of breaking something outweights having the
