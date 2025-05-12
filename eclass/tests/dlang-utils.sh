@@ -104,6 +104,10 @@ test_var DLANG_LINKER_FLAG dmd-2.102 "-L"
 test_var DLANG_LINKER_FLAG gdc-13 "-Wl,"
 test_var DLANG_LINKER_FLAG ldc2-1_36  "-L"
 
+test_var DLANG_MAIN_FLAG dmd-2.104 "-main"
+test_var DLANG_MAIN_FLAG gdc-15 "-fmain"
+test_var DLANG_MAIN_FLAG ldc2-1.40  "-main"
+
 test_var DLANG_OUTPUT_FLAG dmd-2.102 "-of"
 test_var DLANG_OUTPUT_FLAG gdc-13 "-o"
 test_var DLANG_OUTPUT_FLAG ldc2-1_36  "-of="

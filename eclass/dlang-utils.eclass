@@ -303,6 +303,19 @@ dlang_get_linker_flag() {
 	echo "${DLANG_LINKER_FLAG}"
 }
 
+# @FUNCTION: dlang_get_main_flag
+# @USAGE: [<impl>]
+# @DESCRIPTION:
+# Obtain and print the compiler -main flag (include an empty main) for
+# the given implementation. If no implementation is provided, ${EDC}
+# will be used.
+dlang_get_main_flag() {
+	debug-print-function ${FUNCNAME} "${@}"
+
+	_dlang_export "${@}" DLANG_MAIN_FLAG
+	echo "${DLANG_MAIN_FLAG}"
+}
+
 # @FUNCTION: dlang_get_model_flag
 # @USAGE: [<impl>]
 # @DESCRIPTION:
@@ -1013,6 +1026,12 @@ _dlang_export() {
 					_dlang_echo_implementation_string \
 						"${impl}" "-L" "-Wl," "-L")
 				debug-print "${FUNCNAME}: DLANG_LINKER_FLAG = ${DLANG_LINKER_FLAG}"
+				;;
+			DLANG_MAIN_FLAG)
+				export DLANG_MAIN_FLAG=$(
+					_dlang_echo_implementation_string \
+						"${impl}" "-main" "-fmain" "-main")
+				debug-print "${FUNCNAME}: DLANG_MAIN_FLAG = ${DLANG_MAIN_FLAG}"
 				;;
 			DLANG_OUTPUT_FLAG)
 				export DLANG_OUTPUT_FLAG=$(
