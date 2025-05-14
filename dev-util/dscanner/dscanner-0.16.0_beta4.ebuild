@@ -34,7 +34,7 @@ KEYWORDS="~amd64 ~arm64 ~x86"
 IUSE="debug test"
 RESTRICT="!test? ( test )"
 
-DLANG_COMPAT=( dmd-2_{106..109} gdc-1{3,4} ldc2-1_{35..40} )
+DLANG_COMPAT=( dmd-2_{106..111} gdc-1{3..5} ldc2-1_{35..40} )
 
 inherit dlang-single
 
