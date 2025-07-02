@@ -1,3 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
-<pkgmetadata/>
+<pkgmetadata>
+  <upstream>
+    <remote-id type="github">D-Programming-GDC/gdmd</remote-id>
+  </upstream>
+</pkgmetadata>
