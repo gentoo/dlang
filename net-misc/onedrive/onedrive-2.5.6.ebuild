@@ -3,7 +3,7 @@
 
 EAPI=8
 
-DLANG_COMPAT=( dmd-2_{106..109} ldc2-1_{35..40} )
+DLANG_COMPAT=( dmd-2_{106..111} gdc-15 ldc2-1_{35..40} )
 inherit dlang-single optfeature prefix shell-completion systemd
 
 DESCRIPTION="Free Client for OneDrive on Linux"
