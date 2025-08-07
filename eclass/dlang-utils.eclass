@@ -1114,7 +1114,7 @@ _dlang_export() {
 				# runtime. Since only the runtime provides relevant USE
 				# flags usedep is only applied to it.
 				local dmd_dep="dev-lang/dmd:${impl#dmd-}=${usedep}"
-				local gdc_dep="sys-devel/gcc:${impl#gdc-}${usedep} dev-util/gdmd:${impl#gdc-}"
+				local gdc_dep="sys-devel/gcc:${impl#gdc-}${usedep} dev-util/gdmd:0[dlang_targets_${impl}(-)]"
 				local ldc_ver="${impl#ldc2-}" ldc_dep
 				if [[ ${impl} == ldc2* ]] && ver_test "${ldc_ver}" -ge 1.40; then
 					ldc_dep="dev-lang/ldc2:${ldc_ver} dev-libs/ldc2-runtime:${ldc_ver}=${usedep}"

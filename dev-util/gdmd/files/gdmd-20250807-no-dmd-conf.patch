@@ -1,0 +1,13 @@
+diff --git i/dmd-script w/dmd-script
+--- i/dmd-script
++++ w/dmd-script
+@@ -327,9 +327,6 @@ sub browse($) {
+     exit 0;
+ }
+ 
+-# Load dmd.conf before before parsing arguments.
+-readINI();
+-
+ # $DFLAGS should go before a -run switch, or at the end of ARGV
+ my @extra_dflags = split(/\s+/, $ENV{DFLAGS} || "");
+ my $extra_dflags_used = 0;
