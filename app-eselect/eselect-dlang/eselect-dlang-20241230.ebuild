@@ -9,7 +9,7 @@ S="${FILESDIR}"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~x86"
 RESTRICT="test" # no tests
 
 RDEPEND="app-admin/eselect"
