@@ -31,10 +31,3 @@ dlang_targets_ldc2-1_37 - Build with ldc2 1.37
 dlang_targets_ldc2-1_38 - Build with ldc2 1.38
 dlang_targets_ldc2-1_39 - Build with ldc2 1.39
 dlang_targets_ldc2-1_40 - Build with ldc2 1.40
-
-
-dmd-2_107 - Build for DMD 2.107
-gdc-11 - Build for GCC 11
-gdc-12 - Build for GCC 12
-gdc-13 - Build for GCC 13
-ldc2-1_36 - Build for ldc2 1.36
