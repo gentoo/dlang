@@ -37,12 +37,6 @@ _DLANG_COMPILERS_R1_ECLASS=1
 # the second one represents the D language version the implementation
 # supports and, lastly, there are two keywords.
 readonly _DLANG_DMD_FRONTENDS=(
-	"2.101 2.101 ~amd64 ~x86"
-	"2.102 2.102 ~amd64 ~x86"
-	"2.103 2.103 ~amd64 ~x86"
-	"2.104 2.104 ~amd64 ~x86"
-	"2.105 2.105 ~amd64 ~x86"
-	"2.106 2.106 ~amd64 ~x86"
 	"2.107 2.107 ~amd64 ~x86"
 	"2.108 2.108 ~amd64 ~x86"
 	"2.109 2.109 ~amd64 ~x86"
@@ -142,6 +136,12 @@ unset -f _dlang_accumulate_implementations
 # @DESCRIPTION:
 # All historical Dlang implementations that are no longer supported.
 readonly _DLANG_HISTORICAL_IMPLS=(
+	dmd-2_106
+	dmd-2_105
+	dmd-2_104
+	dmd-2_103
+	dmd-2_102
+	dmd-2_101
 	ldc2-1_35
 	ldc2-1_34
 	ldc2-1_33
