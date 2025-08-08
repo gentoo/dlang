@@ -92,10 +92,6 @@ readonly _DLANG_GDC_FRONTENDS=(
 # D language version the implementation supports and, lastly, there are
 # two keywords.
 readonly _DLANG_LDC2_FRONTENDS=(
-	"1.32 2.102 ~amd64 ~arm64 ~x86"
-	"1.33 2.103 ~amd64 ~arm64 ~x86"
-	"1.34 2.104 ~amd64 ~arm64 ~x86"
-	"1.35 2.105 ~amd64 ~arm64 ~x86"
 	"1.36 2.106 ~amd64 ~arm64 ~x86"
 	"1.37 2.107 ~amd64 ~arm64 ~x86"
 	"1.38 2.108 ~amd64 ~arm64 ~x86"
@@ -146,6 +142,10 @@ unset -f _dlang_accumulate_implementations
 # @DESCRIPTION:
 # All historical Dlang implementations that are no longer supported.
 readonly _DLANG_HISTORICAL_IMPLS=(
+	ldc2-1_35
+	ldc2-1_34
+	ldc2-1_33
+	ldc2-1_32
 	gdc-11
 )
 
