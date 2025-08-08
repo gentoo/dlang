@@ -1,9 +1,3 @@
-dlang_single_target_dmd-2_101 - Build for DMD 2.101 only
-dlang_single_target_dmd-2_102 - Build for DMD 2.102 only
-dlang_single_target_dmd-2_103 - Build for DMD 2.103 only
-dlang_single_target_dmd-2_104 - Build for DMD 2.104 only
-dlang_single_target_dmd-2_105 - Build for DMD 2.105 only
-dlang_single_target_dmd-2_106 - Build for DMD 2.106 only
 dlang_single_target_dmd-2_107 - Build for DMD 2.107 only
 dlang_single_target_dmd-2_108 - Build for DMD 2.108 only
 dlang_single_target_dmd-2_109 - Build for DMD 2.109 only
@@ -21,12 +15,6 @@ dlang_single_target_ldc2-1_38 - Build for ldc2 1.38 only
 dlang_single_target_ldc2-1_39 - Build for ldc2 1.39 only
 dlang_single_target_ldc2-1_40 - Build for ldc2 1.40 only
 
-dlang_targets_dmd-2_101 - Build with DMD 2.101
-dlang_targets_dmd-2_102 - Build with DMD 2.102
-dlang_targets_dmd-2_103 - Build with DMD 2.103
-dlang_targets_dmd-2_104 - Build with DMD 2.104
-dlang_targets_dmd-2_105 - Build with DMD 2.105
-dlang_targets_dmd-2_106 - Build with DMD 2.106
 dlang_targets_dmd-2_107 - Build with DMD 2.107
 dlang_targets_dmd-2_108 - Build with DMD 2.108
 dlang_targets_dmd-2_109 - Build with DMD 2.109
@@ -45,12 +33,6 @@ dlang_targets_ldc2-1_39 - Build with ldc2 1.39
 dlang_targets_ldc2-1_40 - Build with ldc2 1.40
 
 
-dmd-2_101 - Build for DMD 2.101
-dmd-2_102 - Build for DMD 2.102
-dmd-2_103 - Build for DMD 2.103
-dmd-2_104 - Build for DMD 2.104
-dmd-2_105 - Build for DMD 2.105
-dmd-2_106 - Build for DMD 2.106
 dmd-2_107 - Build for DMD 2.107
 gdc-11 - Build for GCC 11
 gdc-12 - Build for GCC 12
