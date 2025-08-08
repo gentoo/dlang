@@ -259,7 +259,7 @@ test_is "_dlang_impl_matches gdc-13 gdc*" 0
 test_is "_dlang_impl_matches dmd-2.103 gdc*" 1
 test_is "_dlang_impl_matches gdc-13 dmd-2_103" 1
 test_is "_dlang_impl_matches dmd-2.107 dmd-2.0*" 1
-test_is "_dlang_impl_matches ldc2-1_34 ldc2*" 0
+test_is "_dlang_impl_matches ldc2-1_40 ldc2*" 0
 set +f
 test_is "_dlang_impl_matches gdc-12 2.100" 0
 test_is "_dlang_impl_matches gdc-12 2.086" 1
@@ -273,7 +273,7 @@ test_is "_dlang_impl_matches ldc2-1_36 2.103" 1
 # Check for the oldest frontend version patterns
 test_is "_dlang_impl_matches gdc-12 2.100" 0
 test_is "_dlang_impl_matches dmd-2.101 2.101" 0
-test_is "_dlang_impl_matches ldc2-1.32 2.102" 0
+test_is "_dlang_impl_matches ldc2-1.36 2.106" 0
 eoutdent
 
 tbegin "simple dlang-filter-dflags"
