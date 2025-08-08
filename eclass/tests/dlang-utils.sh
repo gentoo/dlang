@@ -137,7 +137,7 @@ test_var DLANG_SYSTEM_IMPORT_PATHS gdc-13 "${EPREFIX}/usr/lib/gcc/${CHOST_defaul
 test_var DLANG_SYSTEM_IMPORT_PATHS ldc2-1_32 "${EPREFIX}/usr/lib/ldc2/1.32/include/d"
 
 test_var DLANG_PKG_DEP dmd-2.102 "dev-lang/dmd:2.102="
-test_var DLANG_PKG_DEP gdc-12 "sys-devel/gcc:12[d] dev-util/gdmd:12"
+test_var DLANG_PKG_DEP gdc-12 "sys-devel/gcc:12[d] dev-util/gdmd:0[dlang_targets_gdc-12(-)]"
 test_var DLANG_PKG_DEP ldc2-1.36 "dev-lang/ldc2:1.36="
 test_var DLANG_PKG_DEP ldc2-1.40 "dev-lang/ldc2:1.40 dev-libs/ldc2-runtime:1.40="
 
@@ -147,7 +147,7 @@ declare -A DLANG_REQ_USE=(
 	[ldc2]="flag3(-)?"
 )
 test_var DLANG_PKG_DEP dmd-2.102 "dev-lang/dmd:2.102=[flag1]"
-test_var DLANG_PKG_DEP gdc-12 "sys-devel/gcc:12[d,flag2] dev-util/gdmd:12"
+test_var DLANG_PKG_DEP gdc-12 "sys-devel/gcc:12[d,flag2] dev-util/gdmd:0[dlang_targets_gdc-12(-)]"
 test_var DLANG_PKG_DEP ldc2-1.36 "dev-lang/ldc2:1.36=[flag3(-)?]"
 test_var DLANG_PKG_DEP ldc2-1.40 "dev-lang/ldc2:1.40 dev-libs/ldc2-runtime:1.40=[flag3(-)?]"
 
