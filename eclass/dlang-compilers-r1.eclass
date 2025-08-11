@@ -99,7 +99,7 @@ readonly _DLANG_LDC2_FRONTENDS=(
 	"1.36 2.106 ~amd64 ~arm64 ~x86"
 	"1.37 2.107 ~amd64 ~arm64 ~x86"
 	"1.38 2.108 ~amd64 ~arm64 ~x86"
-	"1.39 2.109 ~amd64 ~x86"
+	"1.39 2.109 ~amd64 ~arm64 ~x86"
 	"1.40 2.110 ~amd64 ~x86"
 )
 
