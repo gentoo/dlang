@@ -30,7 +30,7 @@ LICENSE+=" Apache-2.0-with-LLVM-exceptions UoI-NCSA"
 LICENSE+=" GPL-2+ Artistic"
 
 SLOT="$(ver_cut 1-2)"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~x86"
 
 IUSE="debug test"
 RESTRICT="!test? ( test )"
@@ -76,10 +76,13 @@ pkg_setup() {
 src_prepare() {
 	# Disable GDB tests by passing GDB_FLAGS=OFF
 	# Put this here to avoid trigerring reconfigurations later on.
-	sed -i 's/\(GDB_FLAGS=\)\S\+/\1OFF/' "${S}"/tests/dmd/CMakeLists.txt
+	sed -i 's/\(GDB_FLAGS=\)\S\+/\1OFF/' "${S}"/tests/dmd/CMakeLists.txt || die
 
 	# Calls gcc directly
 	sed -i "s/gcc/$(tc-getCC)/" "${S}"/tests/dmd/runnable/importc-test1.sh || die
+
+	# This test fails with >=gcc-14, fixed in newer versions.
+	rm -r "${S}"/tests/dmd/compilable/stdcheaders.c || die
 
 	apply_patches
 

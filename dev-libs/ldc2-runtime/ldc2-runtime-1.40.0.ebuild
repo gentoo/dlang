@@ -26,7 +26,7 @@ LICENSE+=" Boost-1.0 BZIP2 ZLIB curl public-domain"
 # Only increase subslot in case of ABI breakage
 SLOT="$(ver_cut 1-2)/0"
 LDC2_SLOT="$(ver_cut 1-2)" # SLOT without subslot
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~x86"
 
 IUSE="static-libs test"
 RESTRICT="!test? ( test )"
