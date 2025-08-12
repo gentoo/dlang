@@ -11,7 +11,7 @@ SRC_URI="https://gtkd.org/Downloads/sources/GtkD-${PV}.zip"
 LICENSE="LGPL-3+-with-gtkd-exceptions test? ( LGPL-3+ )"
 
 SLOT="3"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~x86"
 
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 DLANG_COMPAT=( dmd-2_{106..109} gdc-1{3,4} ldc2-1_{35..40} )
