@@ -1,0 +1,97 @@
+Fixes compilation failures with newer compilers (frontend >=2.111).
+Only affects tests.
+https://github.com/gtkd-developers/GtkD/pull/361
+
+From acd9ea1e9623ab73482fb1031b620f47d7f8854f Mon Sep 17 00:00:00 2001
+From: David Foerster <davidfoerster@users.noreply.github.com>
+Date: Fri, 13 Jun 2025 18:25:17 +0200
+Subject: [PATCH] Fix illegal use of "debug(1)"
+
+diff --git a/demos/gstreamer/mediaplayer/gst_mediaplayer.d b/demos/gstreamer/mediaplayer/gst_mediaplayer.d
+--- a/demos/gstreamer/mediaplayer/gst_mediaplayer.d
++++ b/demos/gstreamer/mediaplayer/gst_mediaplayer.d
+@@ -270,10 +270,10 @@ public:
+ 		{
+ 			isPlaying = true;
+ 			// Now set to playing and iterate.
+-			debug(1) writeln("Setting to PLAYING.");
++			debug(trace) writeln("Setting to PLAYING.");
+ 			//pipeline.setState( GstState.PLAYING );
+ 			source.setState( GstState.PLAYING );
+-			debug(1) writeln("Running.");
++			debug(trace) writeln("Running.");
+ 		}
+ 		else
+ 		{
+diff --git a/demos/gtkD/TestWindow/TestIdle.d b/demos/gtkD/TestWindow/TestIdle.d
+--- a/demos/gtkD/TestWindow/TestIdle.d
++++ b/demos/gtkD/TestWindow/TestIdle.d
+@@ -56,7 +56,7 @@ class TestIdle : VBox
+ 	this()
+ 	{
+ 
+-		debug(1)
++		debug(trace)
+ 		{
+ 			writeln("instantiating TestTimeout");
+ 		}
+diff --git a/demos/gtkD/TestWindow/TestImage.d b/demos/gtkD/TestWindow/TestImage.d
+--- a/demos/gtkD/TestWindow/TestImage.d
++++ b/demos/gtkD/TestWindow/TestImage.d
+@@ -51,7 +51,7 @@ class TestImage : VBox
+ 	this(Window window)
+ 	{
+ 		this.window = window;
+-		debug(1)
++		debug(trace)
+ 		{
+ 			writeln("instantiating TestImage");
+ 		}
+diff --git a/demos/gtkD/TestWindow/TestScales.d b/demos/gtkD/TestWindow/TestScales.d
+--- a/demos/gtkD/TestWindow/TestScales.d
++++ b/demos/gtkD/TestWindow/TestScales.d
+@@ -53,7 +53,7 @@ class TestScales : Table //, MenuItemListener
+ 	this()
+ 	{
+ 
+-		debug(1)
++		debug(trace)
+ 		{
+ 			writeln("instantiating TestScales");
+ 		}
+diff --git a/demos/gtkD/TestWindow/TestStock.d b/demos/gtkD/TestWindow/TestStock.d
+--- a/demos/gtkD/TestWindow/TestStock.d
++++ b/demos/gtkD/TestWindow/TestStock.d
+@@ -43,7 +43,7 @@ class TestStock : ScrolledWindow
+ 	this()
+ 	{
+ 		super(null, null);
+-		debug(1)
++		debug(trace)
+ 		{
+ 			writeln("instantiating TestStock");
+ 		}
+diff --git a/demos/gtkD/TestWindow/TestText.d b/demos/gtkD/TestWindow/TestText.d
+--- a/demos/gtkD/TestWindow/TestText.d
++++ b/demos/gtkD/TestWindow/TestText.d
+@@ -40,7 +40,7 @@ class TestText : VBox
+ 
+ 		super(false,0);
+ 
+-		debug(1)
++		debug(trace)
+ 		{
+ 			writeln("instantiating TestText");
+ 		}
+diff --git a/demos/gtkD/TestWindow/TestThemes.d b/demos/gtkD/TestWindow/TestThemes.d
+--- a/demos/gtkD/TestWindow/TestThemes.d
++++ b/demos/gtkD/TestWindow/TestThemes.d
+@@ -39,7 +39,7 @@ class TestThemes : VBox
+ 	this(Window window)
+ 	{
+ 		this.window = window;
+-		debug(1)
++		debug(trace)
+ 		{
+ 			writeln("instantiating TestThemes");
+ 		}

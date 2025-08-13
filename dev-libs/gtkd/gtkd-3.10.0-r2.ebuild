@@ -14,7 +14,7 @@ SLOT="3"
 KEYWORDS="~amd64 ~arm64 ~x86"
 
 MULTILIB_COMPAT=( abi_x86_{32,64} )
-DLANG_COMPAT=( dmd-2_{106..109} gdc-1{3,4} ldc2-1_{35..40} )
+DLANG_COMPAT=( dmd-2_{106..111} gdc-1{3..5} ldc2-1_{35..40} )
 declare -A DLANG_REQ_USE=(
 	[dmd]="${MULTILIB_USEDEP}"
 	[gdc]=""
@@ -48,6 +48,10 @@ GTKD_SRC_DIRS=( gtkd gtkdgl sourceview gstreamer  vte  peas)
 IUSE="${GTKD_USE_FLAGS[@]:1} static-libs test"
 RESTRICT="!test? ( test )"
 REQUIRED_USE=${DLANG_REQUIRED_USE}
+
+PATCHES=(
+	"${FILESDIR}/tests-fix-debug-integer-pr-361.patch"
+)
 
 MAJOR=$(ver_cut 1)
 MINOR=$(ver_cut 2-)
