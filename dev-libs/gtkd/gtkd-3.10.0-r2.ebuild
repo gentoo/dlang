@@ -171,6 +171,21 @@ multilib_src_install_all() {
 	foreach_used_component install_headers
 }
 
+pkg_postinst() {
+	local have_gdc=0 u
+	for u in ${USE}; do
+		[[ ${u} != dlang_targets_gdc* ]] && continue
+
+		have_gdc=1
+		break
+	done
+
+	if [[ ${have_gdc} = 1 ]]; then
+		ewarn "Please run env-update before you use this package."
+		ewarn "gdc may not find this library until you do."
+	fi
+}
+
 foreach_used_component() {
 	for (( i = 0 ; i < ${#GTKD_LIB_NAMES[@]} ; i++ )); do
 		if [[ "${GTKD_LIB_NAMES[$i]}" == "gtkd" ]] || use ${GTKD_USE_FLAGS[$i]}; then
