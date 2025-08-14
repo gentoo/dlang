@@ -12,7 +12,7 @@ SRC_URI="https://codeload.github.com/abraunegg/onedrive/tar.gz/v${PV} -> ${P}.ta
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~x86"
 # no straight forward way to run unittests. Probably need to do DFLAGS=-unittest econf
 IUSE="libnotify"
 RESTRICT="test"
