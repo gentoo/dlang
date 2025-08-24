@@ -1,0 +1,8 @@
+dev-lang/ldc2:1.36 dlang_single_target_ldc2-1_36
+dev-lang/ldc2:1.37 dlang_single_target_ldc2-1_37
+dev-lang/ldc2:1.38 dlang_single_target_ldc2-1_38
+dev-lang/ldc2:1.39 dlang_single_target_ldc2-1_39
+
+dev-lang/dmd:2.107 dlang_single_target_dmd-2_107
+dev-lang/dmd:2.108 dlang_single_target_dmd-2_108
+dev-lang/dmd:2.109 dlang_single_target_dmd-2_109

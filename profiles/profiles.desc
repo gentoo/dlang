@@ -1,0 +1,56 @@
+amd64        dlang/amd64/23.0/ldc2                                        exp
+amd64        dlang/amd64/23.0/gdc                                         exp
+amd64        dlang/amd64/23.0/dmd                                         exp
+
+amd64        dlang/amd64/23.0                                             exp
+amd64        dlang/amd64/23.0/systemd                                     exp
+amd64        dlang/amd64/23.0/desktop                                     exp
+amd64        dlang/amd64/23.0/desktop/systemd                             exp
+
+amd64        dlang/amd64/23.0/no-multilib                                 exp
+amd64        dlang/amd64/23.0/no-multilib/hardened                        exp
+amd64        dlang/amd64/23.0/no-multilib/hardened/systemd                exp
+amd64        dlang/amd64/23.0/no-multilib/systemd                         exp
+
+amd64        dlang/amd64/23.0/llvm                                        exp
+amd64        dlang/amd64/23.0/llvm/systemd                                exp
+
+amd64        dlang/amd64/23.0/hardened                                    exp
+amd64        dlang/amd64/23.0/hardened/systemd                            exp
+
+
+
+arm64        dlang/arm64/23.0/ldc2                                        exp
+arm64        dlang/arm64/23.0/gdc                                         exp
+
+arm64        dlang/arm64/23.0                                             exp
+
+arm64        dlang/arm64/23.0/hardened                                    exp
+arm64        dlang/arm64/23.0/hardened/systemd                            exp
+
+arm64        dlang/arm64/23.0/desktop                                     exp
+arm64        dlang/arm64/23.0/desktop/systemd                             exp
+arm64        dlang/arm64/23.0/systemd                                     exp
+
+arm64        dlang/arm64/23.0/llvm                                        exp
+arm64        dlang/arm64/23.0/llvm/systemd                                exp
+
+
+
+x86	     dlang/x86/23.0/i686/ldc2				          stable
+x86	     dlang/x86/23.0/i686/gdc 				          stable
+x86	     dlang/x86/23.0/i686/dmd 				          stable
+x86	     dlang/x86/23.0/i686				          stable
+x86	     dlang/x86/23.0/i686/systemd		                  stable
+x86	     dlang/x86/23.0/i686/hardened		                  stable
+x86	     dlang/x86/23.0/i686/desktop		                  stable
+
+
+
+amd64        dlang/amd64/23.0/musl                                        exp
+amd64        dlang/amd64/23.0/musl/hardened                               exp
+amd64        dlang/amd64/23.0/musl/llvm                                   exp
+arm64        dlang/arm64/23.0/musl                                        exp
+arm64        dlang/arm64/23.0/musl/hardened                               exp
+arm64        dlang/arm64/23.0/musl/llvm                                   exp
+x86          dlang/x86/23.0/i686/musl                                     exp

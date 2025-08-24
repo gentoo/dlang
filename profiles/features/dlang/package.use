@@ -1,0 +1,3 @@
+dev-lang/dmd -selfhost
+
+dev-util/gdmd dlang_targets_gdc-14

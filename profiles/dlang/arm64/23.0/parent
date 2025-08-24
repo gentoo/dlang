@@ -1,0 +1,3 @@
+gentoo:default/linux/arm64/23.0
+../../../arch/arm64
+../../../features/ldc2

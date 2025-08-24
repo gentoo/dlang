@@ -1,0 +1,2 @@
+# Missing dep >=gnome-base/librsvg-2.54:2[abi_x86_32(-)]
+dev-libs/gtkd
