@@ -13,7 +13,7 @@ This overlay aims to make parallel installation of Dlang compilers easy and offe
 * Shared library support when using DMD
 * Easily compile debug builds with DMD and release builds with LDC/GDC even when they depend on libraries like GtkD. (This depends on availability of libraries in this repository.)
 
-The overlay supports linker and compiler flags, though some package build scripts may not be patched to use them (e.g. DMD). For Dlang packages, the LDFLAGS variable is rewritten to match the Dlang compilers linker prefix. For DMD this is `-L` and for LDC this is `-L=`. If you have not set up LDFLAGS in make.conf, the Gentoo default will be used, which is currently `-Wl,--as-needed -Wl,-O1`. Taking this example, in a compilation using DMD this would be rewritten to `LDFLAGS=-L--as-needed -L-O1`. Compiler flags are passed into build scripts as `DCFLAGS`, but since there is no common command-line syntax between Dlang compilers they are split up into DMDFLAGS, GDCFLAGS and LDCFLAGS in `make.conf`. An example configuration could be: 
+The overlay supports linker and compiler flags, though some package build scripts may not be patched to use them (e.g. DMD). For Dlang packages, the LDFLAGS variable is rewritten to match the Dlang compilers linker prefix. For DMD this is `-L` and for LDC this is `-L=`. If you have not set up LDFLAGS in make.conf, the Gentoo default will be used, which is currently `-Wl,--as-needed -Wl,-O1`. Taking this example, in a compilation using DMD this would be rewritten to `LDFLAGS=-L--as-needed -L-O1`. Compiler flags are passed into build scripts as `DCFLAGS`, but since there is no common command-line syntax between Dlang compilers they are split up into DMDFLAGS, GDCFLAGS and LDCFLAGS in `make.conf`. An example configuration could be:
 ```sh
 DMDFLAGS="-O"
 GDCFLAGS="-march=native -O3 -pipe -frelease"
@@ -84,6 +84,13 @@ For pull requests please add `--signoff` to your commits. Otherwise they cannot 
 At first there is not much to be done, but once the first arch is stable, it should be added as a compiler option for Dlang packages, by providing a description for its USE-flag in `profile/use.desc` and tying it into `eclass/dlang-compilers.eclass`. This way it knows which compiler release is based on which version of the D language specification, which is crucial for dependency management.
 ### When changing paths in compiler ebuilds
 Make sure that `dlang.eselect` knows about it. `eclass/dlang.eclass` also has a function that needs to be changed: `dlang_foreach_config()`. It advertizes compiler specific variables and paths to D ebuilds.
+
+### Using pkgcheck
+
+Like the standard [Gentoo git workflow](https://wiki.gentoo.org/wiki/Standard_git_workflow), this overlay uses [Pkgcheck](https://wiki.gentoo.org/wiki/Pkgcheck) to check for QA errors and warnings.
+Unfortunately, `pkgcheck` will not function as intended by default but the [scripts/pkgcheck-scan.sh](scripts/pkgcheck-scan.sh) wrapper will help you.
+It hides a lot of warnings and errors that aren't actually relevant to the overlay and it will show you diagnostics that actually concern your changes.
+If you're a first time contributor, using `pkgcheck` is strongly encouraged.
 
 ## Q & A
 * **Why does DMD have a circular dependency upon itself?**
