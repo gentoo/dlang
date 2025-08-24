@@ -120,7 +120,7 @@ test_var DLANG_VERSION_FLAG dmd-2.102 "-version"
 test_var DLANG_VERSION_FLAG gdc-13 "-fversion"
 test_var DLANG_VERSION_FLAG ldc2-1_36  "-d-version"
 
-test_var DLANG_FE_VERSION dmd-2.102 2.102
+test_var DLANG_FE_VERSION dmd-2.111 2.111
 test_var DLANG_FE_VERSION gdc-13 2.103
 test_var DLANG_FE_VERSION ldc2-1_36  2.106
 
