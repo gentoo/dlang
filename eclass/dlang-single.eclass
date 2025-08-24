@@ -233,24 +233,17 @@ _dlang_single_set_globals() {
 		IUSE="${flags[*]}"
 	fi
 
-	local stabilization_mock=$(dlang_compilers_stabs_required_use \
-								   dlang_single_target \
-								   "${_DLANG_SUPPORTED_IMPLS[@]}"
-		  )
-	local requse="( ^^ ( ${flags[*]} )${stabilization_mock:+ ${stabilization_mock}} )"
+	local requse="( ^^ ( ${flags[*]} ) )"
 	local single_flags="${flags[@]/%/(-)?}"
 	local single_usedep=${single_flags// /,}
 
 	local deps= i DLANG_PKG_DEP
 	for i in "${_DLANG_SUPPORTED_IMPLS[@]}"; do
 		_dlang_export "${i}" DLANG_PKG_DEP
-		deps+=$(
-			dlang_compilers_stabs_impl_dep \
-				"${i}" \
-				"dlang_single_target_${i}? (
-					${DLANG_PKG_DEP}
-				) "
-			 )
+		deps+="
+		dlang_single_target_${i}? (
+			${DLANG_PKG_DEP}
+		) "
 	done
 
 	if [[ ${DLANG_DEPS+1} ]]; then

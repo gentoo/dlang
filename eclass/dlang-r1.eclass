@@ -1,4 +1,4 @@
-# Copyright 2024 Gentoo Authors
+# Copyright 2024-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: dlang-r1.eclass
@@ -219,22 +219,15 @@ _dlang_set_globals() {
 
 	for i in "${_DLANG_SUPPORTED_IMPLS[@]}"; do
 		_dlang_export "${i}" DLANG_PKG_DEP
-		deps+=$(
-			dlang_compilers_stabs_impl_dep \
-				"${i}" \
-				"dlang_targets_${i}? (
-					${DLANG_PKG_DEP}
-				 ) "
-			 )
+		deps+="
+		dlang_targets_${i}? (
+			${DLANG_PKG_DEP}
+		) "
 	done
 
 	local flags=( "${_DLANG_SUPPORTED_IMPLS[@]/#/dlang_targets_}" )
 	local optflags=${flags[@]/%/(-)?}
-	local stabilization_mock=$(dlang_compilers_stabs_required_use \
-								   dlang_targets \
-								   "${_DLANG_SUPPORTED_IMPLS[@]}"
-		  )
-	local requse="( || ( ${flags[*]} )${stabilization_mock:+ ${stabilization_mock}} )"
+	local requse="( || ( ${flags[*]} ) )"
 	local usedep=${optflags// /,}
 
 	if [[ ${DLANG_DEPS+1} ]]; then

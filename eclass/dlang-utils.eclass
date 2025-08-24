@@ -1052,8 +1052,7 @@ _dlang_export() {
 				debug-print "${FUNCNAME}: DLANG_VERSION_FLAG = ${DLANG_VERSION_FLAG}"
 				;;
 			DLANG_FE_VERSION)
-				local implDetails=( $(_dlang_get_impl_details "${impl}") )
-				export DLANG_FE_VERSION=${implDetails[1]}
+				export DLANG_FE_VERSION=$(_dlang_get_fe_version "${impl}")
 				debug-print "${FUNCNAME}: DLANG_FE_VERSION = ${DLANG_FE_VERSION}"
 				;;
 			DLANG_BE_VERSION)
