@@ -1,4 +1,4 @@
-# Copyright 2024-2025 Gentoo Authors
+# Copyright 2024-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: dlang-compilers-r1.eclass
@@ -83,6 +83,7 @@ readonly _DLANG_LDC2_FRONTENDS=(
 	"1.38 2.108 ~amd64 ~arm64 ~x86"
 	"1.39 2.109 ~amd64 ~arm64 ~x86"
 	"1.40 2.110 ~amd64 ~arm64 ~x86"
+	"1.42 2.112 ~amd64 ~arm64 ~x86"
 )
 
 # @FUNCTION: _dlang_accumulate_implementations
