@@ -6,7 +6,7 @@ EAPI=8
 DLANG_COMPAT=( ldc2-1_$(ver_cut 2) )
 inherit dlang-single multilib cmake-multilib
 
-PATCH_VER=1
+PATCH_VER=2
 PATCH_TAG_NAME="${PV}-patches-${PATCH_VER}"
 PATCH_URL_BASE="https://github.com/the-horo/ldc-patches/archive/refs/tags"
 

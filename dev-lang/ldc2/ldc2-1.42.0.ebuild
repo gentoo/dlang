@@ -8,7 +8,7 @@ LLVM_COMPAT=( {17..21} )
 PYTHON_COMPAT=( python3_{12..14} )
 inherit dlang-single llvm-r2 multiprocessing python-any-r1 toolchain-funcs cmake
 
-PATCH_VER=1
+PATCH_VER=2
 PATCH_TAG_NAME="${PV}-patches-${PATCH_VER}"
 PATCH_URL_BASE="https://github.com/the-horo/ldc-patches/archive/refs/tags"
 
