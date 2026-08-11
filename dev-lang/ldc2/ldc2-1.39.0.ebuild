@@ -1,11 +1,11 @@
-# Copyright 1999-2025 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
 # Upstream supports LLVM 15.0 through 18.0.
-LLVM_COMPAT=( {15..18} )
-PYTHON_COMPAT=( python3_{10..13} )
+LLVM_COMPAT=( {17..18} )
+PYTHON_COMPAT=( python3_{12..14} )
 inherit cmake llvm-r1 multilib-build multiprocessing python-any-r1 toolchain-funcs
 
 PATCH_VER=1

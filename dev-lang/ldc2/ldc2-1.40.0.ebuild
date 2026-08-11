@@ -1,11 +1,11 @@
-# Copyright 1999-2025 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
 DLANG_COMPAT=( dmd-2_{106..109} gdc-1{3..4} ldc2-1_{35..40} )
-LLVM_COMPAT=( {15..19} )
-PYTHON_COMPAT=( python3_{10..13} )
+LLVM_COMPAT=( {17..19} )
+PYTHON_COMPAT=( python3_{12..14} )
 inherit dlang-single llvm-r1 multiprocessing python-any-r1 toolchain-funcs cmake
 
 PATCH_VER=1
