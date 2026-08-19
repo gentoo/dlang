@@ -1,0 +1,39 @@
+# Backported from upstream vibe: https://github.com/vibe-d/vibe-serialization/pull/27
+
+From ebd472c28f8d98e4488425a52ece07f2eaf9045f Mon Sep 17 00:00:00 2001
+From: Andrei Horodniceanu <a.horodniceanu@proton.me>
+Date: Wed, 12 Aug 2026 22:12:56 +0300
+Subject: [PATCH] source/vibe/data/json.d: Fix initialization of BigInt
+
+Assigning to the `m_bigInt` union member is lowered to an `opAssign`
+on the `BigInt` instance, (and its internal `BigUint` member), which
+means invariants will be called at the entrance in the function. Now,
+the `BigUint` struct has an invariant that checks that its internal
+data is non-zero.
+
+This invariant thus fails when a `Json` object is constructed because
+the constructor specifically zeros out the memory before assigning the
+default value to the `m_bigInt` member.
+
+Replacing the assignment with a call to `core.lifetime.emplace` fixes
+the issue by not calling the invariant and directly constructing the
+variable with its safe internal state.
+
+This issue can be observed when running the unittests with a stdlib
+compiled without `-frelease`. The easiest way to do this is using
+`ldc` with `-link-defaultlib-debug`.
+
+Signed-off-by: Andrei Horodniceanu <a.horodniceanu@proton.me>
+
+diff --git i/source/dub/internal/vibecompat/data/json.d w/source/dub/internal/vibecompat/data/json.d
+--- i/source/dub/internal/vibecompat/data/json.d
++++ w/source/dub/internal/vibecompat/data/json.d
+@@ -1261,7 +1261,7 @@ struct Json {
+ 	private void initBigInt()
+ 	nothrow @trusted {
+ 		// BigInt is a struct, and it has a special BigInt.init value, which differs from null.
+-		m_bigInt = BigInt.init;
++		emplace(&m_bigInt);
+ 	}
+ 
+ 	private void runDestructors()
